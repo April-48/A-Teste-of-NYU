@@ -13,9 +13,10 @@ from dash import Dash, Input, Output, State, ctx, dcc, html
 from prepare_data import BOROUGHS, SOURCE_URL
 
 ROOT = Path(__file__).resolve().parent
-PURPLE = "#7160a6"
-SELECTED = "#b35c16"
-INK = "#2b253b"
+BASE_COLOR = "#1745b8"
+SELECTED = "#f28e00"
+SELECTED_TEXT = "#984000"
+INK = "#172033"
 CONFIG = {"displayModeBar": False, "responsive": True, "scrollZoom": False}
 
 
@@ -70,12 +71,12 @@ def scatter_figure(summary, selected):
             x=rows.restaurants.tolist(), y=rows.grade_a_pct.tolist(),
             mode="markers+text" if active else "markers",
             text=rows.cuisine.tolist() if active else None, textposition="bottom center",
-            textfont={"color": SELECTED, "size": 13}, cliponaxis=False,
+            textfont={"color": SELECTED_TEXT, "size": 13}, cliponaxis=False,
             customdata=rows[["cuisine", "restaurants", "rated", "grade_a"]].values.tolist(),
-            marker={"size": 15 if active else 10, "color": SELECTED if active else PURPLE,
-                    "opacity": 1 if active else 0.7,
+            marker={"size": 18 if active else 10, "color": SELECTED if active else BASE_COLOR,
+                    "opacity": 1,
                     "symbol": ["diamond" if active else ("circle-open" if n < 10 else "circle") for n in rows.rated],
-                    "line": {"width": 1.5, "color": SELECTED if active else PURPLE}},
+                    "line": {"width": 2 if active else 1, "color": INK if active else BASE_COLOR}},
             hovertemplate="<b>%{customdata[0]}</b><br>Restaurants: %{customdata[1]:,}<br>Rated (A/B/C): %{customdata[2]:,}<br>Grade A: %{y:.1%}<extra></extra>"))
     fig.update_xaxes(title="Restaurant count", rangemode="tozero", tickformat=",d")
     fig.update_yaxes(title="Grade A percentage", range=[-0.04, 1.07], tickformat=".0%", dtick=0.2)
@@ -93,7 +94,8 @@ def bar_figure(summary, selected):
     fig = base_figure()
     fig.add_trace(go.Bar(
         x=top.restaurants.tolist(), y=top.cuisine.tolist(), orientation="h",
-        marker_color=[SELECTED if c == selected else PURPLE for c in top.cuisine],
+        marker_color=[SELECTED if c == selected else BASE_COLOR for c in top.cuisine],
+        marker_line={"color": INK, "width": [2 if c == selected else 0 for c in top.cuisine]},
         text=[f"{n:,}" + (" ◀" if c == selected else "") for c, n in zip(top.cuisine, top.restaurants)],
         textposition="outside", cliponaxis=False,
         hovertemplate="<b>%{y}</b><br>Restaurants: %{x:,}<extra></extra>"))
@@ -116,7 +118,7 @@ def heatmap_figure(frame):
     fig.add_trace(go.Heatmap(
         x=cuisines, y=BOROUGHS, z=z, customdata=detail, zmin=0,
         zmax=max(0.01, float(shares.max().max())),
-        colorscale=[[0, "#f5f1fb"], [0.25, "#d8cbe9"], [0.6, "#9b7bc1"], [1, "#523179"]],
+        colorscale=[[0, "#faf5ff"], [0.25, "#d7b5f1"], [0.5, "#9950c9"], [0.75, "#63169b"], [1, "#29004f"]],
         xgap=2, ygap=2, hoverongaps=False,
         colorbar={"title": {"text": "Share"}, "tickformat": ".0%", "thickness": 10, "len": 0.94},
         hovertemplate="<b>%{customdata[0]} · %{customdata[1]}</b><br>Restaurants: %{customdata[2]:,}<br>Share of borough: %{z:.1%}<br>All borough restaurants: %{customdata[3]:,}<extra></extra>"))

@@ -65,6 +65,8 @@ Grade is attached to the restaurant's latest valid borough/cuisine information. 
 
 ## Interactions and demonstration
 
+Color encodes selection in scatter/bar: saturated blue is the comparison set; bright orange with a dark outline identifies the selected cuisine. The same cuisine is highlighted consistently across both views. Cuisine identity is supplied by axis labels, hover and the selected point label rather than 90 different colors. Heatmap color has a separate quantitative role: a high-contrast, light-to-dark purple scale represents increasing borough share.
+
 1. Start at **All NYC · All cuisines**.
 2. Change **Borough**: scatter, bar and summary counts recompute. A manual borough change clears cuisine highlighting.
 3. Click **Brooklyn × Chinese** on the heatmap. The dropdown changes to Brooklyn, both other charts recompute, and Chinese is highlighted with a labeled diamond in scatter and a marked bar. The selection reads **Brooklyn · Chinese**. A selection highlights a cuisine; it does not filter out the other cuisines.

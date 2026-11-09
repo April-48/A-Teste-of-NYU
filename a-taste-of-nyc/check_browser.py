@@ -44,8 +44,8 @@ def run():
         expect(page.locator("#metrics")).to_contain_text("8,021")
         expect(page.locator("#bar-scope")).to_contain_text("Brooklyn")
         expect(page.locator("#scatter-scope")).to_contain_text("Brooklyn")
-        page.wait_for_function("""() => document.querySelector('#scatter .js-plotly-plot').data.some(t => t.marker.color === '#b35c16')""")
-        assert page.locator("#bar .js-plotly-plot").evaluate("g => g.data[0].marker.color.includes('#b35c16')")
+        page.wait_for_function("""() => document.querySelector('#scatter .js-plotly-plot').data.some(t => t.marker.color === '#f28e00')""")
+        assert page.locator("#bar .js-plotly-plot").evaluate("g => g.data[0].marker.color.includes('#f28e00')")
         selected = page.locator("#scatter .scatterlayer .trace").last.locator(".point").first
         bounds = selected.bounding_box()
         page.mouse.move(bounds["x"] + bounds["width"] / 2, bounds["y"] + bounds["height"] / 2)
