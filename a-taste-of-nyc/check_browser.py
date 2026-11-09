@@ -24,7 +24,7 @@ def run():
           const g=panel.querySelector('.dash-graph').getBoundingClientRect();
           const p=panel.getBoundingClientRect(); return g.bottom <= p.bottom + 1;
         })"""), "A plot overflows its section"
-        page.screenshot(path=str(ROOT / "screenshots/01-default.png"), full_page=True)
+        page.screenshot(path=str(ROOT / "screenshots/01-default.jpg"), full_page=True)
 
         def cell(borough, cuisine, click=True):
             point = page.locator("#heatmap .js-plotly-plot").evaluate("""(g, [borough,cuisine]) => {
@@ -44,8 +44,11 @@ def run():
         expect(page.locator("#metrics")).to_contain_text("8,021")
         expect(page.locator("#bar-scope")).to_contain_text("Brooklyn")
         expect(page.locator("#scatter-scope")).to_contain_text("Brooklyn")
-        page.wait_for_function("""() => document.querySelector('#scatter .js-plotly-plot').data.some(t => t.marker.color === '#f28e00')""")
-        assert page.locator("#bar .js-plotly-plot").evaluate("g => g.data[0].marker.color.includes('#f28e00')")
+        page.wait_for_function("""() => document.querySelector('#scatter .js-plotly-plot').data.some(t => t.text?.includes('Chinese') && t.marker.line.color === '#111111')""")
+        assert page.locator("#bar .js-plotly-plot").evaluate("g => g.data[0].marker.color.includes('#355e6a')")
+        assert page.locator("#heatmap .js-plotly-plot").evaluate("g => g.layout.shapes.length === 2")
+        expect(page.locator("#missing-note")).to_contain_text("992")
+        expect(page.locator("#scatter")).to_contain_text("Brooklyn overall · 90.2%")
         selected = page.locator("#scatter .scatterlayer .trace").last.locator(".point").first
         bounds = selected.bounding_box()
         page.mouse.move(bounds["x"] + bounds["width"] / 2, bounds["y"] + bounds["height"] / 2)
@@ -55,7 +58,7 @@ def run():
         page.mouse.move(bounds["x"] + bounds["width"] / 2, bounds["y"] + bounds["height"] / 2)
         expect(page.locator("#bar .hoverlayer")).to_contain_text("Restaurants:")
         page.mouse.move(20, 20)
-        page.screenshot(path=str(ROOT / "screenshots/02-brooklyn-chinese.png"), full_page=True)
+        page.screenshot(path=str(ROOT / "screenshots/02-brooklyn-chinese.jpg"), full_page=True)
 
         page.get_by_role("button", name="Reset", exact=True).click()
         expect(page.locator("#selection")).to_have_text("All NYC · All cuisines")

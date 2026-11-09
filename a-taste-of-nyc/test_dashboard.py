@@ -5,7 +5,7 @@ import pandas as pd
 
 from prepare_data import BOROUGHS, FIELDS, clean_restaurants, read_raw, DATA
 from app import (app, bar_figure, create_app, cuisine_summary, heatmap_figure,
-                 load_data, scatter_figure, select_state)
+                 load_data, scatter_figure, select_state, ABOVE, BELOW, SELECTED)
 
 
 class CleaningTests(unittest.TestCase):
@@ -100,6 +100,50 @@ class RealSnapshotTests(unittest.TestCase):
         self.assertEqual(select_state("heatmap", "All NYC", click, None, ["Chinese"]), ("Brooklyn", "Chinese"))
         self.assertEqual(select_state("reset", "Brooklyn", click, "Chinese", ["Chinese"]), ("All NYC", None))
         self.assertEqual(select_state("borough", "Queens", None, "Chinese", ["Chinese"]), ("Queens", None))
+
+    def test_missing_cuisine_really_missing_in_all_source_records(self):
+        raw = read_raw(DATA / "nyc_inspections.csv.gz")
+        unknown = self.frame[self.frame.cuisine.eq("Unknown")]
+        source = raw[raw.CAMIS.isin(unknown.CAMIS)]
+        self.assertEqual(len(unknown), 3922)
+        self.assertEqual(int(unknown.borough.eq("Brooklyn").sum()), 992)
+        self.assertFalse(source["CUISINE DESCRIPTION"].str.strip().ne("").any())
+        self.assertFalse(unknown.grade.isin(["A", "B", "C"]).any())
+        self.assertNotIn("Unknown", heatmap_figure(self.frame)[1])
+        self.assertNotIn("Unknown", bar_figure(cuisine_summary(self.frame), None)[0].data[0].y)
+
+    def test_pooled_benchmark_and_selection_preserves_color(self):
+        for boro in ["All NYC", *BOROUGHS]:
+            frame = self.frame if boro == "All NYC" else self.frame[self.frame.borough.eq(boro)]
+            expected = frame.grade.eq("A").sum() / frame.grade.isin(["A", "B", "C"]).sum()
+            summary = cuisine_summary(frame)
+            fig = scatter_figure(summary, "Chinese", boro)
+            self.assertAlmostEqual(fig.layout.shapes[0].y0, expected)
+            for trace in fig.data:
+                if trace.customdata is None:
+                    continue
+                for rate, color in zip(trace.y, trace.marker.color):
+                    self.assertEqual(color, ABOVE if rate >= expected else BELOW)
+            selected = [t for t in fig.data if t.text and "Chinese" in t.text][0]
+            self.assertEqual(selected.marker.line.color, "#111111")
+        # A deliberately skewed fixture distinguishes a pooled rate from average rates,
+        # and confirms graded missing-cuisine records stay in the overall denominator.
+        summary = pd.DataFrame({"cuisine": ["One", "Many", "Unknown"], "restaurants": [1,99,100],
+                                "rated": [1,99,100], "grade_a": [1,0,100], "grade_a_pct": [1.,0.,1.]})
+        fig = scatter_figure(summary, None)
+        self.assertEqual(fig.layout.shapes[0].y0, 101/200)
+        self.assertEqual(len(fig.data[0].x), 2)
+
+    def test_heatmap_labels_selection_and_fixed_scale(self):
+        default, cuisines = heatmap_figure(self.frame)
+        selected, _ = heatmap_figure(self.frame, "Brooklyn", "Chinese")
+        self.assertEqual(default.data[0].zmax, selected.data[0].zmax)
+        self.assertEqual(len(default.layout.annotations), 50)
+        self.assertEqual(len(selected.layout.shapes), 2)
+        self.assertEqual(len(default.layout.shapes), 0)
+        self.assertIn("<b>Brooklyn</b>", selected.layout.yaxis.ticktext)
+        i, j = BOROUGHS.index("Brooklyn"), cuisines.index("Chinese")
+        self.assertEqual(selected.layout.annotations[i*10+j].text, "8.1%")
 
     def test_dash_routes(self):
         client = app.server.test_client()

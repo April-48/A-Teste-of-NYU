@@ -1,0 +1,21 @@
+{
+  "unknown_restaurants": 3922,
+  "unknown_brooklyn": 992,
+  "source_rows_for_unknown": 4000,
+  "unknown_with_any_valid_source_cuisine": 0,
+  "unknown_with_valid_grade": 0,
+  "placeholder_1900_source_rows": 3920,
+  "borough_unknown_counts": {
+    "Manhattan": 1784,
+    "Brooklyn": 992,
+    "Queens": 791,
+    "Bronx": 228,
+    "Staten Island": 127
+  },
+  "brooklyn_grade_a": 5707,
+  "brooklyn_graded": 6325,
+  "brooklyn_grade_a_rate": 0.902292490118577,
+  "snapshot_date": "2026-11-09",
+  "source_snapshot_sha256": "eb2bf12374d7fd16f3815a0a376c415c2097b6e492245ffba8b13ddae81a85fb",
+  "method": "For every cleaned CAMIS marked Unknown, inspect every source row and test whether cuisine_description.strip() is nonempty."
+}
