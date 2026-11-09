@@ -14,9 +14,9 @@ from dash import Dash, Input, Output, State, ctx, dcc, html
 from prepare_data import BOROUGHS, SOURCE_URL
 
 ROOT = Path(__file__).resolve().parent
-ABOVE = "#39877f"
-BELOW = "#c87938"
-BAR_BACKGROUND = "#c3cbd0"
+ABOVE = "#237d75"
+BELOW = "#bc641f"
+BAR_BACKGROUND = "#aebfc6"
 SELECTED = "#355e6a"
 MISSING_CUISINE = "Unknown"
 HEAT_COLORS = [[0, "#faf5ff"], [0.25, "#d7b5f1"], [0.5, "#9950c9"], [0.75, "#63169b"], [1, "#29004f"]]
@@ -46,12 +46,14 @@ def cuisine_summary(frame: pd.DataFrame) -> pd.DataFrame:
 
 def base_figure():
     figure = go.Figure()
-    figure.update_layout(template="plotly_white", font={"family": "Arial, sans-serif", "size": 12, "color": INK},
+    figure.update_layout(template="plotly_white", font={"family": "Arial, sans-serif", "size": 14, "color": INK},
                          paper_bgcolor="white", plot_bgcolor="white", showlegend=False,
                          margin={"l": 60, "r": 25, "t": 20, "b": 55},
-                         hoverlabel={"bgcolor": "white", "font_size": 13}, dragmode=False)
+                         hoverlabel={"bgcolor": "white", "font_size": 15}, dragmode=False)
     figure.update_xaxes(gridcolor="#f0f1f2", zeroline=False, fixedrange=True)
     figure.update_yaxes(gridcolor="#f0f1f2", zeroline=False, fixedrange=True)
+    figure.update_xaxes(title_font={"size": 15}, tickfont={"size": 13}, showline=True, linecolor="#cbd2d7")
+    figure.update_yaxes(title_font={"size": 15}, tickfont={"size": 13})
     return figure
 
 
@@ -81,10 +83,10 @@ def scatter_figure(summary, selected, scope="All NYC", min_graded=1):
             x=rows.restaurants.tolist(), y=rows.grade_a_pct.tolist(),
             mode="markers+text" if active else "markers",
             text=[escape(c) for c in rows.cuisine] if active else None,
-            textposition="bottom center", textfont={"color": INK, "size": 13}, cliponaxis=False,
+            textposition="bottom center", textfont={"color": INK, "size": 15}, cliponaxis=False,
             customdata=custom,
             marker={"size": 12 if active else 8, "color": colors,
-                    "opacity": 1 if active else 0.72,
+                    "opacity": 1 if active else 0.85,
                     "symbol": ["circle-open" if n < 10 else "circle" for n in rows.rated],
                     "line": {"width": 2.5 if active else 1, "color": "#111111" if active else colors}},
             hovertemplate="<b>%{customdata[0]}</b><br>Borough: %{customdata[5]}<br>Restaurants: %{customdata[1]:,}<br>Rated (A/B/C): %{customdata[2]:,}<br>Grade A restaurants: %{customdata[3]:,}<br>Grade A: %{y:.1%}<br>%{customdata[4]}<extra></extra>"))
@@ -98,10 +100,10 @@ def scatter_figure(summary, selected, scope="All NYC", min_graded=1):
     # Keep the benchmark label outside the data region so it cannot cover a point.
     fig.add_annotation(x=1, xref="paper", y=1.02, yref="paper", text=f"{escape(scope)} overall · {benchmark:.1%}",
                        showarrow=False, xanchor="right", yanchor="bottom",
-                       font={"size": 12, "color": "#454b52"})
+                       font={"size": 14, "color": "#33414c"})
     fig.update_xaxes(title="Restaurant count", rangemode="tozero", tickformat=",d", type="linear")
     fig.update_yaxes(title="Grade A percentage", range=[-0.04, 1.07], tickformat=".0%", dtick=0.2)
-    fig.update_layout(margin={"l": 65, "r": 25, "t": 25, "b": 55})
+    fig.update_layout(margin={"l": 76, "r": 28, "t": 36, "b": 62})
     return fig
 
 
@@ -121,13 +123,13 @@ def bar_figure(summary, selected, scope="All NYC"):
         marker_color=[SELECTED if c == selected else BAR_BACKGROUND for c in top.cuisine],
         customdata=[[c, int(n), float(n / total), scope, int(rank)] for c, n, rank in zip(top.cuisine, top.restaurants, top["rank"])],
         text=[f"{n:,}" for n in top.restaurants],
-        textposition="outside", cliponaxis=False,
+        textposition="outside", textfont={"size": 14}, cliponaxis=False,
         hovertemplate="<b>%{customdata[0]}</b><br>Borough: %{customdata[3]}<br>Restaurants: %{x:,}<br>Share of all restaurants: %{customdata[2]:.1%}<br>Rank: %{customdata[4]}<extra></extra>"))
     fig.update_yaxes(title=None, autorange="reversed", showgrid=False, automargin=True,
                      tickvals=top.cuisine.tolist(),
-                     ticktext=[(f"<b>{escape(c)}</b><br>Selected cuisine · Rank {rank}" if extra else f"<b>{escape(c)}</b>") if c == selected else escape(c) for c, rank in zip(top.cuisine, top["rank"])])
+                     ticktext=[(f"<b>{escape(c)}</b><br>Selected cuisine · Rank {rank}" if extra else f"<b>{escape(c)}</b>") if c == selected else escape(c) for c, rank in zip(top.cuisine, top["rank"])], tickfont={"size": 14})
     fig.update_xaxes(title="Restaurant count", range=[0, float(top.restaurants.max()) * 1.22], tickformat=",d")
-    fig.update_layout(margin={"l": 155, "r": 35, "t": 5, "b": 45}, bargap=0.3)
+    fig.update_layout(margin={"l": 185, "r": 38, "t": 8, "b": 52}, bargap=0.33)
     return fig, extra
 
 
@@ -167,14 +169,14 @@ def heatmap_figure(frame, borough="All NYC", selected=None):
         zmax=maximum,
         colorscale=HEAT_COLORS,
         xgap=2, ygap=2, hoverongaps=False,
-        colorbar={"title": {"text": "Share"}, "tickformat": ".0%", "thickness": 10, "len": 0.94},
+        colorbar={"title": {"text": "Share"}, "tickformat": ".0%", "thickness": 13, "len": 0.94},
         hovertemplate="<b>%{customdata[0]} · %{customdata[1]}</b><br>Restaurants: %{customdata[2]:,}<br>Share of borough: %{z:.1%}<br>All borough restaurants: %{customdata[3]:,}<extra></extra>"))
     for i, boro in enumerate(BOROUGHS):
         for j, cuisine in enumerate(cuisines):
             value = z[i][j]
             fig.add_annotation(x=cuisine, y=boro, text=f"{value:.1%}" if value is not None else "—",
                                showarrow=False, captureevents=False,
-                               font={"size": 11, "color": heat_text_color(value / maximum) if value is not None else INK})
+                               font={"size": 13, "color": heat_text_color(value / maximum) if value is not None else INK})
     if selected in cuisines:
         x = cuisines.index(selected)
         # Every borough in the selected cuisine gets a thin outline.
@@ -188,11 +190,11 @@ def heatmap_figure(frame, borough="All NYC", selected=None):
     labels = {"Coffee/Tea": "Coffee /<br>Tea", "Juice, Smoothies, Fruit Salads": "Juice /<br>Smoothies", "Latin American": "Latin<br>American", "Bakery Products/Desserts": "Bakery /<br>Desserts"}
     ticks = [labels.get(c, "<br>".join(textwrap.wrap(c, 11))) for c in cuisines]
     ticks = [f"<b>{t}</b>" if c == selected else t for c, t in zip(cuisines, ticks)]
-    fig.update_xaxes(title="Cuisine · NYC top 10" + (" + selected" if len(cuisines) > 10 else ""), tickvals=cuisines, ticktext=ticks, tickangle=0, showgrid=False,
-                     tickfont={"size": 10 if len(cuisines) > 10 else 12})
+    fig.update_xaxes(title="Cuisine · NYC top 10" + (" + selected" if len(cuisines) > 10 else ""), tickvals=cuisines, ticktext=ticks, tickangle=-40, showgrid=False, showline=False,
+                     tickfont={"size": 13})
     fig.update_yaxes(title=None, autorange="reversed", showgrid=False, tickvals=BOROUGHS,
                      ticktext=[f"<b>{b}</b>" if b == borough else b for b in BOROUGHS])
-    fig.update_layout(margin={"l": 110, "r": 18, "t": 8, "b": 80})
+    fig.update_layout(margin={"l": 116, "r": 22, "t": 10, "b": 104})
     return fig, cuisines
 
 
@@ -239,7 +241,7 @@ def create_app(frame=None, metadata=None):
         html.Div(id="metrics", className="metrics"),
         html.Div([
             html.Section([
-                html.Div([html.Span("01", className="rq"), html.H2("Cuisine size & Grade A percentage")], className="chart-title"),
+                html.Div([html.Span("01", className="rq"), html.H2("Cuisine size & inspection grades")], className="chart-title"),
                 html.P(id="scatter-scope", className="chart-subtitle"),
                 html.Div([
                     html.Span([html.I(className="key-dot above"), "At or above overall"]),
@@ -250,19 +252,19 @@ def create_app(frame=None, metadata=None):
                     dcc.Checklist(id="sample-filter", options=[{"label": "At least 10 graded restaurants", "value": "ten"}], value=[]),
                     html.Span(id="sample-status", **{"aria-live": "polite"}),
                 ], className="sample-controls"),
-                dcc.Graph(id="scatter", config=CONFIG, responsive=True, style={"height": "435px"}, className="scatter-plot"),
+                dcc.Graph(id="scatter", config=CONFIG, responsive=True, style={"height": "450px"}, className="scatter-plot"),
                 html.P("Each point is a cuisine; the dashed line is the overall rate among graded restaurants.", className="figure-note"),
             ], className="panel scatter-panel"),
             html.Div([
                 html.Section([
                     html.Div([html.Span("02", className="rq"), html.H2(id="bar-title")], className="chart-title"),
                     html.P(id="bar-scope", className="chart-subtitle"),
-                    dcc.Graph(id="bar", config=CONFIG, responsive=True, style={"height": "285px"}, className="bar-plot"),
+                    dcc.Graph(id="bar", config=CONFIG, responsive=True, style={"height": "330px"}, className="bar-plot"),
                 ], className="panel"),
                 html.Section([
-                    html.Div([html.Span("03", className="rq"), html.H2("Cuisine share by borough · NYC top 10", id="heatmap-title")], className="chart-title"),
-                    html.P("Share within each borough · All five boroughs", className="chart-subtitle"),
-                    dcc.Graph(id="heatmap", figure=heatmap, config=CONFIG, responsive=True, style={"height": "255px"}, className="heatmap-plot"),
+                    html.Div([html.Span("03", className="rq"), html.H2("Cuisine share by borough", id="heatmap-title")], className="chart-title"),
+                    html.P("NYC top 10 · Share within each borough · All five boroughs", className="chart-subtitle"),
+                    dcc.Graph(id="heatmap", figure=heatmap, config=CONFIG, responsive=True, style={"height": "290px"}, className="heatmap-plot"),
                 ], className="panel"),
             ], className="right-column"),
         ], className="chart-grid"),
@@ -326,11 +328,11 @@ def create_app(frame=None, metadata=None):
         return (borough, selected, None, scatter_figure(summary, selected, borough, minimum), bar,
                 f"{borough} · {selected or 'All cuisines'}", metrics,
                 f"{borough} · Recorded cuisines with A/B/C grades",
-                f"{borough} · Ranked by unique restaurants",
-                "Restaurant count · Top 10" + (" + selected cuisine" if extra else ""), note,
+                f"{borough} · Top 10 by unique restaurant count",
+                "Most common cuisines" + (" · + selected" if extra else ""), note,
                 heatmap_figure(frame, borough, selected)[0], missing_note,
                 None, None, sample_filter, sample_status,
-                "Cuisine share by borough · NYC top 10" + (" + selected" if selected and selected not in heat_cuisines else ""))
+                "Cuisine share by borough" + (" · + selected" if selected and selected not in heat_cuisines else ""))
 
     return app
 

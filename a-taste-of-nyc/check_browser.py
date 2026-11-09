@@ -12,7 +12,7 @@ ROOT = Path(__file__).resolve().parent
 def run():
     with sync_playwright() as p:
         browser = p.chromium.launch(channel="chrome", headless=True)
-        page = browser.new_page(viewport={"width": 1600, "height": 1000}, device_scale_factor=1)
+        page = browser.new_page(viewport={"width": 1600, "height": 1100}, device_scale_factor=1)
         errors = []
         page.on("pageerror", lambda error: errors.append(str(error)))
         page.goto("http://127.0.0.1:8050")

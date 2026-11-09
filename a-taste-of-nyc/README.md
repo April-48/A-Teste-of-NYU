@@ -93,6 +93,8 @@ The saved audit is [data/cuisine_missingness_audit.json](data/cuisine_missingnes
 
 These refinements retain Option B and the original chart types and axes. The added reference line and binary comparison colors strengthen RQ3. No logarithmic axis or arbitrary cuisine palette was introduced. Only the selected scatter point is labeled to limit clutter. Display numbers 01–03 express reading order; the original research-question mapping remains RQ3 / RQ1 / RQ2.
 
+The readability revision uses a 42 px desktop page title, 22–24 px chart titles, 14 px scope subtitles and 13–15 px chart labels. The right column receives more width, short chart titles are separated from scope subtitles, and heatmap labels use a consistent 40° angle instead of shrinking type. Dark text, stronger teal/orange marks and subtle section rules separate the three views without card borders. Data and selection behavior are unchanged.
+
 ## Interactions and demonstration
 
 1. Start at **All NYC · All cuisines**. Other cuisines always remain as comparison context when selecting one.
@@ -105,7 +107,7 @@ These refinements retain Option B and the original chart types and axes. The add
 
 The three chart click paths, the Italian rank-11 case, the appended Caribbean column, sample filtering, Reset and repeated selection were exercised in the running browser on November 9, 2026. The two screenshots were refreshed after these changes; screenshots supplement the interactive demonstration rather than proving it alone.
 
-Below 1000 px, chart panels stack vertically. On very narrow screens, the heatmap scrolls horizontally within its panel to preserve readable columns. Mouse/touch chart marks initiate selection; keyboard-only chart-mark navigation is not implemented. Borough selection, the sample checkbox and Reset are keyboard accessible.
+Below 1150 px, chart panels stack vertically. When the heatmap cannot fit readable columns, it scrolls horizontally within its panel; the narrow-screen subtitle explains this. Mouse/touch chart marks initiate selection; keyboard-only chart-mark navigation is not implemented. Borough selection, the sample checkbox and Reset are keyboard accessible.
 
 ## Rebuild or refresh data
 
