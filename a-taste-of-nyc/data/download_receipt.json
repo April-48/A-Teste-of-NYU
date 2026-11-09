@@ -1,0 +1,12 @@
+{
+  "downloaded_at": "2026-11-09T12:24:26.748953-05:00",
+  "source_url": "https://data.cityofnewyork.us/d/43nn-pn8j",
+  "download_url": "https://data.cityofnewyork.us/resource/43nn-pn8j.csv?%24select=camis%2Cboro%2Ccuisine_description%2Cinspection_date%2Cgrade&%24limit=2000000",
+  "requested_limit": 2000000,
+  "source_rows_updated_at": 1794006285,
+  "download_method": "Official API; every row, five required columns, no row filters",
+  "official_row_count": 295002,
+  "downloaded_rows": 295002,
+  "completeness_verified": true,
+  "count_url": "https://data.cityofnewyork.us/resource/43nn-pn8j.json?%24select=count%28%2A%29"
+}

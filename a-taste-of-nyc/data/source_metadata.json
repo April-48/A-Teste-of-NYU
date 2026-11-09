@@ -1,0 +1,2209 @@
+{
+  "id" : "43nn-pn8j",
+  "name" : "DOHMH New York City Restaurant Inspection Results",
+  "assetType" : "dataset",
+  "attribution" : "Department of Health and Mental Hygiene (DOHMH)",
+  "averageRating" : 0,
+  "category" : "Health",
+  "createdAt" : 1406920259,
+  "description" : "The dataset contains every sustained or not yet adjudicated violation citation from every full or special program inspection conducted up to three years prior to the most recent inspection for restaurants and college cafeterias in an active status on the RECORD DATE (date of the data pull). When an inspection results in more than one violation, values for associated fields are repeated for each additional violation record.  Establishments are uniquely identified by their CAMIS (record ID) number. Keep in mind that thousands of restaurants start business and go out of business every year; only restaurants in an active status are included in the dataset. \r\nRecords are also included for each restaurant that has applied for a permit but has not yet been inspected and for inspections resulting in no violations. Establishments with inspection date of 1/1/1900 are new establishments that have not yet received an inspection. Restaurants that received no violations are represented by a single row and coded as having no violations using the ACTION field. \r\nBecause this dataset is compiled from several large administrative data systems, it contains some illogical values that could be a result of data entry or transfer errors. Data may also be missing. \r\nThis dataset and the information on the Health Department’s Restaurant Grading website come from the same data source.  The Health Department’s Restaurant Grading website is here: \r\nhttp://www1.nyc.gov/site/doh/services/restaurant-grades.page\r\nSee the data dictionary file in the Attachments section of the OpenData website for a summary of data fields and allowable values.",
+  "diciBackend" : false,
+  "displayType" : "table",
+  "downloadCount" : 197688,
+  "hideFromCatalog" : false,
+  "hideFromDataJson" : false,
+  "locked" : false,
+  "newBackend" : true,
+  "numberOfComments" : 0,
+  "oid" : 41682659,
+  "provenance" : "official",
+  "publicationAppendEnabled" : true,
+  "publicationDate" : 1760715821,
+  "publicationGroup" : 1669002,
+  "publicationStage" : "published",
+  "rowClass" : "",
+  "rowsUpdatedAt" : 1794006285,
+  "rowsUpdatedBy" : "5fuc-pqz2",
+  "tableId" : 20124614,
+  "totalTimesRated" : 0,
+  "viewCount" : 460510,
+  "viewLastModified" : 1794006014,
+  "viewType" : "tabular",
+  "approvals" : [ {
+    "reviewedAt" : 1563548474,
+    "reviewedAutomatically" : true,
+    "state" : "approved",
+    "submissionId" : 7162275,
+    "submissionObject" : "public_audience_request",
+    "submissionOutcome" : "change_audience",
+    "submittedAt" : 1563548474,
+    "targetAudience" : "public",
+    "workflowId" : 2285,
+    "submissionDetails" : {
+      "permissionType" : "READ"
+    },
+    "submissionOutcomeApplication" : {
+      "failureCount" : 0,
+      "status" : "success"
+    },
+    "submitter" : {
+      "id" : "5fuc-pqz2",
+      "displayName" : "NYC OpenData"
+    }
+  } ],
+  "clientContext" : {
+    "clientContextVariables" : [ ],
+    "inheritedVariables" : { }
+  },
+  "columns" : [ {
+    "id" : 619480316,
+    "name" : "CAMIS",
+    "dataTypeName" : "text",
+    "description" : "This is an unique identifier for the entity (restaurant); 10-digit integer, static per restaurant permit",
+    "fieldName" : "camis",
+    "position" : 1,
+    "renderTypeName" : "text",
+    "tableColumnId" : 21140491,
+    "width" : 160,
+    "cachedContents" : {
+      "non_null" : "295002",
+      "largest" : "50194587",
+      "null" : "0",
+      "top" : [ {
+        "item" : "50139259",
+        "count" : "92"
+      }, {
+        "item" : "50138270",
+        "count" : "89"
+      }, {
+        "item" : "50001215",
+        "count" : "89"
+      }, {
+        "item" : "50078726",
+        "count" : "76"
+      }, {
+        "item" : "50111296",
+        "count" : "74"
+      }, {
+        "item" : "50106885",
+        "count" : "72"
+      }, {
+        "item" : "50056793",
+        "count" : "68"
+      }, {
+        "item" : "50119363",
+        "count" : "68"
+      }, {
+        "item" : "50097045",
+        "count" : "67"
+      }, {
+        "item" : "50130108",
+        "count" : "66"
+      }, {
+        "item" : "41406895",
+        "count" : "66"
+      }, {
+        "item" : "41491419",
+        "count" : "65"
+      }, {
+        "item" : "50048350",
+        "count" : "65"
+      }, {
+        "item" : "41686215",
+        "count" : "63"
+      }, {
+        "item" : "50131346",
+        "count" : "61"
+      }, {
+        "item" : "50141618",
+        "count" : "60"
+      }, {
+        "item" : "50156592",
+        "count" : "60"
+      }, {
+        "item" : "50116136",
+        "count" : "59"
+      }, {
+        "item" : "50088048",
+        "count" : "59"
+      }, {
+        "item" : "50118198",
+        "count" : "59"
+      } ],
+      "smallest" : "30075445",
+      "count" : "295002",
+      "cardinality" : "295002"
+    },
+    "format" : {
+      "align" : "left"
+    }
+  }, {
+    "id" : 619480317,
+    "name" : "DBA",
+    "dataTypeName" : "text",
+    "description" : "This field represents the name (doing business as) of the entity (restaurant); Public business name, may change at discretion of restaurant owner",
+    "fieldName" : "dba",
+    "position" : 2,
+    "renderTypeName" : "text",
+    "tableColumnId" : 21140492,
+    "width" : 136,
+    "cachedContents" : {
+      "non_null" : "295001",
+      "largest" : "ZZ WINE AND BEER",
+      "null" : "1",
+      "top" : [ {
+        "item" : "DUNKIN",
+        "count" : "3047"
+      }, {
+        "item" : "SUBWAY",
+        "count" : "1854"
+      }, {
+        "item" : "MCDONALD'S",
+        "count" : "1323"
+      }, {
+        "item" : "STARBUCKS",
+        "count" : "1226"
+      }, {
+        "item" : "POPEYES",
+        "count" : "1098"
+      }, {
+        "item" : "DUNKIN'",
+        "count" : "972"
+      }, {
+        "item" : "KENNEDY FRIED CHICKEN",
+        "count" : "773"
+      }, {
+        "item" : "CHIPOTLE MEXICAN GRILL",
+        "count" : "680"
+      }, {
+        "item" : "BURGER KING",
+        "count" : "667"
+      }, {
+        "item" : "DOMINO'S",
+        "count" : "588"
+      }, {
+        "item" : "GOLDEN KRUST CARIBBEAN BAKERY & GRILL",
+        "count" : "568"
+      }, {
+        "item" : "PARIS BAGUETTE",
+        "count" : "535"
+      }, {
+        "item" : "TACO BELL",
+        "count" : "522"
+      }, {
+        "item" : "KFC",
+        "count" : "459"
+      }, {
+        "item" : "CROWN FRIED CHICKEN",
+        "count" : "445"
+      }, {
+        "item" : "DUNKIN' / BASKIN ROBBINS",
+        "count" : "430"
+      }, {
+        "item" : "WENDY'S",
+        "count" : "412"
+      }, {
+        "item" : "PAPA JOHN'S",
+        "count" : "380"
+      }, {
+        "item" : "WINGSTOP",
+        "count" : "373"
+      }, {
+        "item" : "787 COFFEE",
+        "count" : "373"
+      } ],
+      "smallest" : "08/2024",
+      "count" : "295002",
+      "cardinality" : "295002"
+    },
+    "format" : {
+      "align" : "left"
+    }
+  }, {
+    "id" : 619480318,
+    "name" : "BORO",
+    "dataTypeName" : "text",
+    "description" : "Borough in which the entity (restaurant) is located.;• 1 = MANHATTAN • 2 = BRONX • 3 = BROOKLYN • 4 = QUEENS • 5 = STATEN ISLAND • Missing; NOTE: There may be discrepancies between zip code and listed boro due to differences in an establishment's mailing address and physical location",
+    "fieldName" : "boro",
+    "position" : 3,
+    "renderTypeName" : "text",
+    "tableColumnId" : 21140493,
+    "width" : 148,
+    "cachedContents" : {
+      "non_null" : "295002",
+      "largest" : "Staten Island",
+      "null" : "0",
+      "top" : [ {
+        "item" : "Manhattan",
+        "count" : "109077"
+      }, {
+        "item" : "Brooklyn",
+        "count" : "74526"
+      }, {
+        "item" : "Queens",
+        "count" : "74171"
+      }, {
+        "item" : "Bronx",
+        "count" : "27493"
+      }, {
+        "item" : "Staten Island",
+        "count" : "9437"
+      }, {
+        "item" : "0",
+        "count" : "298"
+      } ],
+      "smallest" : "0",
+      "count" : "295002",
+      "cardinality" : "295002"
+    },
+    "format" : {
+      "align" : "left"
+    }
+  }, {
+    "id" : 619480319,
+    "name" : "BUILDING",
+    "dataTypeName" : "text",
+    "description" : "Building number for establishment (restaurant) location",
+    "fieldName" : "building",
+    "position" : 4,
+    "renderTypeName" : "text",
+    "tableColumnId" : 21140494,
+    "width" : 196,
+    "cachedContents" : {
+      "non_null" : "294071",
+      "largest" : "WTC 4",
+      "null" : "931",
+      "top" : [ {
+        "item" : "1",
+        "count" : "1526"
+      }, {
+        "item" : "200",
+        "count" : "924"
+      }, {
+        "item" : "2",
+        "count" : "872"
+      }, {
+        "item" : "25",
+        "count" : "845"
+      }, {
+        "item" : "30",
+        "count" : "760"
+      }, {
+        "item" : "20",
+        "count" : "740"
+      }, {
+        "item" : "100",
+        "count" : "739"
+      }, {
+        "item" : "55",
+        "count" : "716"
+      }, {
+        "item" : "75",
+        "count" : "686"
+      }, {
+        "item" : "10",
+        "count" : "679"
+      }, {
+        "item" : "11",
+        "count" : "677"
+      }, {
+        "item" : "5",
+        "count" : "650"
+      }, {
+        "item" : "240",
+        "count" : "612"
+      }, {
+        "item" : "42",
+        "count" : "592"
+      }, {
+        "item" : "150",
+        "count" : "583"
+      }, {
+        "item" : "135",
+        "count" : "581"
+      }, {
+        "item" : "88",
+        "count" : "564"
+      }, {
+        "item" : "4",
+        "count" : "562"
+      }, {
+        "item" : "120",
+        "count" : "556"
+      }, {
+        "item" : "45",
+        "count" : "554"
+      } ],
+      "smallest" : "0",
+      "count" : "295002",
+      "cardinality" : "295002"
+    },
+    "format" : {
+      "align" : "left"
+    }
+  }, {
+    "id" : 619480320,
+    "name" : "STREET",
+    "dataTypeName" : "text",
+    "description" : "Street name for establishment (restaurant) location",
+    "fieldName" : "street",
+    "position" : 5,
+    "renderTypeName" : "text",
+    "tableColumnId" : 21140495,
+    "width" : 172,
+    "cachedContents" : {
+      "non_null" : "295002",
+      "largest" : "ZEREGA AVENUE",
+      "null" : "0",
+      "top" : [ {
+        "item" : "BROADWAY",
+        "count" : "11417"
+      }, {
+        "item" : "3 AVENUE",
+        "count" : "5931"
+      }, {
+        "item" : "5 AVENUE",
+        "count" : "5004"
+      }, {
+        "item" : "ROOSEVELT AVENUE",
+        "count" : "4832"
+      }, {
+        "item" : "2 AVENUE",
+        "count" : "4389"
+      }, {
+        "item" : "NORTHERN BOULEVARD",
+        "count" : "4263"
+      }, {
+        "item" : "8 AVENUE",
+        "count" : "4019"
+      }, {
+        "item" : "1 AVENUE",
+        "count" : "3484"
+      }, {
+        "item" : "JAMAICA AVENUE",
+        "count" : "3409"
+      }, {
+        "item" : "7 AVENUE",
+        "count" : "3235"
+      }, {
+        "item" : "LEXINGTON AVENUE",
+        "count" : "3169"
+      }, {
+        "item" : "AMSTERDAM AVENUE",
+        "count" : "3028"
+      }, {
+        "item" : "9 AVENUE",
+        "count" : "2819"
+      }, {
+        "item" : "QUEENS BOULEVARD",
+        "count" : "2685"
+      }, {
+        "item" : "NOSTRAND AVENUE",
+        "count" : "2449"
+      }, {
+        "item" : "FLATBUSH AVENUE",
+        "count" : "2390"
+      }, {
+        "item" : "FULTON STREET",
+        "count" : "2187"
+      }, {
+        "item" : "MAIN STREET",
+        "count" : "2100"
+      }, {
+        "item" : "LIBERTY AVENUE",
+        "count" : "2051"
+      }, {
+        "item" : "MYRTLE AVENUE",
+        "count" : "2035"
+      } ],
+      "smallest" : "0TH AVENUE",
+      "count" : "295002",
+      "cardinality" : "295002"
+    },
+    "format" : {
+      "align" : "left"
+    }
+  }, {
+    "id" : 619480321,
+    "name" : "ZIPCODE",
+    "dataTypeName" : "text",
+    "description" : "Zip code of establishment (restaurant) location",
+    "fieldName" : "zipcode",
+    "position" : 6,
+    "renderTypeName" : "text",
+    "tableColumnId" : 21140496,
+    "width" : 184,
+    "cachedContents" : {
+      "non_null" : "291877",
+      "largest" : "69361",
+      "null" : "3125",
+      "top" : [ {
+        "item" : "10003",
+        "count" : "6589"
+      }, {
+        "item" : "11354",
+        "count" : "6419"
+      }, {
+        "item" : "10019",
+        "count" : "6198"
+      }, {
+        "item" : "10013",
+        "count" : "6152"
+      }, {
+        "item" : "10001",
+        "count" : "6149"
+      }, {
+        "item" : "10036",
+        "count" : "5749"
+      }, {
+        "item" : "10002",
+        "count" : "5738"
+      }, {
+        "item" : "11372",
+        "count" : "5146"
+      }, {
+        "item" : "10016",
+        "count" : "4828"
+      }, {
+        "item" : "11201",
+        "count" : "4598"
+      }, {
+        "item" : "10012",
+        "count" : "4539"
+      }, {
+        "item" : "10018",
+        "count" : "4466"
+      }, {
+        "item" : "11220",
+        "count" : "4279"
+      }, {
+        "item" : "11211",
+        "count" : "4252"
+      }, {
+        "item" : "11101",
+        "count" : "4231"
+      }, {
+        "item" : "10011",
+        "count" : "4187"
+      }, {
+        "item" : "10014",
+        "count" : "4146"
+      }, {
+        "item" : "10022",
+        "count" : "4090"
+      }, {
+        "item" : "11368",
+        "count" : "3549"
+      }, {
+        "item" : "11373",
+        "count" : "3521"
+      } ],
+      "smallest" : "06605",
+      "count" : "295002",
+      "cardinality" : "295002"
+    },
+    "format" : {
+      "align" : "left"
+    }
+  }, {
+    "id" : 619480322,
+    "name" : "PHONE",
+    "dataTypeName" : "text",
+    "description" : "Phone Number; Phone number provided by restaurant owner/manager",
+    "fieldName" : "phone",
+    "position" : 7,
+    "renderTypeName" : "text",
+    "tableColumnId" : 21140497,
+    "width" : 160,
+    "cachedContents" : {
+      "non_null" : "294890",
+      "largest" : "9858692959",
+      "null" : "112",
+      "top" : [ {
+        "item" : "7182246030",
+        "count" : "195"
+      }, {
+        "item" : "7185958100",
+        "count" : "158"
+      }, {
+        "item" : "2122441111",
+        "count" : "135"
+      }, {
+        "item" : "2126159700",
+        "count" : "128"
+      }, {
+        "item" : "6143187413",
+        "count" : "118"
+      }, {
+        "item" : "9178604544",
+        "count" : "115"
+      }, {
+        "item" : "2126191222",
+        "count" : "112"
+      }, {
+        "item" : "7043285184",
+        "count" : "108"
+      }, {
+        "item" : "6463582779",
+        "count" : "106"
+      }, {
+        "item" : "3478845060",
+        "count" : "106"
+      }, {
+        "item" : "2124656273",
+        "count" : "104"
+      }, {
+        "item" : "9177975131",
+        "count" : "99"
+      }, {
+        "item" : "9175878888",
+        "count" : "95"
+      }, {
+        "item" : "2126332253",
+        "count" : "94"
+      }, {
+        "item" : "9292178365",
+        "count" : "94"
+      }, {
+        "item" : "2123959280",
+        "count" : "94"
+      }, {
+        "item" : "6463516699",
+        "count" : "92"
+      }, {
+        "item" : "7184601044",
+        "count" : "89"
+      }, {
+        "item" : "6462401403",
+        "count" : "89"
+      }, {
+        "item" : "6462179551",
+        "count" : "89"
+      } ],
+      "smallest" : "__________",
+      "count" : "295002",
+      "cardinality" : "295002"
+    },
+    "format" : {
+      "align" : "left"
+    }
+  }, {
+    "id" : 619480323,
+    "name" : "CUISINE DESCRIPTION",
+    "dataTypeName" : "text",
+    "description" : "This field describes the entity (restaurant) cuisine. ; Optional field provided by provided by restaurant owner/manager",
+    "fieldName" : "cuisine_description",
+    "position" : 8,
+    "renderTypeName" : "text",
+    "tableColumnId" : 21140498,
+    "width" : 328,
+    "cachedContents" : {
+      "non_null" : "290924",
+      "largest" : "Vegetarian",
+      "null" : "4078",
+      "top" : [ {
+        "item" : "American",
+        "count" : "43654"
+      }, {
+        "item" : "Chinese",
+        "count" : "28661"
+      }, {
+        "item" : "Coffee/Tea",
+        "count" : "21445"
+      }, {
+        "item" : "Pizza",
+        "count" : "16854"
+      }, {
+        "item" : "Latin American",
+        "count" : "15501"
+      }, {
+        "item" : "Mexican",
+        "count" : "12119"
+      }, {
+        "item" : "Bakery Products/Desserts",
+        "count" : "11620"
+      }, {
+        "item" : "Caribbean",
+        "count" : "10853"
+      }, {
+        "item" : "Japanese",
+        "count" : "10489"
+      }, {
+        "item" : "Italian",
+        "count" : "9436"
+      }, {
+        "item" : "Chicken",
+        "count" : "7850"
+      }, {
+        "item" : "Asian/Asian Fusion",
+        "count" : "5656"
+      }, {
+        "item" : "Juice, Smoothies, Fruit Salads",
+        "count" : "5617"
+      }, {
+        "item" : "Spanish",
+        "count" : "5507"
+      }, {
+        "item" : "Sandwiches",
+        "count" : "5095"
+      }, {
+        "item" : "Donuts",
+        "count" : "4855"
+      }, {
+        "item" : "Korean",
+        "count" : "4547"
+      }, {
+        "item" : "Thai",
+        "count" : "4505"
+      }, {
+        "item" : "Indian",
+        "count" : "4410"
+      }, {
+        "item" : "Hamburgers",
+        "count" : "4354"
+      } ],
+      "smallest" : "Afghan",
+      "count" : "295002",
+      "cardinality" : "295002"
+    },
+    "format" : {
+      "align" : "left"
+    }
+  }, {
+    "id" : 619480324,
+    "name" : "INSPECTION DATE",
+    "dataTypeName" : "calendar_date",
+    "description" : "This field represents the date of inspection; NOTE: Inspection dates of 1/1/1900 mean an establishment has not yet had an inspection",
+    "fieldName" : "inspection_date",
+    "position" : 9,
+    "renderTypeName" : "calendar_date",
+    "tableColumnId" : 21140499,
+    "width" : 211,
+    "cachedContents" : {
+      "non_null" : "295002",
+      "largest" : "2026-11-04T00:00:00.000",
+      "null" : "0",
+      "top" : [ {
+        "item" : "1900-01-01T00:00:00.000",
+        "count" : "3998"
+      }, {
+        "item" : "2026-09-24T00:00:00.000",
+        "count" : "619"
+      }, {
+        "item" : "2025-11-24T00:00:00.000",
+        "count" : "589"
+      }, {
+        "item" : "2026-10-08T00:00:00.000",
+        "count" : "586"
+      }, {
+        "item" : "2026-09-10T00:00:00.000",
+        "count" : "576"
+      }, {
+        "item" : "2026-07-22T00:00:00.000",
+        "count" : "565"
+      }, {
+        "item" : "2025-12-10T00:00:00.000",
+        "count" : "560"
+      }, {
+        "item" : "2025-12-01T00:00:00.000",
+        "count" : "560"
+      }, {
+        "item" : "2026-08-13T00:00:00.000",
+        "count" : "551"
+      }, {
+        "item" : "2026-09-17T00:00:00.000",
+        "count" : "550"
+      }, {
+        "item" : "2026-06-29T00:00:00.000",
+        "count" : "546"
+      }, {
+        "item" : "2026-06-04T00:00:00.000",
+        "count" : "546"
+      }, {
+        "item" : "2026-10-01T00:00:00.000",
+        "count" : "543"
+      }, {
+        "item" : "2026-07-14T00:00:00.000",
+        "count" : "538"
+      }, {
+        "item" : "2026-05-14T00:00:00.000",
+        "count" : "538"
+      }, {
+        "item" : "2026-10-14T00:00:00.000",
+        "count" : "536"
+      }, {
+        "item" : "2026-09-30T00:00:00.000",
+        "count" : "535"
+      }, {
+        "item" : "2026-10-07T00:00:00.000",
+        "count" : "526"
+      }, {
+        "item" : "2026-07-09T00:00:00.000",
+        "count" : "524"
+      }, {
+        "item" : "2026-09-09T00:00:00.000",
+        "count" : "522"
+      } ],
+      "smallest" : "1900-01-01T00:00:00.000",
+      "count" : "295002",
+      "cardinality" : "295002"
+    },
+    "format" : {
+      "view" : "date",
+      "align" : "left"
+    }
+  }, {
+    "id" : 619480325,
+    "name" : "ACTION",
+    "dataTypeName" : "text",
+    "description" : "This field represents the actions that is associated with each restaurant inspection. ; • Violations were cited in the following area(s). • No violations were recorded at the time of this inspection. • Establishment re-opened by DOHMH • Establishment re-closed by DOHMH • Establishment Closed by DOHMH.  Violations were cited in the following area(s) and those requiring immediate action were addressed. • \"Missing\" = not yet inspected;",
+    "fieldName" : "action",
+    "position" : 10,
+    "renderTypeName" : "text",
+    "tableColumnId" : 21140500,
+    "width" : 484,
+    "cachedContents" : {
+      "non_null" : "291004",
+      "largest" : "Violations were cited in the following area(s).",
+      "null" : "3998",
+      "top" : [ {
+        "item" : "Violations were cited in the following area(s).",
+        "count" : "274017"
+      }, {
+        "item" : "Establishment Closed by DOHMH. Violations were cited in the following area(s) and those requiring immediate action were addressed.",
+        "count" : "11136"
+      }, {
+        "item" : "No violations were recorded at the time of this inspection.",
+        "count" : "2971"
+      }, {
+        "item" : "Establishment re-opened by DOHMH.",
+        "count" : "1623"
+      }, {
+        "item" : "Establishment re-closed by DOHMH.",
+        "count" : "1257"
+      } ],
+      "smallest" : "Establishment Closed by DOHMH. Violations were cited in the following area(s) and those requiring immediate action were addressed.",
+      "count" : "295002",
+      "cardinality" : "295002"
+    },
+    "format" : {
+      "align" : "left"
+    }
+  }, {
+    "id" : 619480326,
+    "name" : "VIOLATION CODE",
+    "dataTypeName" : "text",
+    "description" : "Violation code associated with an establishment (restaurant) inspection",
+    "fieldName" : "violation_code",
+    "position" : 11,
+    "renderTypeName" : "text",
+    "tableColumnId" : 21140501,
+    "width" : 268,
+    "cachedContents" : {
+      "non_null" : "287915",
+      "largest" : "99B",
+      "null" : "7087",
+      "top" : [ {
+        "item" : "10F",
+        "count" : "41092"
+      }, {
+        "item" : "08A",
+        "count" : "25062"
+      }, {
+        "item" : "06C",
+        "count" : "19027"
+      }, {
+        "item" : "10B",
+        "count" : "18930"
+      }, {
+        "item" : "02G",
+        "count" : "18888"
+      }, {
+        "item" : "06D",
+        "count" : "18485"
+      }, {
+        "item" : "02B",
+        "count" : "15385"
+      }, {
+        "item" : "04L",
+        "count" : "13723"
+      }, {
+        "item" : "04N",
+        "count" : "11420"
+      }, {
+        "item" : "04A",
+        "count" : "7675"
+      }, {
+        "item" : "10G",
+        "count" : "7461"
+      }, {
+        "item" : "04H",
+        "count" : "6232"
+      }, {
+        "item" : "05D",
+        "count" : "5524"
+      }, {
+        "item" : "06F",
+        "count" : "5357"
+      }, {
+        "item" : "06E",
+        "count" : "5138"
+      }, {
+        "item" : "04M",
+        "count" : "5094"
+      }, {
+        "item" : "08C",
+        "count" : "5040"
+      }, {
+        "item" : "06A",
+        "count" : "4948"
+      }, {
+        "item" : "09C",
+        "count" : "4278"
+      }, {
+        "item" : "10H",
+        "count" : "3808"
+      } ],
+      "smallest" : "02A",
+      "count" : "295002",
+      "cardinality" : "295002"
+    },
+    "format" : {
+      "align" : "left"
+    }
+  }, {
+    "id" : 619480327,
+    "name" : "VIOLATION DESCRIPTION",
+    "dataTypeName" : "text",
+    "description" : "Violation description associated with an establishment  (restaurant) inspection",
+    "fieldName" : "violation_description",
+    "position" : 12,
+    "renderTypeName" : "text",
+    "tableColumnId" : 21140502,
+    "width" : 723,
+    "cachedContents" : {
+      "non_null" : "287915",
+      "largest" : "Written Standard Operating Procedure (SOP) approved by the Department for refillable, reusable containers not available at the time of inspection.  Container construction improper",
+      "null" : "7087",
+      "top" : [ {
+        "item" : "Non-food contact surface or equipment made of unacceptable material, not kept clean, or not properly sealed, raised, spaced or movable to allow accessibility for cleaning on all sides, above and underneath the unit.",
+        "count" : "40678"
+      }, {
+        "item" : "Establishment is not free of harborage or conditions conducive to rodents, insects or other pests.",
+        "count" : "24699"
+      }, {
+        "item" : "Cold TCS food item held above 41 °F; smoked or processed fish held above 38 °F; intact raw eggs held above 45 °F; or reduced oxygen packaged (ROP) TCS foods held above required temperatures except during active necessary preparation.",
+        "count" : "18757"
+      }, {
+        "item" : "Anti-siphonage or back-flow prevention device not provided where required; equipment or floor not properly drained; sewage disposal system in disrepair or not functioning properly. Condensation or liquid waste improperly disposed of.",
+        "count" : "18751"
+      }, {
+        "item" : "Food contact surface not properly washed, rinsed and sanitized after each use and following any activity when contamination may have occurred.",
+        "count" : "18484"
+      }, {
+        "item" : "Food, supplies, or equipment not protected from potential source of contamination during storage, preparation, transportation, display, service or from customer’s refillable, reusable container. Condiments not in single-service containers or dispensed directly by the vendor.",
+        "count" : "17993"
+      }, {
+        "item" : "Hot TCS food item not held at or above 140 °F.",
+        "count" : "15281"
+      }, {
+        "item" : "Evidence of mice or live mice in establishment's food or non-food areas.",
+        "count" : "13493"
+      }, {
+        "item" : "Filth flies or food/refuse/sewage associated with (FRSA) flies or other nuisance pests in establishment’s food and/or non-food areas. FRSA flies include house flies, blow flies, bottle flies, flesh flies, drain flies, Phorid flies and fruit flies.",
+        "count" : "10629"
+      }, {
+        "item" : "Food Protection Certificate (FPC) not held by manager or supervisor of food operations.",
+        "count" : "7551"
+      }, {
+        "item" : "Dishwashing and ware washing: Cleaning and sanitizing of tableware, including dishes, utensils, and equipment deficient.",
+        "count" : "7073"
+      }, {
+        "item" : "Raw, cooked or prepared food is adulterated, contaminated, cross-contaminated, or not discarded in accordance with HACCP plan.",
+        "count" : "6232"
+      }, {
+        "item" : "Wiping cloths not stored clean and dry, or in a sanitizing solution, between uses.",
+        "count" : "5319"
+      }, {
+        "item" : "No hand washing facility in or adjacent to toilet room or within 25 feet of a food preparation, food service or ware washing area. Hand washing facility not accessible, obstructed or used for non-hand washing purposes. No hot and cold running water or water at inadequate pressure. No soap or acceptable hand-drying device.",
+        "count" : "5209"
+      }, {
+        "item" : "Sanitized equipment or utensil, including in-use food dispensing utensil, improperly used or stored.",
+        "count" : "5138"
+      }, {
+        "item" : "Live roaches in facility's food or non-food area.",
+        "count" : "5019"
+      }, {
+        "item" : "Pesticide not properly labeled or used by unlicensed individual. Pesticide, other toxic chemical improperly used/stored. Unprotected, unlocked bait station used.",
+        "count" : "4657"
+      }, {
+        "item" : "Personal cleanliness is inadequate. Outer garment soiled with possible contaminant. Effective hair restraint not worn where required. Jewelry worn on hands or arms. Fingernail polish worn or fingernails not kept clean and trimmed.",
+        "count" : "4564"
+      }, {
+        "item" : "Design, construction, materials used or maintenance of food contact surface improper. Surface not easily cleanable, sanitized and maintained.",
+        "count" : "3929"
+      }, {
+        "item" : "Single service article not provided. Single service article reused or not protected from contamination when transported, stored, dispensed. Drinking straws not completely enclosed in wrapper or dispensed from a sanitary device.",
+        "count" : "3547"
+      } ],
+      "smallest" : "Accurate thermometer not provided in refrigerated or hot holding equipment.",
+      "count" : "295002",
+      "cardinality" : "295002"
+    },
+    "format" : {
+      "align" : "left"
+    }
+  }, {
+    "id" : 619480328,
+    "name" : "CRITICAL FLAG",
+    "dataTypeName" : "text",
+    "description" : "Indicator of critical violation;  \"• Critical • Not Critical • Not Applicable\"; Critical violations are those most likely to contribute to food-borne illness",
+    "fieldName" : "critical_flag",
+    "position" : 13,
+    "renderTypeName" : "text",
+    "tableColumnId" : 21140503,
+    "width" : 260,
+    "cachedContents" : {
+      "non_null" : "295002",
+      "largest" : "Not Critical",
+      "null" : "0",
+      "top" : [ {
+        "item" : "Critical",
+        "count" : "154225"
+      }, {
+        "item" : "Not Critical",
+        "count" : "131890"
+      }, {
+        "item" : "Not Applicable",
+        "count" : "8887"
+      } ],
+      "smallest" : "Critical",
+      "count" : "295002",
+      "cardinality" : "295002"
+    },
+    "format" : {
+      "align" : "left"
+    }
+  }, {
+    "id" : 619480329,
+    "name" : "SCORE",
+    "dataTypeName" : "number",
+    "description" : "Total score for a particular inspection; Scores are updated based on adjudication results",
+    "fieldName" : "score",
+    "position" : 14,
+    "renderTypeName" : "number",
+    "tableColumnId" : 21140504,
+    "width" : 160,
+    "cachedContents" : {
+      "non_null" : "277535",
+      "largest" : "214",
+      "null" : "17467",
+      "top" : [ {
+        "item" : "12",
+        "count" : "25028"
+      }, {
+        "item" : "13",
+        "count" : "24427"
+      }, {
+        "item" : "10",
+        "count" : "10907"
+      }, {
+        "item" : "11",
+        "count" : "10336"
+      }, {
+        "item" : "9",
+        "count" : "9140"
+      }, {
+        "item" : "27",
+        "count" : "8546"
+      }, {
+        "item" : "7",
+        "count" : "7535"
+      }, {
+        "item" : "26",
+        "count" : "7233"
+      }, {
+        "item" : "24",
+        "count" : "6993"
+      }, {
+        "item" : "23",
+        "count" : "6857"
+      }, {
+        "item" : "22",
+        "count" : "6818"
+      }, {
+        "item" : "25",
+        "count" : "6788"
+      }, {
+        "item" : "21",
+        "count" : "6451"
+      }, {
+        "item" : "20",
+        "count" : "6255"
+      }, {
+        "item" : "19",
+        "count" : "5630"
+      }, {
+        "item" : "28",
+        "count" : "5038"
+      }, {
+        "item" : "29",
+        "count" : "4789"
+      }, {
+        "item" : "30",
+        "count" : "4789"
+      }, {
+        "item" : "33",
+        "count" : "4507"
+      }, {
+        "item" : "31",
+        "count" : "4475"
+      } ],
+      "smallest" : "0",
+      "count" : "295002",
+      "cardinality" : "295002"
+    },
+    "format" : {
+      "precisionStyle" : "standard",
+      "noCommas" : "true",
+      "align" : "left"
+    }
+  }, {
+    "id" : 619480330,
+    "name" : "GRADE",
+    "dataTypeName" : "text",
+    "description" : "Grade associated with the inspection; • N = Not Yet Graded• A = Grade A• B = Grade B• C = Grade C• Z = Grade Pending• P= Grade Pending issued on re-opening following an initial inspection that resulted in a closure",
+    "fieldName" : "grade",
+    "position" : 15,
+    "renderTypeName" : "text",
+    "tableColumnId" : 21140505,
+    "width" : 160,
+    "cachedContents" : {
+      "non_null" : "144461",
+      "largest" : "Z",
+      "null" : "150541",
+      "top" : [ {
+        "item" : "A",
+        "count" : "97609"
+      }, {
+        "item" : "B",
+        "count" : "17806"
+      }, {
+        "item" : "C",
+        "count" : "12863"
+      }, {
+        "item" : "N",
+        "count" : "10243"
+      }, {
+        "item" : "Z",
+        "count" : "5238"
+      }, {
+        "item" : "P",
+        "count" : "702"
+      } ],
+      "smallest" : "A",
+      "count" : "295002",
+      "cardinality" : "295002"
+    },
+    "format" : {
+      "align" : "left"
+    }
+  }, {
+    "id" : 619480331,
+    "name" : "GRADE DATE",
+    "dataTypeName" : "calendar_date",
+    "description" : "The date when the current grade was issued to the entity (restaurant)",
+    "fieldName" : "grade_date",
+    "position" : 16,
+    "renderTypeName" : "calendar_date",
+    "tableColumnId" : 21140506,
+    "width" : 220,
+    "cachedContents" : {
+      "non_null" : "134230",
+      "largest" : "2026-11-04T00:00:00.000",
+      "null" : "160772",
+      "top" : [ {
+        "item" : "2024-11-14T00:00:00.000",
+        "count" : "376"
+      }, {
+        "item" : "2024-11-12T00:00:00.000",
+        "count" : "358"
+      }, {
+        "item" : "2024-12-17T00:00:00.000",
+        "count" : "333"
+      }, {
+        "item" : "2024-12-18T00:00:00.000",
+        "count" : "319"
+      }, {
+        "item" : "2024-11-25T00:00:00.000",
+        "count" : "310"
+      }, {
+        "item" : "2024-11-13T00:00:00.000",
+        "count" : "298"
+      }, {
+        "item" : "2025-11-24T00:00:00.000",
+        "count" : "297"
+      }, {
+        "item" : "2025-01-29T00:00:00.000",
+        "count" : "297"
+      }, {
+        "item" : "2024-08-20T00:00:00.000",
+        "count" : "284"
+      }, {
+        "item" : "2024-08-21T00:00:00.000",
+        "count" : "284"
+      }, {
+        "item" : "2025-12-04T00:00:00.000",
+        "count" : "282"
+      }, {
+        "item" : "2025-12-01T00:00:00.000",
+        "count" : "281"
+      }, {
+        "item" : "2025-10-09T00:00:00.000",
+        "count" : "277"
+      }, {
+        "item" : "2024-11-19T00:00:00.000",
+        "count" : "275"
+      }, {
+        "item" : "2025-07-15T00:00:00.000",
+        "count" : "275"
+      }, {
+        "item" : "2025-08-13T00:00:00.000",
+        "count" : "271"
+      }, {
+        "item" : "2026-10-08T00:00:00.000",
+        "count" : "271"
+      }, {
+        "item" : "2025-12-03T00:00:00.000",
+        "count" : "270"
+      }, {
+        "item" : "2024-03-14T00:00:00.000",
+        "count" : "268"
+      }, {
+        "item" : "2026-09-24T00:00:00.000",
+        "count" : "268"
+      } ],
+      "smallest" : "2011-08-10T00:00:00.000",
+      "count" : "295002",
+      "cardinality" : "295002"
+    },
+    "format" : {
+      "view" : "date",
+      "align" : "left"
+    }
+  }, {
+    "id" : 619480332,
+    "name" : "RECORD DATE",
+    "dataTypeName" : "calendar_date",
+    "description" : "The date when the extract was run to produce this data set",
+    "fieldName" : "record_date",
+    "position" : 17,
+    "renderTypeName" : "calendar_date",
+    "tableColumnId" : 21140507,
+    "width" : 232,
+    "cachedContents" : {
+      "non_null" : "295002",
+      "largest" : "2026-11-06T06:00:20.000",
+      "null" : "0",
+      "top" : [ {
+        "item" : "2026-11-06T06:00:15.000",
+        "count" : "290630"
+      }, {
+        "item" : "2026-11-06T06:00:20.000",
+        "count" : "3998"
+      }, {
+        "item" : "2026-11-06T06:00:17.000",
+        "count" : "374"
+      } ],
+      "smallest" : "2026-11-06T06:00:15.000",
+      "count" : "295002",
+      "cardinality" : "295002"
+    },
+    "format" : {
+      "view" : "date",
+      "align" : "left"
+    }
+  }, {
+    "id" : 619480333,
+    "name" : "INSPECTION TYPE",
+    "dataTypeName" : "text",
+    "description" : "A combination of the inspection program and the type of inspection performed; See Data Dictionary for full list of expected values",
+    "fieldName" : "inspection_type",
+    "position" : 18,
+    "renderTypeName" : "text",
+    "tableColumnId" : 21140508,
+    "width" : 280,
+    "cachedContents" : {
+      "non_null" : "291004",
+      "largest" : "Trans Fat / Second Compliance Inspection",
+      "null" : "3998",
+      "top" : [ {
+        "item" : "Cycle Inspection / Initial Inspection",
+        "count" : "157826"
+      }, {
+        "item" : "Cycle Inspection / Re-inspection",
+        "count" : "56586"
+      }, {
+        "item" : "Pre-permit (Operational) / Initial Inspection",
+        "count" : "40065"
+      }, {
+        "item" : "Pre-permit (Operational) / Re-inspection",
+        "count" : "10458"
+      }, {
+        "item" : "Administrative Miscellaneous / Initial Inspection",
+        "count" : "9621"
+      }, {
+        "item" : "Pre-permit (Non-operational) / Initial Inspection",
+        "count" : "3404"
+      }, {
+        "item" : "Cycle Inspection / Reopening Inspection",
+        "count" : "2426"
+      }, {
+        "item" : "Cycle Inspection / Compliance Inspection",
+        "count" : "1808"
+      }, {
+        "item" : "Pre-permit (Operational) / Compliance Inspection",
+        "count" : "1743"
+      }, {
+        "item" : "Administrative Miscellaneous / Re-inspection",
+        "count" : "1737"
+      }, {
+        "item" : "Inter-Agency Task Force / Initial Inspection",
+        "count" : "1398"
+      }, {
+        "item" : "Pre-permit (Operational) / Reopening Inspection",
+        "count" : "922"
+      }, {
+        "item" : "Smoke-Free Air Act / Initial Inspection",
+        "count" : "649"
+      }, {
+        "item" : "Pre-permit (Non-operational) / Re-inspection",
+        "count" : "524"
+      }, {
+        "item" : "Calorie Posting / Initial Inspection",
+        "count" : "480"
+      }, {
+        "item" : "Trans Fat / Initial Inspection",
+        "count" : "433"
+      }, {
+        "item" : "Pre-permit (Operational) / Second Compliance Inspection",
+        "count" : "158"
+      }, {
+        "item" : "Administrative Miscellaneous / Compliance Inspection",
+        "count" : "140"
+      }, {
+        "item" : "Cycle Inspection / Second Compliance Inspection",
+        "count" : "90"
+      }, {
+        "item" : "Sodium Warning / Initial Inspection",
+        "count" : "84"
+      } ],
+      "smallest" : "Accelerated Inspection Program / Initial Inspection",
+      "count" : "295002",
+      "cardinality" : "295002"
+    },
+    "format" : {
+      "align" : "left"
+    }
+  }, {
+    "id" : 619480337,
+    "name" : "Latitude",
+    "dataTypeName" : "number",
+    "description" : "",
+    "fieldName" : "latitude",
+    "position" : 19,
+    "renderTypeName" : "number",
+    "tableColumnId" : 84445621,
+    "cachedContents" : {
+      "non_null" : "293368",
+      "largest" : "40.912822326386",
+      "null" : "1634",
+      "top" : [ {
+        "item" : "0",
+        "count" : "3061"
+      }, {
+        "item" : "40.759777908235",
+        "count" : "417"
+      }, {
+        "item" : "40.582297419955",
+        "count" : "355"
+      }, {
+        "item" : "40.741869040229",
+        "count" : "322"
+      }, {
+        "item" : "40.733840182011",
+        "count" : "301"
+      }, {
+        "item" : "40.865905409786",
+        "count" : "292"
+      }, {
+        "item" : "40.690826232689",
+        "count" : "292"
+      }, {
+        "item" : "40.758501995257",
+        "count" : "273"
+      }, {
+        "item" : "40.758747437799",
+        "count" : "272"
+      }, {
+        "item" : "40.648312826068",
+        "count" : "210"
+      }, {
+        "item" : "40.718189456994",
+        "count" : "208"
+      }, {
+        "item" : "40.754068239421",
+        "count" : "193"
+      }, {
+        "item" : "40.711530166285",
+        "count" : "192"
+      }, {
+        "item" : "40.609928854538",
+        "count" : "180"
+      }, {
+        "item" : "40.752093933162",
+        "count" : "179"
+      }, {
+        "item" : "40.701687901075",
+        "count" : "164"
+      }, {
+        "item" : "40.760605063291",
+        "count" : "163"
+      }, {
+        "item" : "40.750654836632",
+        "count" : "160"
+      }, {
+        "item" : "40.754418104812",
+        "count" : "160"
+      }, {
+        "item" : "40.751091318302",
+        "count" : "158"
+      } ],
+      "smallest" : "0",
+      "count" : "295002",
+      "cardinality" : "295002"
+    },
+    "format" : { }
+  }, {
+    "id" : 619480338,
+    "name" : "Longitude",
+    "dataTypeName" : "number",
+    "description" : "",
+    "fieldName" : "longitude",
+    "position" : 20,
+    "renderTypeName" : "number",
+    "tableColumnId" : 84445620,
+    "cachedContents" : {
+      "non_null" : "293368",
+      "largest" : "0",
+      "null" : "1634",
+      "top" : [ {
+        "item" : "0",
+        "count" : "3061"
+      }, {
+        "item" : "-73.829235428489",
+        "count" : "417"
+      }, {
+        "item" : "-74.169052592685",
+        "count" : "355"
+      }, {
+        "item" : "-74.004713006739",
+        "count" : "322"
+      }, {
+        "item" : "-73.871577033806",
+        "count" : "301"
+      }, {
+        "item" : "-73.830429747919",
+        "count" : "292"
+      }, {
+        "item" : "-73.98345224546",
+        "count" : "292"
+      }, {
+        "item" : "-73.833241808988",
+        "count" : "273"
+      }, {
+        "item" : "-73.978692223615",
+        "count" : "272"
+      }, {
+        "item" : "-73.788281497594",
+        "count" : "210"
+      }, {
+        "item" : "-73.988376805655",
+        "count" : "208"
+      }, {
+        "item" : "-73.982321170752",
+        "count" : "193"
+      }, {
+        "item" : "-74.015672785414",
+        "count" : "192"
+      }, {
+        "item" : "-73.922281617072",
+        "count" : "180"
+      }, {
+        "item" : "-73.977604354379",
+        "count" : "179"
+      }, {
+        "item" : "-74.011631125861",
+        "count" : "164"
+      }, {
+        "item" : "-73.833640816461",
+        "count" : "163"
+      }, {
+        "item" : "-73.827881250044",
+        "count" : "160"
+      }, {
+        "item" : "-73.991944239076",
+        "count" : "160"
+      }, {
+        "item" : "-73.992925898182",
+        "count" : "158"
+      } ],
+      "smallest" : "-74.249101331725",
+      "count" : "295002",
+      "cardinality" : "295002"
+    },
+    "format" : { }
+  }, {
+    "id" : 619480339,
+    "name" : "Community Board",
+    "dataTypeName" : "text",
+    "description" : "",
+    "fieldName" : "community_board",
+    "position" : 21,
+    "renderTypeName" : "text",
+    "tableColumnId" : 84445624,
+    "cachedContents" : {
+      "non_null" : "290307",
+      "largest" : "595",
+      "null" : "4695",
+      "top" : [ {
+        "item" : "105",
+        "count" : "23522"
+      }, {
+        "item" : "103",
+        "count" : "14535"
+      }, {
+        "item" : "102",
+        "count" : "13024"
+      }, {
+        "item" : "407",
+        "count" : "12290"
+      }, {
+        "item" : "104",
+        "count" : "11399"
+      }, {
+        "item" : "301",
+        "count" : "10104"
+      }, {
+        "item" : "401",
+        "count" : "9252"
+      }, {
+        "item" : "106",
+        "count" : "8780"
+      }, {
+        "item" : "108",
+        "count" : "8448"
+      }, {
+        "item" : "101",
+        "count" : "7993"
+      }, {
+        "item" : "302",
+        "count" : "7201"
+      }, {
+        "item" : "402",
+        "count" : "6816"
+      }, {
+        "item" : "403",
+        "count" : "6469"
+      }, {
+        "item" : "404",
+        "count" : "6312"
+      }, {
+        "item" : "107",
+        "count" : "6159"
+      }, {
+        "item" : "306",
+        "count" : "5965"
+      }, {
+        "item" : "412",
+        "count" : "5446"
+      }, {
+        "item" : "307",
+        "count" : "5114"
+      }, {
+        "item" : "311",
+        "count" : "4827"
+      }, {
+        "item" : "405",
+        "count" : "4655"
+      } ],
+      "smallest" : "101",
+      "count" : "295002",
+      "cardinality" : "295002"
+    },
+    "format" : { }
+  }, {
+    "id" : 619480340,
+    "name" : "Council District",
+    "dataTypeName" : "text",
+    "description" : "",
+    "fieldName" : "council_district",
+    "position" : 22,
+    "renderTypeName" : "text",
+    "tableColumnId" : 84445622,
+    "cachedContents" : {
+      "non_null" : "290321",
+      "largest" : "51",
+      "null" : "4681",
+      "top" : [ {
+        "item" : "03",
+        "count" : "24678"
+      }, {
+        "item" : "01",
+        "count" : "20902"
+      }, {
+        "item" : "04",
+        "count" : "20757"
+      }, {
+        "item" : "02",
+        "count" : "14769"
+      }, {
+        "item" : "20",
+        "count" : "9932"
+      }, {
+        "item" : "33",
+        "count" : "9254"
+      }, {
+        "item" : "34",
+        "count" : "9018"
+      }, {
+        "item" : "26",
+        "count" : "8390"
+      }, {
+        "item" : "22",
+        "count" : "7748"
+      }, {
+        "item" : "25",
+        "count" : "7094"
+      }, {
+        "item" : "39",
+        "count" : "6913"
+      }, {
+        "item" : "35",
+        "count" : "6102"
+      }, {
+        "item" : "43",
+        "count" : "6042"
+      }, {
+        "item" : "06",
+        "count" : "5816"
+      }, {
+        "item" : "05",
+        "count" : "5787"
+      }, {
+        "item" : "38",
+        "count" : "5777"
+      }, {
+        "item" : "21",
+        "count" : "5240"
+      }, {
+        "item" : "29",
+        "count" : "5163"
+      }, {
+        "item" : "19",
+        "count" : "4843"
+      }, {
+        "item" : "08",
+        "count" : "4557"
+      } ],
+      "smallest" : "01",
+      "count" : "295002",
+      "cardinality" : "295002"
+    },
+    "format" : { }
+  }, {
+    "id" : 619480341,
+    "name" : "Census Tract",
+    "dataTypeName" : "text",
+    "description" : "",
+    "fieldName" : "census_tract",
+    "position" : 23,
+    "renderTypeName" : "text",
+    "tableColumnId" : 84445626,
+    "cachedContents" : {
+      "non_null" : "290321",
+      "largest" : "162100",
+      "null" : "4681",
+      "top" : [ {
+        "item" : "087100",
+        "count" : "2971"
+      }, {
+        "item" : "006500",
+        "count" : "2348"
+      }, {
+        "item" : "004100",
+        "count" : "2161"
+      }, {
+        "item" : "002100",
+        "count" : "2116"
+      }, {
+        "item" : "002900",
+        "count" : "2044"
+      }, {
+        "item" : "007600",
+        "count" : "1935"
+      }, {
+        "item" : "000700",
+        "count" : "1924"
+      }, {
+        "item" : "003800",
+        "count" : "1889"
+      }, {
+        "item" : "011300",
+        "count" : "1886"
+      }, {
+        "item" : "001800",
+        "count" : "1883"
+      }, {
+        "item" : "010400",
+        "count" : "1804"
+      }, {
+        "item" : "000900",
+        "count" : "1795"
+      }, {
+        "item" : "008400",
+        "count" : "1792"
+      }, {
+        "item" : "012100",
+        "count" : "1777"
+      }, {
+        "item" : "003300",
+        "count" : "1721"
+      }, {
+        "item" : "009200",
+        "count" : "1700"
+      }, {
+        "item" : "006800",
+        "count" : "1655"
+      }, {
+        "item" : "013700",
+        "count" : "1647"
+      }, {
+        "item" : "006700",
+        "count" : "1640"
+      }, {
+        "item" : "005800",
+        "count" : "1581"
+      } ],
+      "smallest" : "000100",
+      "count" : "295002",
+      "cardinality" : "295002"
+    },
+    "format" : { }
+  }, {
+    "id" : 619480342,
+    "name" : "BIN",
+    "dataTypeName" : "text",
+    "description" : "",
+    "fieldName" : "bin",
+    "position" : 24,
+    "renderTypeName" : "text",
+    "tableColumnId" : 84445623,
+    "cachedContents" : {
+      "non_null" : "289167",
+      "largest" : "5799501",
+      "null" : "5835",
+      "top" : [ {
+        "item" : "1000000",
+        "count" : "690"
+      }, {
+        "item" : "4000000",
+        "count" : "454"
+      }, {
+        "item" : "3000000",
+        "count" : "430"
+      }, {
+        "item" : "4113546",
+        "count" : "417"
+      }, {
+        "item" : "1012541",
+        "count" : "398"
+      }, {
+        "item" : "5039658",
+        "count" : "351"
+      }, {
+        "item" : "4045999",
+        "count" : "305"
+      }, {
+        "item" : "4112276",
+        "count" : "302"
+      }, {
+        "item" : "1076262",
+        "count" : "293"
+      }, {
+        "item" : "2120098",
+        "count" : "292"
+      }, {
+        "item" : "3397861",
+        "count" : "292"
+      }, {
+        "item" : "3326830",
+        "count" : "235"
+      }, {
+        "item" : "1035381",
+        "count" : "224"
+      }, {
+        "item" : "1090554",
+        "count" : "215"
+      }, {
+        "item" : "1088961",
+        "count" : "196"
+      }, {
+        "item" : "5000000",
+        "count" : "193"
+      }, {
+        "item" : "1000058",
+        "count" : "192"
+      }, {
+        "item" : "1014387",
+        "count" : "183"
+      }, {
+        "item" : "1082908",
+        "count" : "166"
+      }, {
+        "item" : "4597144",
+        "count" : "163"
+      } ],
+      "smallest" : "1000000",
+      "count" : "295002",
+      "cardinality" : "295002"
+    },
+    "format" : { }
+  }, {
+    "id" : 619480343,
+    "name" : "BBL",
+    "dataTypeName" : "text",
+    "description" : "",
+    "fieldName" : "bbl",
+    "position" : 25,
+    "renderTypeName" : "text",
+    "tableColumnId" : 84445627,
+    "cachedContents" : {
+      "non_null" : "293368",
+      "largest" : "5270000501",
+      "null" : "1634",
+      "top" : [ {
+        "item" : "1",
+        "count" : "2095"
+      }, {
+        "item" : "4",
+        "count" : "881"
+      }, {
+        "item" : "3",
+        "count" : "548"
+      }, {
+        "item" : "2",
+        "count" : "519"
+      }, {
+        "item" : "4050190005",
+        "count" : "417"
+      }, {
+        "item" : "1007130001",
+        "count" : "398"
+      }, {
+        "item" : "5024000180",
+        "count" : "351"
+      }, {
+        "item" : "4018600100",
+        "count" : "305"
+      }, {
+        "item" : "4049730016",
+        "count" : "302"
+      }, {
+        "item" : "1012657501",
+        "count" : "293"
+      }, {
+        "item" : "2051410006",
+        "count" : "292"
+      }, {
+        "item" : "3001497501",
+        "count" : "292"
+      }, {
+        "item" : "1000580001",
+        "count" : "288"
+      }, {
+        "item" : "4142600001",
+        "count" : "247"
+      }, {
+        "item" : "3084700055",
+        "count" : "235"
+      }, {
+        "item" : "1012570002",
+        "count" : "225"
+      }, {
+        "item" : "4049727505",
+        "count" : "224"
+      }, {
+        "item" : "1012800001",
+        "count" : "224"
+      }, {
+        "item" : "1003527501",
+        "count" : "215"
+      }, {
+        "item" : "1007027501",
+        "count" : "196"
+      } ],
+      "smallest" : "1",
+      "count" : "295002",
+      "cardinality" : "295002"
+    },
+    "format" : { }
+  }, {
+    "id" : 619480344,
+    "name" : "NTA",
+    "dataTypeName" : "text",
+    "description" : "",
+    "fieldName" : "nta",
+    "position" : 26,
+    "renderTypeName" : "text",
+    "tableColumnId" : 84445625,
+    "cachedContents" : {
+      "non_null" : "290307",
+      "largest" : "SI54",
+      "null" : "4695",
+      "top" : [ {
+        "item" : "MN17",
+        "count" : "17679"
+      }, {
+        "item" : "MN13",
+        "count" : "8729"
+      }, {
+        "item" : "MN23",
+        "count" : "8139"
+      }, {
+        "item" : "MN24",
+        "count" : "7693"
+      }, {
+        "item" : "QN22",
+        "count" : "7124"
+      }, {
+        "item" : "MN27",
+        "count" : "6999"
+      }, {
+        "item" : "MN22",
+        "count" : "6089"
+      }, {
+        "item" : "MN15",
+        "count" : "5545"
+      }, {
+        "item" : "QN70",
+        "count" : "5281"
+      }, {
+        "item" : "MN19",
+        "count" : "5188"
+      }, {
+        "item" : "MN25",
+        "count" : "5096"
+      }, {
+        "item" : "QN31",
+        "count" : "5001"
+      }, {
+        "item" : "QN28",
+        "count" : "4575"
+      }, {
+        "item" : "BK73",
+        "count" : "4504"
+      }, {
+        "item" : "BK37",
+        "count" : "4295"
+      }, {
+        "item" : "MN12",
+        "count" : "3721"
+      }, {
+        "item" : "MN20",
+        "count" : "3646"
+      }, {
+        "item" : "QN29",
+        "count" : "3613"
+      }, {
+        "item" : "BK38",
+        "count" : "3473"
+      }, {
+        "item" : "BK34",
+        "count" : "3392"
+      } ],
+      "smallest" : "BK09",
+      "count" : "295002",
+      "cardinality" : "295002"
+    },
+    "format" : { }
+  }, {
+    "id" : 619480345,
+    "name" : "Location",
+    "dataTypeName" : "point",
+    "description" : "",
+    "fieldName" : "location",
+    "position" : 27,
+    "renderTypeName" : "point",
+    "tableColumnId" : 162576817,
+    "cachedContents" : {
+      "non_null" : "290307",
+      "null" : "4695",
+      "top" : [ {
+        "item" : {
+          "coordinates" : [ -73.829235428489, 40.759777908235 ],
+          "type" : "Point"
+        },
+        "count" : "417"
+      }, {
+        "item" : {
+          "coordinates" : [ -74.169052592685, 40.582297419955 ],
+          "type" : "Point"
+        },
+        "count" : "355"
+      }, {
+        "item" : {
+          "coordinates" : [ -74.004713006739, 40.741869040229 ],
+          "type" : "Point"
+        },
+        "count" : "322"
+      }, {
+        "item" : {
+          "coordinates" : [ -73.871577033806, 40.733840182011 ],
+          "type" : "Point"
+        },
+        "count" : "301"
+      }, {
+        "item" : {
+          "coordinates" : [ -73.830429747919, 40.865905409786 ],
+          "type" : "Point"
+        },
+        "count" : "292"
+      }, {
+        "item" : {
+          "coordinates" : [ -73.98345224546, 40.690826232689 ],
+          "type" : "Point"
+        },
+        "count" : "292"
+      }, {
+        "item" : {
+          "coordinates" : [ -73.833241808988, 40.758501995257 ],
+          "type" : "Point"
+        },
+        "count" : "273"
+      }, {
+        "item" : {
+          "coordinates" : [ -73.978692223615, 40.758747437799 ],
+          "type" : "Point"
+        },
+        "count" : "272"
+      }, {
+        "item" : {
+          "coordinates" : [ -73.788281497594, 40.648312826068 ],
+          "type" : "Point"
+        },
+        "count" : "210"
+      }, {
+        "item" : {
+          "coordinates" : [ -73.988376805655, 40.718189456994 ],
+          "type" : "Point"
+        },
+        "count" : "208"
+      }, {
+        "item" : {
+          "coordinates" : [ -73.982321170752, 40.754068239421 ],
+          "type" : "Point"
+        },
+        "count" : "193"
+      }, {
+        "item" : {
+          "coordinates" : [ -74.015672785414, 40.711530166285 ],
+          "type" : "Point"
+        },
+        "count" : "192"
+      }, {
+        "item" : {
+          "coordinates" : [ -73.922281617072, 40.609928854538 ],
+          "type" : "Point"
+        },
+        "count" : "180"
+      }, {
+        "item" : {
+          "coordinates" : [ -73.977604354379, 40.752093933162 ],
+          "type" : "Point"
+        },
+        "count" : "179"
+      }, {
+        "item" : {
+          "coordinates" : [ -74.011631125861, 40.701687901075 ],
+          "type" : "Point"
+        },
+        "count" : "164"
+      }, {
+        "item" : {
+          "coordinates" : [ -73.833640816461, 40.760605063291 ],
+          "type" : "Point"
+        },
+        "count" : "163"
+      }, {
+        "item" : {
+          "coordinates" : [ -73.827881250044, 40.754418104812 ],
+          "type" : "Point"
+        },
+        "count" : "160"
+      }, {
+        "item" : {
+          "coordinates" : [ -73.991944239076, 40.750654836632 ],
+          "type" : "Point"
+        },
+        "count" : "160"
+      }, {
+        "item" : {
+          "coordinates" : [ -73.992925898182, 40.751091318302 ],
+          "type" : "Point"
+        },
+        "count" : "158"
+      }, {
+        "item" : {
+          "coordinates" : [ -73.992047363499, 40.703293906326 ],
+          "type" : "Point"
+        },
+        "count" : "157"
+      } ],
+      "count" : "295002",
+      "cardinality" : "295002"
+    },
+    "format" : { }
+  }, {
+    "id" : 619480346,
+    "name" : "Community Districts",
+    "dataTypeName" : "number",
+    "description" : "This column was automatically created in order to record in what polygon from the dataset 'Community Districts' (f5dn-yrer) the point in column 'location' is located.  This enables the creation of region maps (choropleths) in the visualization canvas and data lens.",
+    "fieldName" : ":@computed_region_f5dn_yrer",
+    "position" : 28,
+    "renderTypeName" : "number",
+    "tableColumnId" : 162576818,
+    "computationStrategy" : {
+      "source_columns" : [ "location" ],
+      "type" : "georegion_match_on_point",
+      "parameters" : {
+        "region" : "_f5dn-yrer",
+        "primary_key" : "_feature_id"
+      }
+    },
+    "format" : { }
+  }, {
+    "id" : 619480347,
+    "name" : "Borough Boundaries",
+    "dataTypeName" : "number",
+    "description" : "This column was automatically created in order to record in what polygon from the dataset 'Borough Boundaries' (yeji-bk3q) the point in column 'location' is located.  This enables the creation of region maps (choropleths) in the visualization canvas and data lens.",
+    "fieldName" : ":@computed_region_yeji_bk3q",
+    "position" : 29,
+    "renderTypeName" : "number",
+    "tableColumnId" : 162576819,
+    "computationStrategy" : {
+      "source_columns" : [ "location" ],
+      "type" : "georegion_match_on_point",
+      "parameters" : {
+        "region" : "_yeji-bk3q",
+        "primary_key" : "_feature_id"
+      }
+    },
+    "format" : { }
+  }, {
+    "id" : 619480348,
+    "name" : "Police Precincts",
+    "dataTypeName" : "number",
+    "description" : "This column was automatically created in order to record in what polygon from the dataset 'Police Precincts' (sbqj-enih) the point in column 'location' is located.  This enables the creation of region maps (choropleths) in the visualization canvas and data lens.",
+    "fieldName" : ":@computed_region_sbqj_enih",
+    "position" : 30,
+    "renderTypeName" : "number",
+    "tableColumnId" : 162576820,
+    "computationStrategy" : {
+      "source_columns" : [ "location" ],
+      "type" : "georegion_match_on_point",
+      "parameters" : {
+        "region" : "_sbqj-enih",
+        "primary_key" : "_feature_id"
+      }
+    },
+    "format" : { }
+  }, {
+    "id" : 619480349,
+    "name" : "City Council Districts",
+    "dataTypeName" : "number",
+    "description" : "This column was automatically created in order to record in what polygon from the dataset 'City Council Districts' (92fq-4b7q) the point in column 'location' is located.  This enables the creation of region maps (choropleths) in the visualization canvas and data lens.",
+    "fieldName" : ":@computed_region_92fq_4b7q",
+    "position" : 31,
+    "renderTypeName" : "number",
+    "tableColumnId" : 162576821,
+    "computationStrategy" : {
+      "source_columns" : [ "location" ],
+      "type" : "georegion_match_on_point",
+      "parameters" : {
+        "region" : "_92fq-4b7q",
+        "primary_key" : "_feature_id"
+      }
+    },
+    "format" : { }
+  } ],
+  "grants" : [ {
+    "inherited" : false,
+    "type" : "viewer",
+    "flags" : [ "public" ]
+  } ],
+  "metadata" : {
+    "rdfSubject" : "0",
+    "rdfClass" : "",
+    "attachments" : [ {
+      "filename" : "RestaurantInspectionDataDictionary_09242018.xlsx",
+      "assetId" : "ec33d2c8-81f5-499a-a238-0213a38239cd",
+      "name" : "RestaurantInspectionDataDictionary_09242018.xlsx"
+    }, {
+      "filename" : "About_NYC_Restaurant_Inspection_Data_on_NYC_OpenData_050222.docx",
+      "assetId" : "0658bb14-1b0a-4fc6-b389-d42ae6e9d3be",
+      "name" : "About_NYC_Restaurant_Inspection_Data_on_NYC_OpenData_050222.docx"
+    } ],
+    "custom_fields" : {
+      "Update" : {
+        "Automation" : "Yes",
+        "Date Made Public" : "7/10/2015",
+        "Update Frequency" : "Daily"
+      },
+      "Dataset Information" : {
+        "Agency" : "Department of Health and Mental Hygiene (DOHMH)"
+      }
+    },
+    "rowLabel" : "Restaurant Citations ",
+    "availableDisplayTypes" : [ "table", "fatrow", "page" ],
+    "renderTypeConfig" : {
+      "visible" : {
+        "table" : true
+      }
+    }
+  },
+  "owner" : {
+    "id" : "5fuc-pqz2",
+    "displayName" : "NYC OpenData",
+    "profileImageUrlLarge" : "/api/users/5fuc-pqz2/profile_images/LARGE",
+    "profileImageUrlMedium" : "/api/users/5fuc-pqz2/profile_images/THUMB",
+    "profileImageUrlSmall" : "/api/users/5fuc-pqz2/profile_images/TINY",
+    "screenName" : "NYC OpenData",
+    "type" : "interactive",
+    "flags" : [ "acceptedEula", "mayBeStoriesCoOwner" ]
+  },
+  "query" : { },
+  "rights" : [ "read" ],
+  "tableAuthor" : {
+    "id" : "5fuc-pqz2",
+    "displayName" : "NYC OpenData",
+    "profileImageUrlLarge" : "/api/users/5fuc-pqz2/profile_images/LARGE",
+    "profileImageUrlMedium" : "/api/users/5fuc-pqz2/profile_images/THUMB",
+    "profileImageUrlSmall" : "/api/users/5fuc-pqz2/profile_images/TINY",
+    "screenName" : "NYC OpenData",
+    "type" : "interactive",
+    "flags" : [ "acceptedEula", "mayBeStoriesCoOwner" ]
+  },
+  "tags" : [ "restaurant", "inspection", "violation", "grade", "adjudication", "fines", "2018od4a-report", "2018od4a-video", "food safety", "food" ],
+  "flags" : [ "default", "ownerMayBeContacted", "restorable", "restorePossibleForType" ]
+}
