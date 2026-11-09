@@ -61,13 +61,13 @@ def empty_figure(message):
     return fig
 
 
-def scatter_figure(summary, selected, scope="All NYC"):
+def scatter_figure(summary, selected, scope="All NYC", min_graded=1):
     # The benchmark is a pooled restaurant-level rate, not a mean of cuisine rates.
     total_rated = int(summary.rated.sum())
     benchmark = float(summary.grade_a.sum() / total_rated) if total_rated else None
-    plotted = summary[(summary.rated > 0) & summary.cuisine.ne(MISSING_CUISINE)]
+    plotted = summary[(summary.rated >= min_graded) & summary.cuisine.ne(MISSING_CUISINE)]
     if plotted.empty:
-        return empty_figure("No recorded cuisines with A/B/C grades in this selection")
+        return empty_figure("No recorded cuisines meet the graded-sample filter" if min_graded > 1 else "No recorded cuisines with A/B/C grades in this selection")
     fig = base_figure()
     groups = [(plotted[plotted.cuisine.ne(selected)], False), (plotted[plotted.cuisine.eq(selected)], True)]
     for rows, active in groups:
@@ -75,7 +75,7 @@ def scatter_figure(summary, selected, scope="All NYC"):
             continue
         colors = [ABOVE if value >= benchmark else BELOW for value in rows.grade_a_pct]
         relation = ["At or above overall" if value >= benchmark else "Below overall" for value in rows.grade_a_pct]
-        custom = [[c, int(n), int(r), int(a), rel] for c, n, r, a, rel in
+        custom = [[c, int(n), int(r), int(a), rel, scope] for c, n, r, a, rel in
                   zip(rows.cuisine, rows.restaurants, rows.rated, rows.grade_a, relation)]
         fig.add_trace(go.Scatter(
             x=rows.restaurants.tolist(), y=rows.grade_a_pct.tolist(),
@@ -87,11 +87,12 @@ def scatter_figure(summary, selected, scope="All NYC"):
                     "opacity": 1 if active else 0.72,
                     "symbol": ["circle-open" if n < 10 else "circle" for n in rows.rated],
                     "line": {"width": 2.5 if active else 1, "color": "#111111" if active else colors}},
-            hovertemplate="<b>%{customdata[0]}</b><br>Restaurants: %{customdata[1]:,}<br>Rated (A/B/C): %{customdata[2]:,}<br>Grade A: %{y:.1%}<br>%{customdata[4]}<extra></extra>"))
+            hovertemplate="<b>%{customdata[0]}</b><br>Borough: %{customdata[5]}<br>Restaurants: %{customdata[1]:,}<br>Rated (A/B/C): %{customdata[2]:,}<br>Grade A restaurants: %{customdata[3]:,}<br>Grade A: %{y:.1%}<br>%{customdata[4]}<extra></extra>"))
         if active and int(rows.iloc[0].rated) < 10:
             # Preserve the colored hollow small-sample mark and add a separate black ring.
             fig.add_trace(go.Scatter(x=rows.restaurants.tolist(), y=rows.grade_a_pct.tolist(),
-                                    mode="markers", hoverinfo="skip", marker={"size": 17,
+                                    mode="markers", customdata=custom,
+                                    hovertemplate="<b>%{customdata[0]}</b><br>Borough: %{customdata[5]}<br>Restaurants: %{customdata[1]:,}<br>Rated (A/B/C): %{customdata[2]:,}<br>Grade A restaurants: %{customdata[3]:,}<br>Grade A: %{y:.1%}<extra></extra>", marker={"size": 17,
                                     "symbol": "circle-open", "color": "#111111", "line": {"width": 1.5}}))
     fig.add_hline(y=benchmark, line={"color": "#52565d", "width": 1.3, "dash": "dash"}, layer="below")
     # Keep the benchmark label outside the data region so it cannot cover a point.
@@ -104,8 +105,10 @@ def scatter_figure(summary, selected, scope="All NYC"):
     return fig
 
 
-def bar_figure(summary, selected):
-    summary = summary[summary.cuisine.ne(MISSING_CUISINE)]
+def bar_figure(summary, selected, scope="All NYC"):
+    total = int(summary.restaurants.sum())  # Includes unrecorded cuisines.
+    summary = summary[summary.cuisine.ne(MISSING_CUISINE)].copy()
+    summary["rank"] = range(1, len(summary) + 1)
     if summary.empty:
         return empty_figure("No restaurants in this selection"), False
     top = summary.head(10)
@@ -116,12 +119,13 @@ def bar_figure(summary, selected):
     fig.add_trace(go.Bar(
         x=top.restaurants.tolist(), y=top.cuisine.tolist(), orientation="h",
         marker_color=[SELECTED if c == selected else BAR_BACKGROUND for c in top.cuisine],
+        customdata=[[c, int(n), float(n / total), scope, int(rank)] for c, n, rank in zip(top.cuisine, top.restaurants, top["rank"])],
         text=[f"{n:,}" for n in top.restaurants],
         textposition="outside", cliponaxis=False,
-        hovertemplate="<b>%{y}</b><br>Restaurants: %{x:,}<extra></extra>"))
+        hovertemplate="<b>%{customdata[0]}</b><br>Borough: %{customdata[3]}<br>Restaurants: %{x:,}<br>Share of all restaurants: %{customdata[2]:.1%}<br>Rank: %{customdata[4]}<extra></extra>"))
     fig.update_yaxes(title=None, autorange="reversed", showgrid=False, automargin=True,
                      tickvals=top.cuisine.tolist(),
-                     ticktext=[f"<b>{escape(c)}</b>" if c == selected else escape(c) for c in top.cuisine])
+                     ticktext=[(f"<b>{escape(c)}</b><br>Selected cuisine · Rank {rank}" if extra else f"<b>{escape(c)}</b>") if c == selected else escape(c) for c, rank in zip(top.cuisine, top["rank"])])
     fig.update_xaxes(title="Restaurant count", range=[0, float(top.restaurants.max()) * 1.22], tickformat=",d")
     fig.update_layout(margin={"l": 155, "r": 35, "t": 5, "b": 45}, bargap=0.3)
     return fig, extra
@@ -144,7 +148,10 @@ def heatmap_figure(frame, borough="All NYC", selected=None):
     if frame.empty:
         return empty_figure("No restaurant data available"), []
     summary = cuisine_summary(frame)
-    cuisines = summary[summary.cuisine.ne(MISSING_CUISINE)].head(10).cuisine.tolist()
+    recorded = summary[summary.cuisine.ne(MISSING_CUISINE)]
+    cuisines = recorded.head(10).cuisine.tolist()
+    if selected in recorded.cuisine.values and selected not in cuisines:
+        cuisines.append(selected)
     if not cuisines:
         return empty_figure("No recorded cuisines available"), []
     counts = pd.crosstab(frame.borough, frame.cuisine).reindex(index=BOROUGHS, columns=cuisines, fill_value=0)
@@ -152,7 +159,8 @@ def heatmap_figure(frame, borough="All NYC", selected=None):
     shares = counts.div(totals.replace(0, float("nan")), axis=0)
     detail = [[[b, c, int(counts.loc[b, c]), int(totals[b])] for c in cuisines] for b in BOROUGHS]
     z = [[None if pd.isna(v) else float(v) for v in row] for row in shares.values]
-    maximum = max(0.01, float(shares.max().max()))
+    all_counts = pd.crosstab(frame.borough, frame.cuisine).reindex(index=BOROUGHS, columns=recorded.cuisine, fill_value=0)
+    maximum = max(0.01, float(all_counts.div(totals.replace(0, float("nan")), axis=0).max().max()))
     fig = base_figure()
     fig.add_trace(go.Heatmap(
         x=cuisines, y=BOROUGHS, z=z, customdata=detail, zmin=0,
@@ -167,15 +175,21 @@ def heatmap_figure(frame, borough="All NYC", selected=None):
             fig.add_annotation(x=cuisine, y=boro, text=f"{value:.1%}" if value is not None else "—",
                                showarrow=False, captureevents=False,
                                font={"size": 11, "color": heat_text_color(value / maximum) if value is not None else INK})
-    if borough in BOROUGHS and selected in cuisines:
-        x, y = cuisines.index(selected), BOROUGHS.index(borough)
-        for inset, color, width in [(0.49, "#111111", 3), (0.44, "white", 1.5)]:
-            fig.add_shape(type="rect", x0=x-inset, x1=x+inset, y0=y-inset, y1=y+inset,
-                          xref="x", yref="y", line={"color": color, "width": width}, fillcolor="rgba(0,0,0,0)")
+    if selected in cuisines:
+        x = cuisines.index(selected)
+        # Every borough in the selected cuisine gets a thin outline.
+        for y, boro in enumerate(BOROUGHS):
+            active = boro == borough
+            for inset, color, width in [(0.49, "#111111", 3 if active else 1),
+                                        (0.44, "white", 1.5 if active else 0.6)]:
+                fig.add_shape(type="rect", x0=x-inset, x1=x+inset, y0=y-inset, y1=y+inset,
+                              xref="x", yref="y", line={"color": color, "width": width}, fillcolor="rgba(0,0,0,0)")
     # Full category names stay in hover; line wrapping avoids rotated, clipped ticks.
     labels = {"Coffee/Tea": "Coffee /<br>Tea", "Juice, Smoothies, Fruit Salads": "Juice /<br>Smoothies", "Latin American": "Latin<br>American", "Bakery Products/Desserts": "Bakery /<br>Desserts"}
     ticks = [labels.get(c, "<br>".join(textwrap.wrap(c, 11))) for c in cuisines]
-    fig.update_xaxes(title="Cuisine · NYC top 10", tickvals=cuisines, ticktext=ticks, tickangle=0, showgrid=False)
+    ticks = [f"<b>{t}</b>" if c == selected else t for c, t in zip(cuisines, ticks)]
+    fig.update_xaxes(title="Cuisine · NYC top 10" + (" + selected" if len(cuisines) > 10 else ""), tickvals=cuisines, ticktext=ticks, tickangle=0, showgrid=False,
+                     tickfont={"size": 10 if len(cuisines) > 10 else 12})
     fig.update_yaxes(title=None, autorange="reversed", showgrid=False, tickvals=BOROUGHS,
                      ticktext=[f"<b>{b}</b>" if b == borough else b for b in BOROUGHS])
     fig.update_layout(margin={"l": 110, "r": 18, "t": 8, "b": 80})
@@ -190,6 +204,12 @@ def select_state(trigger, borough, click_data, selected, heat_cuisines):
         point = click_data["points"][0]
         if point.get("y") in BOROUGHS and point.get("x") in heat_cuisines:
             return point["y"], point["x"]
+    if trigger in ("bar", "scatter") and click_data and click_data.get("points"):
+        point = click_data["points"][0]
+        custom = point.get("customdata")
+        cuisine = custom[0] if isinstance(custom, (list, tuple)) and custom else point.get("y") if trigger == "bar" else None
+        if cuisine in heat_cuisines:
+            selected = cuisine
     if trigger == "borough":
         selected = None
     return borough if borough in ["All NYC", *BOROUGHS] else "All NYC", selected
@@ -200,6 +220,7 @@ def create_app(frame=None, metadata=None):
         frame, metadata = load_data()
     metadata = metadata or {}
     heatmap, heat_cuisines = heatmap_figure(frame)
+    all_cuisines = set(frame.loc[frame.cuisine.ne(MISSING_CUISINE), "cuisine"])
     app = Dash(__name__, title="A Taste of NYC", assets_folder=str(ROOT / "assets"))
     app.layout = html.Main([
         html.Header([
@@ -212,7 +233,7 @@ def create_app(frame=None, metadata=None):
                       dcc.Dropdown(id="borough", options=["All NYC", *BOROUGHS], value="All NYC", clearable=False, searchable=False)], className="filter"),
             html.Button("Reset", id="reset", n_clicks=0),
             html.Div([html.Span("Selection", className="selection-label"), html.Strong(id="selection")], className="selection", **{"aria-live": "polite"}),
-            html.P("Click a heatmap cell to link the views.", className="hint"),
+            html.P("Click a point, bar, or heatmap cell to link the views.", className="hint"),
         ], className="controls"),
         dcc.Store(id="selected-cuisine", data=None),
         html.Div(id="metrics", className="metrics"),
@@ -225,7 +246,11 @@ def create_app(frame=None, metadata=None):
                     html.Span([html.I(className="key-dot below"), "Below overall"]),
                     html.Span([html.I(className="key-dot hollow"), "Fewer than 10 graded restaurants"]),
                 ], className="plot-key"),
-                dcc.Graph(id="scatter", config=CONFIG, responsive=True, style={"height": "525px"}, className="scatter-plot"),
+                html.Div([
+                    dcc.Checklist(id="sample-filter", options=[{"label": "At least 10 graded restaurants", "value": "ten"}], value=[]),
+                    html.Span(id="sample-status", **{"aria-live": "polite"}),
+                ], className="sample-controls"),
+                dcc.Graph(id="scatter", config=CONFIG, responsive=True, style={"height": "435px"}, className="scatter-plot"),
                 html.P("Each point is a cuisine; the dashed line is the overall rate among graded restaurants.", className="figure-note"),
             ], className="panel scatter-panel"),
             html.Div([
@@ -235,7 +260,7 @@ def create_app(frame=None, metadata=None):
                     dcc.Graph(id="bar", config=CONFIG, responsive=True, style={"height": "285px"}, className="bar-plot"),
                 ], className="panel"),
                 html.Section([
-                    html.Div([html.Span("03", className="rq"), html.H2("Cuisine share by borough · NYC top 10")], className="chart-title"),
+                    html.Div([html.Span("03", className="rq"), html.H2("Cuisine share by borough · NYC top 10", id="heatmap-title")], className="chart-title"),
                     html.P("Share within each borough · All five boroughs", className="chart-subtitle"),
                     dcc.Graph(id="heatmap", figure=heatmap, config=CONFIG, responsive=True, style={"height": "255px"}, className="heatmap-plot"),
                 ], className="panel"),
@@ -246,7 +271,7 @@ def create_app(frame=None, metadata=None):
             html.Summary("Data notes"),
             html.P("Counts represent unique restaurants. Grade A percentages use each restaurant’s latest available A/B/C graded inspection."),
             html.P("Overall Grade A = all Grade A restaurants / all A/B/C-rated restaurants in the selected scope; it is not an average of cuisine percentages. The reference and both color groups update with the borough."),
-            html.P("Cuisine not recorded is excluded from the cuisine comparisons but included in total counts and heatmap denominators. Heatmap columns are the NYC top 10 recorded cuisines; all five boroughs and the citywide color scale remain fixed."),
+            html.P("Cuisine not recorded is excluded from the cuisine comparisons but included in total counts and heatmap denominators. Heatmap columns are the NYC top 10 recorded cuisines, plus the selected cuisine if needed; all five boroughs and the citywide color scale remain fixed."),
             html.P(id="scatter-note"),
             html.P("Small samples may have extreme percentages. Above/below overall is descriptive, not a significance test. The X axis remains linear. A black outline and label identify the selected scatter point without changing its comparison color."),
             html.P("Source includes active establishments and not-yet-inspected applicants. It is not an all-time census."),
@@ -262,33 +287,50 @@ def create_app(frame=None, metadata=None):
         Output("scatter-scope", "children"), Output("bar-scope", "children"),
         Output("bar-title", "children"), Output("scatter-note", "children"),
         Output("heatmap", "figure"), Output("missing-note", "children"),
+        Output("bar", "clickData"), Output("scatter", "clickData"),
+        Output("sample-filter", "value"), Output("sample-status", "children"), Output("heatmap-title", "children"),
         Input("borough", "value"), Input("heatmap", "clickData"), Input("reset", "n_clicks"),
+        Input("bar", "clickData"), Input("scatter", "clickData"), Input("sample-filter", "value"),
         State("selected-cuisine", "data"),
     )
-    def update(borough, click_data, reset_clicks, selected):
-        borough, selected = select_state(ctx.triggered_id, borough, click_data, selected, heat_cuisines)
+    def update(borough, click_data, reset_clicks, bar_click, scatter_click, sample_filter, selected):
+        trigger = ctx.triggered_id
+        click = {"heatmap": click_data, "bar": bar_click, "scatter": scatter_click}.get(trigger)
+        borough, selected = select_state(trigger, borough, click, selected, all_cuisines)
+        sample_filter = [] if trigger == "reset" else (sample_filter or [])
+        minimum = 10 if "ten" in sample_filter else 1
         subset = frame if borough == "All NYC" else frame[frame.borough.eq(borough)]
         summary = cuisine_summary(subset)
-        bar, extra = bar_figure(summary, selected)
+        bar, extra = bar_figure(summary, selected, borough)
         rated = int(subset.grade.isin(["A", "B", "C"]).sum())
         grade_a = int(subset.grade.eq("A").sum())
         metrics = f"{len(subset):,} restaurants · {rated:,} with A/B/C grades · " + (f"{grade_a / rated:.1%} Grade A overall" if rated else "Grade A: no data")
         unknown = int(subset.cuisine.eq(MISSING_CUISINE).sum())
         missing_note = f"Cuisine not recorded: {unknown:,} in {borough}. Included in totals and share denominators; excluded from cuisine comparisons."
         omitted = int((summary.rated.eq(0) & summary.cuisine.ne(MISSING_CUISINE)).sum())
-        note = f"{omitted} recorded cuisine(s) have no valid grade and are not plotted in scatter. Counts still include them. No minimum sample filter."
+        note = f"{omitted} recorded cuisine(s) have no valid grade and are not plotted in scatter. Counts still include them. The optional minimum-sample filter affects only scatter visibility, not totals or the overall benchmark."
+        hidden = int(((summary.rated > 0) & (summary.rated < minimum) & summary.cuisine.ne(MISSING_CUISINE)).sum())
+        sample_status = f"{hidden} cuisines hidden by sample filter"
+        if omitted:
+            sample_status += f" · {omitted} with no grade not plotted"
         if selected:
             row = summary[summary.cuisine.eq(selected)]
             if row.empty:
                 note = f"{selected}: 0 restaurants; Grade A: no data. " + note
+                sample_status += f" · {selected}: no restaurants in this borough"
             elif int(row.iloc[0].rated) == 0:
                 note = f"{selected}: Grade A unavailable (0 rated restaurants). " + note
-        return (borough, selected, None, scatter_figure(summary, selected, borough), bar,
+                sample_status += f" · {selected}: no valid grade"
+            elif int(row.iloc[0].rated) < minimum:
+                sample_status += f" · {selected} is hidden ({int(row.iloc[0].rated)} graded); turn off the filter to see it"
+        return (borough, selected, None, scatter_figure(summary, selected, borough, minimum), bar,
                 f"{borough} · {selected or 'All cuisines'}", metrics,
                 f"{borough} · Recorded cuisines with A/B/C grades",
                 f"{borough} · Ranked by unique restaurants",
                 "Restaurant count · Top 10" + (" + selected cuisine" if extra else ""), note,
-                heatmap_figure(frame, borough, selected)[0], missing_note)
+                heatmap_figure(frame, borough, selected)[0], missing_note,
+                None, None, sample_filter, sample_status,
+                "Cuisine share by borough · NYC top 10" + (" + selected" if selected and selected not in heat_cuisines else ""))
 
     return app
 

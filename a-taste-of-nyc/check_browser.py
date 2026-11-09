@@ -1,7 +1,7 @@
 """Optional browser QA: pip install playwright; python check_browser.py.
 
 Requires Chrome and a running app at http://127.0.0.1:8050.
-Clicks actual rendered heatmap cells; saves the two submission screenshots.
+Clicks actual rendered chart marks; saves the two submission screenshots.
 """
 from pathlib import Path
 from playwright.sync_api import sync_playwright, expect
@@ -12,7 +12,7 @@ ROOT = Path(__file__).resolve().parent
 def run():
     with sync_playwright() as p:
         browser = p.chromium.launch(channel="chrome", headless=True)
-        page = browser.new_page(viewport={"width": 1600, "height": 1100}, device_scale_factor=1)
+        page = browser.new_page(viewport={"width": 1600, "height": 1000}, device_scale_factor=1)
         errors = []
         page.on("pageerror", lambda error: errors.append(str(error)))
         page.goto("http://127.0.0.1:8050")
@@ -25,6 +25,18 @@ def run():
           const p=panel.getBoundingClientRect(); return g.bottom <= p.bottom + 1;
         })"""), "A plot overflows its section"
         page.screenshot(path=str(ROOT / "screenshots/01-default.jpg"), full_page=True)
+
+        # Bar selection must update the other two views without removing context.
+        page.locator("#bar .barlayer .point").nth(1).click()
+        expect(page.locator("#selection")).to_have_text("All NYC · Chinese")
+        assert page.locator("#scatter .point").count() > 10
+        # The selected Chinese point can initiate the reverse interaction after Reset.
+        page.get_by_role("button", name="Reset", exact=True).click()
+        expect(page.locator("#selection")).to_have_text("All NYC · All cuisines")
+        page.locator("#scatter .scatterlayer .point").first.click()
+        expect(page.locator("#selection")).to_have_text("All NYC · American")
+        page.get_by_role("button", name="Reset", exact=True).click()
+        expect(page.locator("#selection")).to_have_text("All NYC · All cuisines")
 
         def cell(borough, cuisine, click=True):
             point = page.locator("#heatmap .js-plotly-plot").evaluate("""(g, [borough,cuisine]) => {
@@ -46,7 +58,7 @@ def run():
         expect(page.locator("#scatter-scope")).to_contain_text("Brooklyn")
         page.wait_for_function("""() => document.querySelector('#scatter .js-plotly-plot').data.some(t => t.text?.includes('Chinese') && t.marker.line.color === '#111111')""")
         assert page.locator("#bar .js-plotly-plot").evaluate("g => g.data[0].marker.color.includes('#355e6a')")
-        assert page.locator("#heatmap .js-plotly-plot").evaluate("g => g.layout.shapes.length === 2")
+        assert page.locator("#heatmap .js-plotly-plot").evaluate("g => g.layout.shapes.length === 10")
         expect(page.locator("#missing-note")).to_contain_text("992")
         expect(page.locator("#scatter")).to_contain_text("Brooklyn overall · 90.2%")
         selected = page.locator("#scatter .scatterlayer .trace").last.locator(".point").first
@@ -60,8 +72,17 @@ def run():
         page.mouse.move(20, 20)
         page.screenshot(path=str(ROOT / "screenshots/02-brooklyn-chinese.jpg"), full_page=True)
 
+        cell("Brooklyn", "Italian")
+        expect(page.locator("#selection")).to_have_text("Brooklyn · Italian")
+        expect(page.locator("#bar")).to_contain_text("Selected cuisine · Rank 11")
+        page.locator("#bar .barlayer .point").nth(4).click()
+        expect(page.locator("#selection")).to_have_text("Brooklyn · Caribbean")
+        expect(page.locator("#heatmap-title")).to_contain_text("+ selected")
+        page.get_by_role("checkbox", name="At least 10 graded restaurants").check()
+        expect(page.locator("#sample-status")).to_contain_text("24 cuisines hidden")
         page.get_by_role("button", name="Reset", exact=True).click()
         expect(page.locator("#selection")).to_have_text("All NYC · All cuisines")
+        expect(page.get_by_role("checkbox", name="At least 10 graded restaurants")).not_to_be_checked()
         expect(page.locator("#metrics")).to_contain_text("31,360")
         # Reclicking the same cell after Reset must work (stale clickData regression).
         cell("Brooklyn", "Chinese")
@@ -84,7 +105,7 @@ def run():
         assert page.locator("#heatmap .heatmaplayer").is_visible()
         assert not errors, errors
         browser.close()
-        print("PASS: initial render, all 5 boroughs, real heatmap click, highlights, all hovers, Reset, repeated selection, reload, narrow layout. No browser errors.")
+        print("PASS: initial render, all 5 boroughs, all three chart clicks, highlights, Top 10 additions, sample filter, all hovers, Reset, repeated selection, reload, narrow layout. No browser errors.")
 
 
 if __name__ == "__main__":

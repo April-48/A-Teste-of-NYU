@@ -139,7 +139,7 @@ class RealSnapshotTests(unittest.TestCase):
         selected, _ = heatmap_figure(self.frame, "Brooklyn", "Chinese")
         self.assertEqual(default.data[0].zmax, selected.data[0].zmax)
         self.assertEqual(len(default.layout.annotations), 50)
-        self.assertEqual(len(selected.layout.shapes), 2)
+        self.assertEqual(len(selected.layout.shapes), 10)
         self.assertEqual(len(default.layout.shapes), 0)
         self.assertIn("<b>Brooklyn</b>", selected.layout.yaxis.ticktext)
         i, j = BOROUGHS.index("Brooklyn"), cuisines.index("Chinese")
@@ -149,6 +149,62 @@ class RealSnapshotTests(unittest.TestCase):
         client = app.server.test_client()
         for route in ["/", "/_dash-layout", "/_dash-dependencies"]:
             self.assertEqual(client.get(route).status_code, 200)
+
+    def test_three_way_callback_filter_and_reset(self):
+        client = app.server.test_client()
+        key, callback = next(iter(app.callback_map.items()))
+
+        def update(trigger, borough="All NYC", cuisine=None, click=None, sample=None):
+            values = [borough, click if trigger == "heatmap" else None, 1,
+                      click if trigger == "bar" else None, click if trigger == "scatter" else None, sample or []]
+            inputs = [dict(item, value=value) for item, value in zip(callback["inputs"], values)]
+            prop = "value" if trigger in ("borough", "sample-filter") else "n_clicks" if trigger == "reset" else "clickData"
+            response = client.post("/_dash-update-component", json={
+                "output": key, "outputs": [{"id": o.component_id, "property": o.component_property} for o in callback["output"]],
+                "inputs": inputs, "state": [{"id": "selected-cuisine", "property": "data", "value": cuisine}],
+                "changedPropIds": [f"{trigger}.{prop}"]})
+            self.assertEqual(response.status_code, 200, response.data)
+            return response.get_json()["response"]
+
+        for trigger in ("bar", "scatter"):
+            result = update(trigger, click={"points": [{"customdata": ["Chinese"]}]})
+            self.assertEqual(result["selection"]["children"], "All NYC · Chinese")
+            self.assertGreater(sum(len(t["x"]) for t in result["scatter"]["figure"]["data"]), 10)
+            self.assertEqual(len(result["heatmap"]["figure"]["layout"]["shapes"]), 10)
+            self.assertIsNone(result[trigger]["clickData"])
+        result = update("heatmap", click={"points": [{"x": "Chinese", "y": "Brooklyn"}]})
+        self.assertEqual(result["borough"]["value"], "Brooklyn")
+        self.assertIn("8,021", result["metrics"]["children"])
+        summary = cuisine_summary(self.frame)
+        rare = summary[(summary.rated > 0) & (summary.rated < 10)].iloc[-1].cuisine
+        selected = update("scatter", click={"points": [{"customdata": [rare]}]})
+        self.assertIn(rare, selected["bar"]["figure"]["data"][0]["y"])
+        self.assertIn("Selected cuisine · Rank", str(selected["bar"]["figure"]["layout"]["yaxis"]["ticktext"]))
+        self.assertEqual(len(selected["heatmap"]["figure"]["data"][0]["x"]), 11)
+        filtered = update("sample-filter", cuisine=rare, sample=["ten"])
+        self.assertIn("is hidden", filtered["sample-status"]["children"])
+        self.assertEqual(filtered["selected-cuisine"]["data"], rare)
+        for trace in filtered["scatter"]["figure"]["data"]:
+            self.assertTrue(all(row[2] >= 10 for row in trace["customdata"]))
+        self.assertEqual(selected["scatter"]["figure"]["layout"]["shapes"], filtered["scatter"]["figure"]["layout"]["shapes"])
+        self.assertEqual(selected["heatmap"]["figure"]["data"][0]["zmax"], filtered["heatmap"]["figure"]["data"][0]["zmax"])
+        reset = update("reset", "Brooklyn", rare, sample=["ten"])
+        self.assertEqual(reset["selection"]["children"], "All NYC · All cuisines")
+        self.assertEqual(reset["sample-filter"]["value"], [])
+
+    def test_hover_denominators_and_context(self):
+        frame = self.frame[self.frame.borough.eq("Brooklyn")]
+        summary = cuisine_summary(frame)
+        bar, _ = bar_figure(summary, "Chinese", "Brooklyn")
+        for cuisine, count, share, scope, rank in bar.data[0].customdata:
+            self.assertAlmostEqual(share, count / len(frame))
+            self.assertEqual(scope, "Brooklyn")
+        scatter = scatter_figure(summary, "Chinese", "Brooklyn")
+        for trace in scatter.data:
+            for cuisine, count, rated, grade_a, relation, scope in trace.customdata:
+                restaurants = frame[frame.cuisine.eq(cuisine)]
+                self.assertEqual((count, rated, grade_a, scope),
+                                 (len(restaurants), restaurants.grade.isin(["A", "B", "C"]).sum(), restaurants.grade.eq("A").sum(), "Brooklyn"))
 
 
 if __name__ == "__main__":

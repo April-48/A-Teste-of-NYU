@@ -32,6 +32,10 @@ h2 { margin: 0; font-size: 15px; font-weight: 600; }
 .key-dot.above { background: #39877f; }
 .key-dot.below { background: #c87938; }
 .key-dot.hollow { background: white; border: 1.5px solid #555; }
+.sample-controls { display: flex; flex-wrap: wrap; align-items: center; gap: 6px 16px; margin: 12px 0 2px; font-size: 12px; color: #454f56; }
+.sample-controls label { display: inline-flex; align-items: center; gap: 5px; cursor: pointer; }
+.sample-controls input { accent-color: #355e6a; }
+#sample-status { color: var(--muted); font-size: 11px; }
 .figure-note { font-size: 12px; color: var(--muted); line-height: 1.5; margin: 4px 0 0; }
 .missing-note { border-top: 1px solid var(--line); margin: 16px 0 0; padding-top: 12px; color: var(--muted); font-size: 12px; line-height: 1.5; }
 .data-notes { margin-top: 10px; font-size: 12px; color: var(--muted); line-height: 1.6; max-width: 1100px; }

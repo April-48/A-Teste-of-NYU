@@ -59,9 +59,9 @@ Grade is attached to the restaurant's latest valid borough/cuisine information. 
 
 **Grade A denominator:** only A/B/C-rated restaurants. Missing grades, N, Z, P and other values never become non-A observations. A zero graded denominator means **no data**, not 0%.
 
-- **Scatter / RQ3:** X = restaurant count (linear); Y = Grade A percentage; one point per recorded cuisine with at least one valid grade. The dashed line is the pooled Grade A rate for the selected scope, including every validly graded restaurant. Teal = at or above that rate; warm orange = below it. The selected cuisine keeps its comparison color, with a black outline and label. Markers are smaller and semi-transparent; fewer than 10 graded restaurants remain hollow. There is no minimum sample cutoff. Zero-rated cuisines are not plotted on a numeric percentage axis. Above/below overall is descriptive, not statistical significance or causation.
-- **Bar / RQ1:** descending restaurant count, Top 10 recorded cuisines in the selected borough. If a heatmap selection falls outside that Top 10, append the selected cuisine and disclose this in the title. Ordinary bars are gray-blue; a dark desaturated teal bar and bold cuisine label identify selection. Counts remain at bar ends; the former arrow and redundant Cuisine axis title are removed. Ties are alphabetical.
-- **Heatmap / RQ2:** five boroughs × citywide Top 10 recorded cuisines. Purple intensity represents borough share, and every cell displays its percentage. Text switches to white on darker cells. Selected cells have black/white outlines and the active borough label is bold. The matrix and color scale stay fixed across borough selections. The nearby subtitle explicitly says “Share within each borough · All five boroughs.” All borough restaurants, including Cuisine not recorded, remain in the denominator. Zero-count combinations remain 0%; zero denominators are no data.
+- **Scatter / RQ3:** X = restaurant count (linear); Y = Grade A percentage; one point per recorded cuisine with at least one valid grade. The dashed line is the pooled Grade A rate for the selected scope, including every validly graded restaurant. Teal = at or above that rate; warm orange = below it. The selected cuisine keeps its comparison color, with a black outline and label. Markers are smaller and semi-transparent; fewer than 10 graded restaurants remain hollow. The optional **At least 10 graded restaurants** checkbox is off by default. When enabled, it hides cuisines with fewer than 10 valid grades only from scatter, displays the number hidden, and leaves all totals and the pooled benchmark unchanged. A selected cuisine hidden by this filter is explicitly named beside the checkbox. Zero-rated cuisines are not plotted on a numeric percentage axis. Above/below overall is descriptive, not statistical significance or causation.
+- **Bar / RQ1:** descending restaurant count, Top 10 recorded cuisines in the selected borough. If any chart selection falls outside that Top 10, append the selected cuisine, disclose this in the title, and show its actual rank among recorded cuisines. Ordinary bars are gray-blue; a dark desaturated teal bar and bold cuisine label identify selection. Counts remain at bar ends; the former arrow and redundant Cuisine axis title are removed. Ties are alphabetical.
+- **Heatmap / RQ2:** five boroughs × citywide Top 10 recorded cuisines. Purple intensity represents borough share, and every cell displays its percentage. Text switches to white on darker cells. All five cells in the selected cuisine column have thin outlines; the active borough–cuisine cell has a heavier outline and the active borough label is bold. A cuisine selected from scatter/bar outside the NYC Top 10 is appended as an eleventh column. All five boroughs and the citywide color scale remain fixed across selections. The nearby subtitle explicitly says “Share within each borough · All five boroughs.” All borough restaurants, including Cuisine not recorded, remain in the denominator. Zero-count combinations remain 0%; zero denominators are no data.
 
 ## Missing-cuisine audit
 
@@ -87,21 +87,25 @@ The saved audit is [data/cuisine_missingness_audit.json](data/cuisine_missingnes
 | Scatter / RQ3 | Black outline + text label | Selected cuisine; its comparison color is preserved |
 | Bar / RQ1 | Length and sorted position | Unique restaurant count, descending |
 | Bar / RQ1 | Gray-blue / dark teal + bold label | Background comparison / selected cuisine |
-| Heatmap / RQ2 | Row / column | Borough / citywide Top 10 recorded cuisines |
+| Heatmap / RQ2 | Row / column | Borough / citywide Top 10 recorded cuisines, plus selected cuisine if needed |
 | Heatmap / RQ2 | Sequential purple intensity + cell text | Cuisine share among **all** restaurants in that borough |
-| Heatmap / RQ2 | Outlined cell / bold row label | Selected borough–cuisine / active borough |
+| Heatmap / RQ2 | Thin column outlines / heavy cell outline / bold row label | Selected cuisine across boroughs / selected borough–cuisine / active borough |
 
 These refinements retain Option B and the original chart types and axes. The added reference line and binary comparison colors strengthen RQ3. No logarithmic axis or arbitrary cuisine palette was introduced. Only the selected scatter point is labeled to limit clutter. Display numbers 01–03 express reading order; the original research-question mapping remains RQ3 / RQ1 / RQ2.
 
 ## Interactions and demonstration
 
-1. Start at **All NYC · All cuisines**.
-2. Change **Borough**: scatter, bar and summary counts recompute. A manual borough change clears cuisine highlighting.
-3. Click **Brooklyn × Chinese** on the heatmap. The dropdown changes to Brooklyn, both other charts recompute, and Chinese retains its warm orange below-overall color with a black outline and label in scatter, its bar is emphasized, and its heatmap cell is outlined. The selection reads **Brooklyn · Chinese**. A selection highlights a cuisine; it does not filter out the other cuisines.
-4. Hover over each chart for exact values and denominator context.
-5. Click **Reset** to return to All NYC and clear the cuisine. Clicking the same cell again works.
+1. Start at **All NYC · All cuisines**. Other cuisines always remain as comparison context when selecting one.
+2. Click **Chinese** in the bar: scatter labels/outlines Chinese, and heatmap outlines its entire column. Click **American** in scatter: the bar and heatmap switch to American.
+3. Click **Brooklyn × Chinese** on the heatmap. The dropdown changes to Brooklyn; bar and scatter recompute, and all three charts highlight Chinese. The selected heatmap cell is outlined more heavily than the other four cells in that column.
+4. Click **Brooklyn × Italian**: Italian is appended to Brooklyn's bar with **Selected cuisine · Rank 11**. Click **Caribbean** in that bar: heatmap adds Caribbean as an extra column because it is outside the NYC Top 10.
+5. Enable **At least 10 graded restaurants**. Brooklyn hides **24 cuisines** from scatter; the other charts, counts and overall reference remain unchanged. The control is off by default. Zero-rated cuisines cannot appear on the percentage axis and are reported separately.
+6. Hover over each chart. Scatter shows cuisine, borough, total restaurants, A/B/C-rated count, Grade A count and Grade A percentage. Bar shows cuisine, borough, count, share of all restaurants and rank. Heatmap shows borough, cuisine, count, share and its full-borough denominator.
+7. Click **Reset** to return to All NYC, clear the cuisine and turn off the sample filter. Clicking the same mark again works. Manual borough changes clear cuisine selection and retain the sample-filter setting.
 
-Below 900 px, chart panels stack vertically. On very narrow screens, the heatmap scrolls horizontally within its panel to preserve all 10 readable columns. Mouse/touch interaction with heatmap cells is the prototype selection mechanism; keyboard-only cell navigation is not implemented. Borough selection and Reset are keyboard accessible.
+The three chart click paths, the Italian rank-11 case, the appended Caribbean column, sample filtering, Reset and repeated selection were exercised in the running browser on November 9, 2026. The two screenshots were refreshed after these changes; screenshots supplement the interactive demonstration rather than proving it alone.
+
+Below 1000 px, chart panels stack vertically. On very narrow screens, the heatmap scrolls horizontally within its panel to preserve readable columns. Mouse/touch chart marks initiate selection; keyboard-only chart-mark navigation is not implemented. Borough selection, the sample checkbox and Reset are keyboard accessible.
 
 ## Rebuild or refresh data
 
@@ -135,7 +139,7 @@ Run the analytical and boundary-case tests:
 python -m unittest -v
 ```
 
-Eleven tests cover duplicate violations, independent latest grades, missing attributes, invalid dates, conflict handling, zero graded denominators, empty plots, five-borough reconciliations, every heatmap cell's full-population denominator, independent raw-row grade reconstruction, outside-Top-10 selection, Reset state and Dash HTTP routes. Added checks verify source missingness, pooled benchmark weighting, preservation of comparison colors on selection, heatmap values/outlines, and a fixed citywide color scale.
+Thirteen tests cover duplicate violations, independent latest grades, missing attributes, invalid dates, conflict handling, zero graded denominators, empty plots, five-borough reconciliations, every heatmap cell's full-population denominator, independent raw-row grade reconstruction, outside-Top-10 selection, Reset state and Dash HTTP routes. Added checks verify source missingness, pooled benchmark weighting, preservation of comparison colors on selection, heatmap values/outlines, and a fixed citywide color scale. Callback HTTP tests exercise all three click inputs, sample filtering without changing the benchmark, out-of-Top-10 additions, tooltip denominators and Reset.
 
 Optional real-browser check (app running, Google Chrome installed):
 
@@ -144,7 +148,7 @@ pip install playwright==1.64.1
 python check_browser.py
 ```
 
-This checks rendered charts, all five borough selections, actual heatmap clicks, both highlights, hover text, Reset, selecting the same cell again, reload and narrow layout. It recreates the two screenshots. Snapshot counts in this browser regression script refer to the included November 9 dataset and must be updated intentionally after a data refresh.
+This checks rendered charts, all five borough selections, clicks in all three charts, linked highlights, hover text, the sample filter, Reset, selecting the same cell again, reload and narrow layout. It recreates the two screenshots. Snapshot counts in this browser regression script refer to the included November 9 dataset and must be updated intentionally after a data refresh.
 
 ## Submission materials
 
@@ -161,4 +165,4 @@ The 2–3 page usability report and one-page reflection belong to the final stag
 - `assets/style.css`: Option B layout, readable typography and responsive behavior.
 - `test_dashboard.py`: data logic and boundary-case tests. `check_browser.py`: real-browser interactions and screenshots.
 
-**AI assistance actually used:** OpenAI Codex generated the initial Python/CSS implementation, downloaded and inspected the official data, proposed and documented cleaning choices, wrote and executed automated checks, inspected browser screenshots, fixed chart-container overlap, audited missing cuisine against all source records, implemented the user-requested benchmark color encoding and visual hierarchy changes, and drafted this README and the empty feedback template. The dataset is real NYC Open Data; it is not AI-generated. No classroom feedback or user-study outcome has been invented. The student should review the code and be able to explain the unique-CAMIS collapse, separate latest-grade lookup, rate denominators, and callback state before submitting. AI testing is not classroom usability feedback.
+**AI assistance actually used:** OpenAI Codex generated the initial Python/CSS implementation, downloaded and inspected the official data, proposed and documented cleaning choices, wrote and executed automated checks, inspected browser screenshots, fixed chart-container overlap, audited missing cuisine against all source records, implemented the user-requested benchmark color encoding, visual hierarchy changes, three-way linked selection and sample filter, and drafted this README and the empty feedback template. The dataset is real NYC Open Data; it is not AI-generated. No classroom feedback or user-study outcome has been invented. The student should review the code and be able to explain the unique-CAMIS collapse, separate latest-grade lookup, rate denominators, and callback state before submitting. AI testing is not classroom usability feedback.
