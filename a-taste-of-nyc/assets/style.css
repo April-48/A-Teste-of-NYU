@@ -30,10 +30,11 @@ h2 { margin: 0; font-size: 22px; line-height: 1.25; font-weight: 700; letter-spa
 .chart-subtitle { font-size: 14px; color: var(--muted); font-weight: 500; margin: 8px 0 12px; line-height: 1.45; }
 .plot-key { display: flex; flex-wrap: wrap; gap: 9px 18px; margin: 14px 0 0; font-size: 13px; color: #263e49; }
 .plot-key span { display: inline-flex; align-items: center; gap: 7px; }
-.key-dot { display: inline-block; width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0; }
-.key-dot.above { background: #237d75; }
-.key-dot.below { background: #bc641f; }
-.key-dot.hollow { background: white; border: 1.5px solid #4a5963; }
+.key-mark { display: inline-block; font-style: normal; font-size: 17px; line-height: 1; flex-shrink: 0; }
+.key-mark.above { color: #237d75; }
+.key-mark.below { color: #bc641f; }
+.key-mark.hollow { color: #4a5963; }
+.key-line { display: inline-block; width: 28px; border-top: 2px dashed #45515c; flex-shrink: 0; }
 .sample-controls { display: flex; flex-wrap: wrap; align-items: center; gap: 7px 16px; margin: 16px 0 8px; padding: 10px 12px; background: #f3f6f6; font-size: 13px; color: #263e49; }
 .sample-controls label { display: inline-flex; align-items: center; gap: 7px; font-weight: 600; cursor: pointer; }
 .sample-controls input { accent-color: var(--accent); width: 16px; height: 16px; margin: 0; }

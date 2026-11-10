@@ -76,6 +76,8 @@ def scatter_figure(summary, selected, scope="All NYC", min_graded=1):
         if rows.empty:
             continue
         colors = [ABOVE if value >= benchmark else BELOW for value in rows.grade_a_pct]
+        symbols = [("triangle-up" if value >= benchmark else "square") + ("-open" if n < 10 else "")
+                   for value, n in zip(rows.grade_a_pct, rows.rated)]
         relation = ["At or above overall" if value >= benchmark else "Below overall" for value in rows.grade_a_pct]
         custom = [[c, int(n), int(r), int(a), rel, scope] for c, n, r, a, rel in
                   zip(rows.cuisine, rows.restaurants, rows.rated, rows.grade_a, relation)]
@@ -85,25 +87,28 @@ def scatter_figure(summary, selected, scope="All NYC", min_graded=1):
             text=[escape(c) for c in rows.cuisine] if active else None,
             textposition="bottom center", textfont={"color": INK, "size": 15}, cliponaxis=False,
             customdata=custom,
-            marker={"size": 12 if active else 8, "color": colors,
+            marker={"size": 14 if active else 9, "color": colors,
                     "opacity": 1 if active else 0.85,
-                    "symbol": ["circle-open" if n < 10 else "circle" for n in rows.rated],
+                    "symbol": symbols,
                     "line": {"width": 2.5 if active else 1, "color": "#111111" if active else colors}},
             hovertemplate="<b>%{customdata[0]}</b><br>Borough: %{customdata[5]}<br>Restaurants: %{customdata[1]:,}<br>Rated (A/B/C): %{customdata[2]:,}<br>Grade A restaurants: %{customdata[3]:,}<br>Grade A: %{y:.1%}<br>%{customdata[4]}<extra></extra>"))
         if active and int(rows.iloc[0].rated) < 10:
-            # Preserve the colored hollow small-sample mark and add a separate black ring.
+            # Preserve the colored hollow small-sample mark and add a matching black outline.
             fig.add_trace(go.Scatter(x=rows.restaurants.tolist(), y=rows.grade_a_pct.tolist(),
                                     mode="markers", customdata=custom,
                                     hovertemplate="<b>%{customdata[0]}</b><br>Borough: %{customdata[5]}<br>Restaurants: %{customdata[1]:,}<br>Rated (A/B/C): %{customdata[2]:,}<br>Grade A restaurants: %{customdata[3]:,}<br>Grade A: %{y:.1%}<extra></extra>", marker={"size": 17,
-                                    "symbol": "circle-open", "color": "#111111", "line": {"width": 1.5}}))
-    fig.add_hline(y=benchmark, line={"color": "#52565d", "width": 1.3, "dash": "dash"}, layer="below")
+                                    "symbol": symbols, "color": "#111111", "line": {"width": 1.5}}))
+    fig.add_hline(y=benchmark, line={"color": "#45515c", "width": 1.8, "dash": "dash"}, layer="below")
     # Keep the benchmark label outside the data region so it cannot cover a point.
-    fig.add_annotation(x=1, xref="paper", y=1.02, yref="paper", text=f"{escape(scope)} overall · {benchmark:.1%}",
+    fig.add_annotation(x=1, xref="paper", y=1.02, yref="paper", text=f"{escape(scope)} overall Grade A · {benchmark:.1%}",
                        showarrow=False, xanchor="right", yanchor="bottom",
                        font={"size": 14, "color": "#33414c"})
+    fig.add_annotation(x=1.015, xref="paper", y=benchmark, yref="y",
+                       text=f"<b>{benchmark:.1%}</b>", showarrow=False, xanchor="left", yanchor="middle",
+                       font={"size": 13, "color": "#33414c"}, bgcolor="white", borderpad=2)
     fig.update_xaxes(title="Restaurant count", rangemode="tozero", tickformat=",d", type="linear")
     fig.update_yaxes(title="Grade A percentage", range=[-0.04, 1.07], tickformat=".0%", dtick=0.2)
-    fig.update_layout(margin={"l": 76, "r": 28, "t": 36, "b": 62})
+    fig.update_layout(margin={"l": 76, "r": 65, "t": 36, "b": 62})
     return fig
 
 
@@ -244,9 +249,10 @@ def create_app(frame=None, metadata=None):
                 html.Div([html.Span("01", className="rq"), html.H2("Cuisine size & inspection grades")], className="chart-title"),
                 html.P(id="scatter-scope", className="chart-subtitle"),
                 html.Div([
-                    html.Span([html.I(className="key-dot above"), "At or above overall"]),
-                    html.Span([html.I(className="key-dot below"), "Below overall"]),
-                    html.Span([html.I(className="key-dot hollow"), "Fewer than 10 graded restaurants"]),
+                    html.Span([html.I("▲", className="key-mark above"), "At or above overall"]),
+                    html.Span([html.I("■", className="key-mark below"), "Below overall"]),
+                    html.Span([html.I("△ □", className="key-mark hollow"), "Fewer than 10 graded restaurants"]),
+                    html.Span([html.I(className="key-line"), "Dashed line: overall Grade A %"]),
                 ], className="plot-key"),
                 html.Div([
                     dcc.Checklist(id="sample-filter", options=[{"label": "At least 10 graded restaurants", "value": "ten"}], value=[]),

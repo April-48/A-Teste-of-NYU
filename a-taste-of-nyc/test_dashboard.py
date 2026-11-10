@@ -122,8 +122,10 @@ class RealSnapshotTests(unittest.TestCase):
             for trace in fig.data:
                 if trace.customdata is None:
                     continue
-                for rate, color in zip(trace.y, trace.marker.color):
+                for rate, color, symbol, detail in zip(trace.y, trace.marker.color, trace.marker.symbol, trace.customdata):
                     self.assertEqual(color, ABOVE if rate >= expected else BELOW)
+                    expected_symbol = "triangle-up" if rate >= expected else "square"
+                    self.assertEqual(symbol, expected_symbol + ("-open" if detail[2] < 10 else ""))
             selected = [t for t in fig.data if t.text and "Chinese" in t.text][0]
             self.assertEqual(selected.marker.line.color, "#111111")
         # A deliberately skewed fixture distinguishes a pooled rate from average rates,
