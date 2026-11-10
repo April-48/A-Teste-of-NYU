@@ -30,10 +30,10 @@ h2 { margin: 0; font-size: 22px; line-height: 1.25; font-weight: 700; letter-spa
 .chart-subtitle { font-size: 14px; color: var(--muted); font-weight: 500; margin: 8px 0 12px; line-height: 1.45; }
 .plot-key { display: flex; flex-wrap: wrap; gap: 9px 18px; margin: 14px 0 0; font-size: 13px; color: #263e49; }
 .plot-key span { display: inline-flex; align-items: center; gap: 7px; }
-.key-mark { display: inline-block; font-style: normal; font-size: 17px; line-height: 1; flex-shrink: 0; }
-.key-mark.above { color: #237d75; }
-.key-mark.below { color: #bc641f; }
-.key-mark.hollow { color: #4a5963; }
+.key-mark { display: inline-block; width: 16px; height: 16px; flex-shrink: 0; }
+.plot-key .key-reference, .plot-key .key-note { flex-basis: 100%; }
+.plot-key .key-note { align-items: flex-start; line-height: 1.45; }
+.plot-key .key-symbols { flex-shrink: 0; gap: 4px; padding-top: 1px; }
 .key-line { display: inline-block; width: 28px; border-top: 2px dashed #45515c; flex-shrink: 0; }
 .sample-controls { display: flex; flex-wrap: wrap; align-items: center; gap: 7px 16px; margin: 16px 0 8px; padding: 10px 12px; background: #f3f6f6; font-size: 13px; color: #263e49; }
 .sample-controls label { display: inline-flex; align-items: center; gap: 7px; font-weight: 600; cursor: pointer; }

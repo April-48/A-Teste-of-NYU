@@ -249,10 +249,14 @@ def create_app(frame=None, metadata=None):
                 html.Div([html.Span("01", className="rq"), html.H2("Cuisine size & inspection grades")], className="chart-title"),
                 html.P(id="scatter-scope", className="chart-subtitle"),
                 html.Div([
-                    html.Span([html.I("▲", className="key-mark above"), "At or above overall"]),
-                    html.Span([html.I("■", className="key-mark below"), "Below overall"]),
-                    html.Span([html.I("△ □", className="key-mark hollow"), "Fewer than 10 graded restaurants"]),
-                    html.Span([html.I(className="key-line"), "Dashed line: overall Grade A %"]),
+                    html.Span([html.Img(src="/assets/legend-triangle.svg", className="key-mark", alt=""), "At or above overall"]),
+                    html.Span([html.Img(src="/assets/legend-square.svg", className="key-mark", alt=""), "Below overall"]),
+                    html.Span([html.I(className="key-line"), "Dashed line: overall Grade A %"], className="key-reference"),
+                    html.Span([
+                        html.Span([html.Img(src="/assets/legend-triangle-open.svg", className="key-mark", alt=""),
+                                   html.Img(src="/assets/legend-square-open.svg", className="key-mark", alt="")], className="key-symbols"),
+                        html.Span("Hollow symbols: fewer than 10 A/B/C-graded restaurants per cuisine"),
+                    ], className="key-note"),
                 ], className="plot-key"),
                 html.Div([
                     dcc.Checklist(id="sample-filter", options=[{"label": "At least 10 graded restaurants", "value": "ten"}], value=[]),
