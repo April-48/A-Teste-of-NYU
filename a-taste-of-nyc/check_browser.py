@@ -59,7 +59,6 @@ def run():
         page.wait_for_function("""() => document.querySelector('#scatter .js-plotly-plot').data.some(t => t.text?.includes('Chinese') && t.marker.line.color === '#111111')""")
         assert page.locator("#bar .js-plotly-plot").evaluate("g => g.data[0].marker.color.includes('#355e6a')")
         assert page.locator("#heatmap .js-plotly-plot").evaluate("g => g.layout.shapes.length === 10")
-        expect(page.locator("#missing-note")).to_contain_text("992")
         expect(page.locator("#scatter")).to_contain_text("Brooklyn overall: 90.2%")
         selected = page.locator("#scatter .scatterlayer .trace").last.locator(".point").first
         bounds = selected.bounding_box()

@@ -327,19 +327,11 @@ def create_app(frame=None, metadata=None):
                 ], className="panel"),
             ], className="right-column"),
         ], className="chart-grid"),
-        html.Details([
-            html.Summary("Data notes"),
-            html.P(id="missing-note"),
-            html.P("Triangle and circle marks have at least 10 A/B/C-rated restaurants. Hollow squares have 1–9; their exact Grade A rates remain in their vertical positions and tooltips."),
+        html.Footer([
             html.P("Counts represent unique restaurants. Grade A percentages use each restaurant’s latest available A/B/C graded inspection."),
-            html.P("Overall Grade A = all Grade A restaurants / all A/B/C-rated restaurants in the selected scope; it is not an average of cuisine percentages. The reference and both color groups update with the borough."),
-            html.P("Cuisine not recorded is excluded from the cuisine comparisons but included in total counts and heatmap denominators. Heatmap columns are the NYC top 10 recorded cuisines, plus the selected cuisine if needed; all five boroughs and the citywide color scale remain fixed."),
-            html.P(id="scatter-note"),
-            html.P("Small samples may have extreme percentages. Above/below overall is descriptive, not a significance test. The X axis remains linear. A black outline and label identify the selected scatter point without changing its comparison color."),
-            html.P("Source includes active establishments and not-yet-inspected applicants. It is not an all-time census."),
-        ], className="data-notes"),
-        html.Footer([html.A("NYC DOHMH Restaurant Inspection Results", href=SOURCE_URL, target="_blank", rel="noreferrer"),
-                     f" · Downloaded {metadata.get('download_date', 'unknown')}"]),
+            html.A("NYC DOHMH Restaurant Inspection Results", href=SOURCE_URL, target="_blank", rel="noreferrer"),
+            f" · Downloaded {metadata.get('download_date', 'unknown')}",
+        ]),
     ], className="page")
 
     @app.callback(
@@ -347,8 +339,8 @@ def create_app(frame=None, metadata=None):
         Output("heatmap", "clickData"), Output("scatter", "figure"), Output("bar", "figure"),
         Output("selection", "children"), Output("metrics", "children"),
         Output("scatter-scope", "children"), Output("bar-scope", "children"),
-        Output("bar-title", "children"), Output("scatter-note", "children"),
-        Output("heatmap", "figure"), Output("missing-note", "children"),
+        Output("bar-title", "children"),
+        Output("heatmap", "figure"),
         Output("bar", "clickData"), Output("scatter", "clickData"),
         Output("sample-filter", "value"), Output("sample-status", "children"), Output("heatmap-title", "children"),
         Input("borough", "value"), Input("heatmap", "clickData"), Input("reset", "n_clicks"),
@@ -366,10 +358,7 @@ def create_app(frame=None, metadata=None):
         bar, extra = bar_figure(summary, selected, borough)
         rated = int(subset.grade.isin(["A", "B", "C"]).sum())
         metrics = f"{len(subset):,} restaurants · {rated:,} with A/B/C grades"
-        unknown = int(subset.cuisine.eq(MISSING_CUISINE).sum())
-        missing_note = f"Cuisine not recorded: {unknown:,} in {borough}. Included in totals and share denominators; excluded from cuisine comparisons."
         omitted = int((summary.rated.eq(0) & summary.cuisine.ne(MISSING_CUISINE)).sum())
-        note = f"{omitted} recorded cuisine(s) have no valid grade and are not plotted in scatter. Counts still include them. The optional minimum-sample filter affects only scatter visibility, not totals or the overall benchmark."
         hidden = int(((summary.rated > 0) & (summary.rated < minimum) & summary.cuisine.ne(MISSING_CUISINE)).sum())
         sample_status = f"{hidden} cuisines hidden by sample filter" if minimum > 1 else ""
         if omitted:
@@ -377,10 +366,8 @@ def create_app(frame=None, metadata=None):
         if selected:
             row = summary[summary.cuisine.eq(selected)]
             if row.empty:
-                note = f"{selected}: 0 restaurants; Grade A: no data. " + note
                 sample_status += (" · " if sample_status else "") + f"{selected}: no restaurants in this borough"
             elif int(row.iloc[0].rated) == 0:
-                note = f"{selected}: Grade A unavailable (0 rated restaurants). " + note
                 sample_status += (" · " if sample_status else "") + f"{selected}: no valid grade"
             elif int(row.iloc[0].rated) < minimum:
                 sample_status += f" · {selected} is hidden ({int(row.iloc[0].rated)} graded); turn off the filter to see it"
@@ -388,8 +375,8 @@ def create_app(frame=None, metadata=None):
                 f"{borough} · {selected or 'All cuisines'}", metrics,
                 f"{borough} · Each mark is a cuisine",
                 f"{borough} · Top 10 by unique restaurant count",
-                "Most common cuisines" + (" · + selected" if extra else ""), note,
-                heatmap_figure(frame, borough, selected)[0], missing_note,
+                "Most common cuisines" + (" · + selected" if extra else ""),
+                heatmap_figure(frame, borough, selected)[0],
                 None, None, sample_filter, sample_status,
                 "Cuisine share by borough" + (" · + selected" if selected and selected not in heat_cuisines else ""))
 
