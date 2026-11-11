@@ -118,10 +118,10 @@ Below 1150 px, chart panels stack vertically. When the heatmap cannot fit readab
 
 The hosted edition is a **fixed-snapshot export**, not a live Python process. `export_public.py` evaluates every supported borough, cuisine and sample-minimum combination through the real Python Dash callback. Identical figures/options are shared by content hash. A small browser callback routes selections to those generated results, preserving search, linked highlighting, sample filtering and Reset. Data and calculations are not reimplemented in JavaScript.
 
-Rebuild after data, chart or control changes:
+Rebuild and preview locally after data, chart or control changes:
 
 ```sh
-python export_public.py public-dist --base-path /A-Teste-of-NYU/
+python export_public.py public-dist
 python verify_public.py public-dist
 python serve_public.py public-dist
 ```
