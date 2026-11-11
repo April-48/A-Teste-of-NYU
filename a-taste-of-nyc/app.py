@@ -253,8 +253,7 @@ def create_app(frame=None, metadata=None):
                     html.Span([html.Img(src="/assets/legend-square.svg", className="key-mark", alt=""), "Below overall"]),
                     html.Span([html.I(className="key-line"), "Dashed line: overall Grade A %"], className="key-reference"),
                     html.Span([
-                        html.Span([html.Img(src="/assets/legend-triangle-open.svg", className="key-mark", alt=""),
-                                   html.Img(src="/assets/legend-square-open.svg", className="key-mark", alt="")], className="key-symbols"),
+                        html.Span([html.Img(src="/assets/legend-square-open.svg", className="key-mark", alt="")], className="key-symbols"),
                         html.Span("Hollow symbols: fewer than 10 A/B/C-graded restaurants per cuisine"),
                     ], className="key-note"),
                 ], className="plot-key"),
