@@ -55,7 +55,8 @@ def export(destination):
     for route in ("/_dash-layout", "/_dash-dependencies", "/_favicon.ico"):
         response = web.get(route)
         assert response.status_code == 200, route
-        (destination / route.lstrip("/")).write_bytes(response.data)
+        name = route.lstrip("/") + (".json" if route.startswith("/_dash-") else "")
+        (destination / name).write_bytes(response.data)
     shutil.copytree(source.ROOT / "assets", destination / "assets", dirs_exist_ok=True)
 
     # Dynamic Dash chunks use their normal package filenames; initial script
@@ -128,7 +129,7 @@ def export(destination):
                 "outputs": [{"id": o.component_id, "property": o.component_property} for o in outputs],
                 "snapshot": metadata["download_date"], "states": total}
     (destination / "state-index.json").write_text(json.dumps(manifest))
-    (destination / "_headers").write_text("/objects/*\n  Cache-Control: public, max-age=31536000, immutable\n/states/*\n  Cache-Control: no-cache\n/_dash-layout\n  Content-Type: application/json\n/_dash-dependencies\n  Content-Type: application/json\n")
+    (destination / "_headers").write_text("/objects/*\n  Cache-Control: public, max-age=31536000, immutable\n/states/*\n  Cache-Control: no-cache\n")
     print(f"Complete: {total} states, {len(saved)} shared objects", flush=True)
 
 

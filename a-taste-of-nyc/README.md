@@ -114,6 +114,8 @@ Below 1150 px, chart panels stack vertically. When the heatmap cannot fit readab
 
 ## Public deployment
 
+**Live dashboard: [A Taste of NYC](https://a-taste-of-nyc-april48.caohuixi2002.chatgpt.site)**. Public access requires no installation or local Python server.
+
 The hosted edition is a **fixed-snapshot export**, not a live Python process. `export_public.py` evaluates every supported borough, cuisine and sample-minimum combination through the real Python Dash callback. Identical figures/options are shared by content hash. A small browser callback routes selections to those generated results, preserving search, linked highlighting, sample filtering and Reset. Data and calculations are not reimplemented in JavaScript.
 
 Rebuild after data, chart or control changes:
@@ -124,7 +126,7 @@ python verify_public.py public-dist
 python serve_public.py public-dist
 ```
 
-Serve `public-dist` at the root of a static host that honors its `_headers` file; the two Dash bootstrap JSON endpoints require `application/json`. Local preview uses `serve_public.py` to apply those response types. The export includes Dash and Plotly browser libraries locally, with no CDN requirement. `verify_public.py` checks 18 representative states against the original Python callback and verifies every generated state's object references. The hosted snapshot does not update until it is rebuilt and published.
+Serve `public-dist` at the root of a static host. The browser adapter maps Dash’s two initialization requests to standard `.json` files so MIME types work without custom server configuration. Use `serve_public.py` for local preview. The export includes Dash and Plotly browser libraries locally, with no CDN requirement. `verify_public.py` checks 18 representative states against the original Python callback and verifies every generated state's object references. The hosted snapshot does not update until it is rebuilt and published.
 
 ## Rebuild or refresh data
 
