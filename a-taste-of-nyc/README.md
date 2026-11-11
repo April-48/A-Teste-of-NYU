@@ -19,7 +19,7 @@ On Windows, replace the activation command with `.venv\Scripts\activate` and use
 
 Open **http://127.0.0.1:8050**. Stop with **Ctrl+C**. To restart, activate the same environment, enter this folder and run `python app.py` again. The checked-in cleaned data lets the app start without downloading anything. Dependencies are installed once; charts and data are served locally without CDN dependencies. If port 8050 is occupied, macOS/Linux users can run `PORT=8051 python app.py` and open port 8051.
 
-This is a local classroom prototype, not a publicly hosted application. GitHub Pages cannot run Python Dash. The source repository and these setup instructions are the runnable-code submission.
+The Python Dash app runs locally with the commands above. A separate public export preserves the same Dash browser components and Plotly figures without requiring a Python server; see the public deployment section below. The source repository and these setup instructions remain the runnable-code submission.
 
 ## Data source and snapshot
 
@@ -112,6 +112,20 @@ The three chart click paths, the Italian rank-11 case, the appended Caribbean co
 
 Below 1150 px, chart panels stack vertically. When the heatmap cannot fit readable columns, it scrolls horizontally within its panel; the narrow-screen subtitle explains this. Mouse/touch chart marks initiate selection; keyboard-only chart-mark navigation is not implemented. Borough, cuisine search, sample-size dropdown and Reset are keyboard accessible.
 
+## Public deployment
+
+The hosted edition is a **fixed-snapshot export**, not a live Python process. `export_public.py` evaluates every supported borough, cuisine and sample-minimum combination through the real Python Dash callback. Identical figures/options are shared by content hash. A small browser callback routes selections to those generated results, preserving search, linked highlighting, sample filtering and Reset. Data and calculations are not reimplemented in JavaScript.
+
+Rebuild after data, chart or control changes:
+
+```sh
+python export_public.py public-dist
+python verify_public.py public-dist
+python serve_public.py public-dist
+```
+
+Serve `public-dist` at the root of a static host that honors its `_headers` file; the two Dash bootstrap JSON endpoints require `application/json`. Local preview uses `serve_public.py` to apply those response types. The export includes Dash and Plotly browser libraries locally, with no CDN requirement. `verify_public.py` checks 18 representative states against the original Python callback and verifies every generated state's object references. The hosted snapshot does not update until it is rebuilt and published.
+
 ## Rebuild or refresh data
 
 Rebuild the included snapshot without network access:
@@ -168,6 +182,7 @@ The 2–3 page usability report and one-page reflection belong to the final stag
 - `prepare_data.py`: `read_raw` standardizes fields; `clean_restaurants` creates attributes and latest-grade tables separately; `main` writes the auditable snapshot.
 - `app.py`: `cuisine_summary` calculates counts and ratios; three figure functions draw plots; `select_state` handles selection rules; one Dash callback updates controls and dependent views together.
 - `assets/style.css`: Option B layout, readable typography and responsive behavior.
+- `export_public.py`, `public/callback.js`, `verify_public.py`: reproducible public export, browser selection routing and parity checks.
 - `test_dashboard.py`: data logic and boundary-case tests. `check_browser.py`: real-browser interactions and screenshots.
 
-**AI assistance actually used:** OpenAI Codex generated the initial Python/CSS implementation, downloaded and inspected the official data, proposed and documented cleaning choices, wrote and executed automated checks, inspected browser screenshots, fixed chart-container overlap, audited missing cuisine against all source records, inspected real data-visualization websites and implemented the approved editorial redesign, benchmark color encoding, visual hierarchy changes, three-way linked selection and sample filter, and drafted this README and the empty feedback template. The dataset is real NYC Open Data; it is not AI-generated. No classroom feedback or user-study outcome has been invented. The student should review the code and be able to explain the unique-CAMIS collapse, separate latest-grade lookup, rate denominators, and callback state before submitting. AI testing is not classroom usability feedback.
+**AI assistance actually used:** OpenAI Codex generated the initial Python/CSS implementation, downloaded and inspected the official data, proposed and documented cleaning choices, wrote and executed automated checks, inspected browser screenshots, fixed chart-container overlap, audited missing cuisine against all source records, inspected real data-visualization websites and implemented the approved editorial redesign, benchmark color encoding, visual hierarchy changes, three-way linked selection and sample filter, built and validated the fixed-snapshot public export, and drafted this README and the empty feedback template. The dataset is real NYC Open Data; it is not AI-generated. No classroom feedback or user-study outcome has been invented. The student should review the code and be able to explain the unique-CAMIS collapse, separate latest-grade lookup, rate denominators, and callback state before submitting. AI testing is not classroom usability feedback.

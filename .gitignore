@@ -4,3 +4,4 @@ __pycache__/
 .DS_Store
 *.part
 a-taste-of-nyc/data/nyc_inspections.csv
+a-taste-of-nyc/public-dist/
