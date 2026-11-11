@@ -2,7 +2,7 @@
 
 Python + Plotly Dash prototype for the NYC restaurant inspection visualization project.
 
-**[Open the public dashboard](https://a-taste-of-nyc-april48.caohuixi2002.chatgpt.site)** — no installation or local server required. This interactive edition uses the November 9, 2026 data snapshot; updates require rebuilding and publishing.
+**[Open the public dashboard](https://april-48.github.io/A-Teste-of-NYU/)** — no installation or local server required. This interactive edition uses the November 9, 2026 data snapshot; updates require rebuilding and publishing.
 
 The complete application, included data snapshot, screenshots, and setup instructions are in **[a-taste-of-nyc/README.md](a-taste-of-nyc/README.md)**.
 

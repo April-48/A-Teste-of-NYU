@@ -7,11 +7,11 @@ Usage: python export_public.py /absolute/path/to/site/dist
 """
 from __future__ import annotations
 
+import argparse
 import hashlib
 import json
 import re
 import shutil
-import sys
 from functools import lru_cache
 from pathlib import Path
 from urllib.parse import urlsplit
@@ -22,7 +22,8 @@ from dash import ClientsideFunction, Dash, Input, State
 import app as source
 
 
-def export(destination):
+def export(destination, base_path="/"):
+    base_path = "/" + base_path.strip("/") + "/" if base_path.strip("/") else "/"
     destination = Path(destination).resolve()
     destination.mkdir(parents=True, exist_ok=True)
     frame, metadata = source.load_data()
@@ -39,7 +40,8 @@ def export(destination):
 
     key, callback = next(iter(source.app.callback_map.items()))
     outputs = callback["output"]
-    public = Dash("nyc_public", title="A Taste of NYC", assets_folder=str(source.ROOT / "assets"))
+    public = Dash("nyc_public", title="A Taste of NYC", assets_folder=str(source.ROOT / "assets"),
+                  requests_pathname_prefix=base_path, routes_pathname_prefix="/")
     public.layout = source.app.layout
     public.clientside_callback(
         ClientsideFunction(namespace="nyc_public", function_name="update"),
@@ -49,8 +51,9 @@ def export(destination):
     )
     web = public.server.test_client()
     html = web.get("/").data.decode()
-    html = html.replace('<script id="_dash-renderer"', '<script src="/public-callback.js"></script>\n<script id="_dash-renderer"')
+    html = html.replace('<script id="_dash-renderer"', f'<script src="{base_path}public-callback.js"></script>\n<script id="_dash-renderer"')
     (destination / "index.html").write_text(html)
+    (destination / ".nojekyll").touch()
     shutil.copyfile(source.ROOT / "public" / "callback.js", destination / "public-callback.js")
     for route in ("/_dash-layout", "/_dash-dependencies", "/_favicon.ico"):
         response = web.get(route)
@@ -71,8 +74,10 @@ def export(destination):
                 shutil.copyfile(asset, target)
     for url in re.findall(r'(?:src|href)="([^"\s]+)"', html):
         route = urlsplit(url).path
+        if route.startswith(base_path):
+            route = "/" + route[len(base_path):]
         if route.startswith("/_dash-component-suites/"):
-            response = web.get(url)
+            response = web.get(route)
             assert response.status_code == 200, url
             target = destination / route.lstrip("/")
             target.parent.mkdir(parents=True, exist_ok=True)
@@ -134,6 +139,8 @@ def export(destination):
 
 
 if __name__ == "__main__":
-    if len(sys.argv) != 2:
-        raise SystemExit("Usage: python export_public.py /absolute/path/to/site/dist")
-    export(sys.argv[1])
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument("destination")
+    parser.add_argument("--base-path", default="/", help="Hosting path, e.g. /A-Teste-of-NYU/")
+    args = parser.parse_args()
+    export(args.destination, args.base_path)

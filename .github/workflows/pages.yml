@@ -1,0 +1,55 @@
+name: Publish dashboard
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'a-taste-of-nyc/**'
+      - '.github/workflows/pages.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: github-pages
+  cancel-in-progress: false
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+      - uses: actions/setup-python@v6
+        with:
+          python-version: '3.14'
+          cache: pip
+          cache-dependency-path: a-taste-of-nyc/requirements.txt
+      - name: Configure Pages
+        id: pages
+        uses: actions/configure-pages@v5
+      - name: Install dependencies
+        run: python -m pip install -r a-taste-of-nyc/requirements.txt
+      - name: Export dashboard and verify calculations
+        working-directory: a-taste-of-nyc
+        env:
+          BASE_PATH: ${{ steps.pages.outputs.base_path }}
+        run: |
+          python export_public.py public-dist --base-path "$BASE_PATH/"
+          python verify_public.py public-dist
+      - uses: actions/upload-pages-artifact@v4
+        with:
+          path: a-taste-of-nyc/public-dist
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    permissions:
+      pages: write
+      id-token: write
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4

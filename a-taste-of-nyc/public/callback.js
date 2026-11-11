@@ -2,12 +2,13 @@
  * Only selection routing happens here; statistics and figures come from Python.
  */
 (() => {
+  const base = JSON.parse(document.getElementById("_dash-config").textContent).requests_pathname_prefix;
   // Dash expects extensionless bootstrap routes. Static hosts reliably infer
   // JSON MIME types from .json, so adapt only these two same-origin GETs.
   const nativeFetch = window.fetch.bind(window);
   window.fetch = function(input, options) {
     const url = new URL(typeof input === "string" ? input : input.url || input.href, location.href);
-    if (url.origin === location.origin && ["/_dash-layout", "/_dash-dependencies"].includes(url.pathname)) {
+    if (url.origin === location.origin && [base + "_dash-layout", base + "_dash-dependencies"].includes(url.pathname)) {
       url.pathname += ".json";
       return nativeFetch(input instanceof Request ? new Request(url, input) : url, options);
     }
@@ -16,6 +17,7 @@
   const cache = new Map();
   let revision = 0;
   function json(url) {
+    url = base + url.replace(/^\//, "");
     if (!cache.has(url)) {
       cache.set(url, fetch(url).then(response => {
         if (!response.ok) throw new Error(`Unable to load ${url}: ${response.status}`);
