@@ -99,7 +99,7 @@ class RealSnapshotTests(unittest.TestCase):
         click = {"points": [{"x": "Chinese", "y": "Brooklyn"}]}
         self.assertEqual(select_state("heatmap", "All NYC", click, None, ["Chinese"]), ("Brooklyn", "Chinese"))
         self.assertEqual(select_state("reset", "Brooklyn", click, "Chinese", ["Chinese"]), ("All NYC", None))
-        self.assertEqual(select_state("borough", "Queens", None, "Chinese", ["Chinese"]), ("Queens", None))
+        self.assertEqual(select_state("borough", "Queens", None, "Chinese", ["Chinese"]), ("Queens", "Chinese"))
 
     def test_missing_cuisine_really_missing_in_all_source_records(self):
         raw = read_raw(DATA / "nyc_inspections.csv.gz")
@@ -163,11 +163,11 @@ class RealSnapshotTests(unittest.TestCase):
         client = app.server.test_client()
         key, callback = next(iter(app.callback_map.items()))
 
-        def update(trigger, borough="All NYC", cuisine=None, click=None, sample=None):
+        def update(trigger, borough="All NYC", cuisine=None, click=None, sample=1, focus=None):
             values = [borough, click if trigger == "heatmap" else None, 1,
-                      click if trigger == "bar" else None, click if trigger == "scatter" else None, sample or []]
+                      click if trigger == "bar" else None, click if trigger == "scatter" else None, sample, focus]
             inputs = [dict(item, value=value) for item, value in zip(callback["inputs"], values)]
-            prop = "value" if trigger in ("borough", "sample-filter") else "n_clicks" if trigger == "reset" else "clickData"
+            prop = "value" if trigger in ("borough", "sample-filter", "cuisine-focus") else "n_clicks" if trigger == "reset" else "clickData"
             response = client.post("/_dash-update-component", json={
                 "output": key, "outputs": [{"id": o.component_id, "property": o.component_property} for o in callback["output"]],
                 "inputs": inputs, "state": [{"id": "selected-cuisine", "property": "data", "value": cuisine}],
@@ -190,16 +190,38 @@ class RealSnapshotTests(unittest.TestCase):
         self.assertIn(rare, selected["bar"]["figure"]["data"][0]["y"])
         self.assertIn("Selected cuisine · Rank", str(selected["bar"]["figure"]["layout"]["yaxis"]["ticktext"]))
         self.assertEqual(len(selected["heatmap"]["figure"]["data"][0]["x"]), 11)
-        filtered = update("sample-filter", cuisine=rare, sample=["ten"])
+        filtered = update("sample-filter", cuisine=rare, sample=10)
         self.assertIn("is hidden", filtered["sample-status"]["children"])
         self.assertEqual(filtered["selected-cuisine"]["data"], rare)
         for trace in filtered["scatter"]["figure"]["data"]:
             self.assertTrue(all(row[2] >= 10 for row in trace["customdata"]))
         self.assertEqual(selected["scatter"]["figure"]["layout"]["shapes"], filtered["scatter"]["figure"]["layout"]["shapes"])
         self.assertEqual(selected["heatmap"]["figure"]["data"][0]["zmax"], filtered["heatmap"]["figure"]["data"][0]["zmax"])
-        reset = update("reset", "Brooklyn", rare, sample=["ten"])
+        reset = update("reset", "Brooklyn", rare, sample=10)
         self.assertEqual(reset["selection"]["children"], "All NYC · All cuisines")
-        self.assertEqual(reset["sample-filter"]["value"], [])
+        self.assertEqual(reset["sample-filter"]["value"], 1)
+        self.assertIsNone(reset["cuisine-focus"]["value"])
+        focused = update("cuisine-focus", focus="Chinese")
+        self.assertEqual(focused["cuisine-focus"]["value"], "Chinese")
+        self.assertEqual(focused["selection"]["children"], "All NYC · Chinese")
+        self.assertEqual(len(focused["heatmap"]["figure"]["layout"]["shapes"]), 10)
+        moved = update("borough", "Brooklyn", "Chinese", sample=25, focus="Chinese")
+        self.assertEqual(moved["selection"]["children"], "Brooklyn · Chinese")
+        self.assertIn({"label": "Chinese · 647", "value": "Chinese"}, moved["cuisine-focus"]["options"])
+        cleared = update("cuisine-focus", "Brooklyn", "Chinese", sample=25)
+        self.assertEqual(cleared["selection"]["children"], "Brooklyn · All cuisines")
+        self.assertEqual(cleared["sample-filter"]["value"], 25)
+        for limit in (1, 10, 25, 50, 100):
+            filtered = update("sample-filter", sample=limit)
+            traces = filtered["scatter"]["figure"]["data"]
+            plotted = {r[0] for t in traces for r in t["customdata"]}
+            expected = set(summary.loc[(summary.rated >= limit) & summary.cuisine.ne("Unknown"), "cuisine"])
+            self.assertEqual(plotted, expected)
+            self.assertEqual(filtered["metrics"], focused["metrics"])
+            self.assertEqual(filtered["scatter"]["figure"]["layout"]["shapes"], focused["scatter"]["figure"]["layout"]["shapes"])
+        absent = next(c for c in summary.cuisine if c != "Unknown" and c not in set(self.frame.loc[self.frame.borough.eq("Staten Island"), "cuisine"]))
+        no_data = update("cuisine-focus", "Staten Island", focus=absent)
+        self.assertIn("no restaurants in this borough", no_data["sample-status"]["children"])
 
     def test_hover_denominators_and_context(self):
         frame = self.frame[self.frame.borough.eq("Brooklyn")]

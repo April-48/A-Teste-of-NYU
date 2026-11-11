@@ -20,6 +20,7 @@ SMALL_SAMPLE = "#4a5963"
 BAR_BACKGROUND = "#aebfc6"
 SELECTED = "#355e6a"
 MISSING_CUISINE = "Unknown"
+SAMPLE_LIMITS = (1, 10, 25, 50, 100)
 HEAT_COLORS = [[0, "#faf5ff"], [0.25, "#d7b5f1"], [0.5, "#9950c9"], [0.75, "#63169b"], [1, "#29004f"]]
 INK = "#172033"
 CONFIG = {"displayModeBar": False, "responsive": True, "scrollZoom": False}
@@ -266,8 +267,6 @@ def select_state(trigger, borough, click_data, selected, heat_cuisines):
         cuisine = custom[0] if isinstance(custom, (list, tuple)) and custom else point.get("y") if trigger == "bar" else None
         if cuisine in heat_cuisines:
             selected = cuisine
-    if trigger == "borough":
-        selected = None
     return borough if borough in ["All NYC", *BOROUGHS] else "All NYC", selected
 
 
@@ -290,6 +289,9 @@ def create_app(frame=None, metadata=None):
         html.Div([
             html.Div([html.Label("Borough", htmlFor="borough"),
                       dcc.Dropdown(id="borough", options=["All NYC", *BOROUGHS], value="All NYC", clearable=False, searchable=False)], className="filter"),
+            html.Div([html.Label("Cuisine focus", htmlFor="cuisine-focus"),
+                      dcc.Dropdown(id="cuisine-focus", options=sorted(all_cuisines), value=None,
+                                   placeholder="Search cuisines…", clearable=True, searchable=True)], className="filter cuisine-filter"),
             html.Button("Reset", id="reset", n_clicks=0),
             html.Div([html.Span("Viewing", className="selection-label"), html.Strong(id="selection")], className="selection", **{"aria-live": "polite"}),
             html.P("Click any chart to select a cuisine.", className="hint"),
@@ -308,7 +310,11 @@ def create_app(frame=None, metadata=None):
                 ], className="plot-key"),
                 dcc.Graph(id="scatter", config=CONFIG, responsive=True, style={"height": "470px"}, className="scatter-plot"),
                 html.Div([
-                    dcc.Checklist(id="sample-filter", options=[{"label": "At least 10 graded restaurants", "value": "ten"}], value=[]),
+                    html.Label("Sample size", htmlFor="sample-filter"),
+                    dcc.Dropdown(id="sample-filter", options=[
+                        {"label": "All rated cuisines" if n == 1 else f"{n}+ graded restaurants", "value": n}
+                        for n in SAMPLE_LIMITS], value=1, clearable=False, searchable=False),
+                    html.Span("Scatter only", className="filter-scope"),
                     html.Span(id="sample-status", **{"aria-live": "polite"}),
                 ], className="sample-controls"),
                 html.P([html.Strong("How to read this view"),
@@ -343,24 +349,31 @@ def create_app(frame=None, metadata=None):
         Output("heatmap", "figure"),
         Output("bar", "clickData"), Output("scatter", "clickData"),
         Output("sample-filter", "value"), Output("sample-status", "children"), Output("heatmap-title", "children"),
+        Output("cuisine-focus", "value"), Output("cuisine-focus", "options"),
         Input("borough", "value"), Input("heatmap", "clickData"), Input("reset", "n_clicks"),
         Input("bar", "clickData"), Input("scatter", "clickData"), Input("sample-filter", "value"),
+        Input("cuisine-focus", "value"),
         State("selected-cuisine", "data"),
     )
-    def update(borough, click_data, reset_clicks, bar_click, scatter_click, sample_filter, selected):
+    def update(borough, click_data, reset_clicks, bar_click, scatter_click, sample_filter, cuisine_focus, selected):
         trigger = ctx.triggered_id
         click = {"heatmap": click_data, "bar": bar_click, "scatter": scatter_click}.get(trigger)
         borough, selected = select_state(trigger, borough, click, selected, all_cuisines)
-        sample_filter = [] if trigger == "reset" else (sample_filter or [])
-        minimum = 10 if "ten" in sample_filter else 1
+        if trigger == "cuisine-focus":
+            selected = cuisine_focus if cuisine_focus in all_cuisines else None
+        minimum = sample_filter if sample_filter in SAMPLE_LIMITS and trigger != "reset" else 1
         subset = frame if borough == "All NYC" else frame[frame.borough.eq(borough)]
         summary = cuisine_summary(subset)
+        counts = summary.set_index("cuisine").restaurants.to_dict()
+        cuisine_options = [{"label": f"{c} · {int(counts.get(c, 0)):,}", "value": c}
+                           for c in sorted(all_cuisines)]
         bar, extra = bar_figure(summary, selected, borough)
         rated = int(subset.grade.isin(["A", "B", "C"]).sum())
         metrics = f"{len(subset):,} restaurants · {rated:,} with A/B/C grades"
         omitted = int((summary.rated.eq(0) & summary.cuisine.ne(MISSING_CUISINE)).sum())
         hidden = int(((summary.rated > 0) & (summary.rated < minimum) & summary.cuisine.ne(MISSING_CUISINE)).sum())
-        sample_status = f"{hidden} cuisines hidden by sample filter" if minimum > 1 else ""
+        visible = int(((summary.rated >= minimum) & summary.cuisine.ne(MISSING_CUISINE)).sum())
+        sample_status = f"{visible} cuisines shown · {hidden} hidden by sample filter"
         if omitted:
             sample_status += (" · " if sample_status else "") + f"{omitted} with no grade not plotted"
         if selected:
@@ -370,15 +383,16 @@ def create_app(frame=None, metadata=None):
             elif int(row.iloc[0].rated) == 0:
                 sample_status += (" · " if sample_status else "") + f"{selected}: no valid grade"
             elif int(row.iloc[0].rated) < minimum:
-                sample_status += f" · {selected} is hidden ({int(row.iloc[0].rated)} graded); turn off the filter to see it"
+                sample_status += f" · {selected} is hidden ({int(row.iloc[0].rated)} graded); lower the sample minimum to see it"
         return (borough, selected, None, scatter_figure(summary, selected, borough, minimum), bar,
                 f"{borough} · {selected or 'All cuisines'}", metrics,
                 f"{borough} · Each mark is a cuisine",
                 f"{borough} · Top 10 by unique restaurant count",
                 "Most common cuisines" + (" · + selected" if extra else ""),
                 heatmap_figure(frame, borough, selected)[0],
-                None, None, sample_filter, sample_status,
-                "Cuisine share by borough" + (" · + selected" if selected and selected not in heat_cuisines else ""))
+                None, None, minimum, sample_status,
+                "Cuisine share by borough" + (" · + selected" if selected and selected not in heat_cuisines else ""),
+                selected, cuisine_options)
 
     return app
 
