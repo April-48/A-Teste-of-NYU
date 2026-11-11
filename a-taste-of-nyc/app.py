@@ -16,6 +16,7 @@ from prepare_data import BOROUGHS, SOURCE_URL
 ROOT = Path(__file__).resolve().parent
 ABOVE = "#237d75"
 BELOW = "#bc641f"
+SMALL_SAMPLE = "#4a5963"
 BAR_BACKGROUND = "#aebfc6"
 SELECTED = "#355e6a"
 MISSING_CUISINE = "Unknown"
@@ -75,8 +76,10 @@ def scatter_figure(summary, selected, scope="All NYC", min_graded=1):
     for rows, active in groups:
         if rows.empty:
             continue
-        colors = [ABOVE if value >= benchmark else BELOW for value in rows.grade_a_pct]
-        symbols = [("triangle-up" if value >= benchmark else "circle") + ("-open" if n < 10 else "")
+        # Small samples get their own shape, regardless of the benchmark side.
+        colors = [SMALL_SAMPLE if n < 10 else ABOVE if value >= benchmark else BELOW
+                  for value, n in zip(rows.grade_a_pct, rows.rated)]
+        symbols = ["square-open" if n < 10 else "triangle-up" if value >= benchmark else "circle"
                    for value, n in zip(rows.grade_a_pct, rows.rated)]
         relation = ["At or above overall" if value >= benchmark else "Below overall" for value in rows.grade_a_pct]
         custom = [[c, int(n), int(r), int(a), rel, scope] for c, n, r, a, rel in
@@ -93,7 +96,7 @@ def scatter_figure(summary, selected, scope="All NYC", min_graded=1):
                     "line": {"width": 2.5 if active else 1, "color": "#111111" if active else colors}},
             hovertemplate="<b>%{customdata[0]}</b><br>Borough: %{customdata[5]}<br>Restaurants: %{customdata[1]:,}<br>Rated (A/B/C): %{customdata[2]:,}<br>Grade A restaurants: %{customdata[3]:,}<br>Grade A: %{y:.1%}<br>%{customdata[4]}<extra></extra>"))
         if active and int(rows.iloc[0].rated) < 10:
-            # Preserve the colored hollow small-sample mark and add a matching black outline.
+            # Preserve the hollow small-sample square and add a matching black outline.
             fig.add_trace(go.Scatter(x=rows.restaurants.tolist(), y=rows.grade_a_pct.tolist(),
                                     mode="markers", customdata=custom,
                                     hovertemplate="<b>%{customdata[0]}</b><br>Borough: %{customdata[5]}<br>Restaurants: %{customdata[1]:,}<br>Rated (A/B/C): %{customdata[2]:,}<br>Grade A restaurants: %{customdata[3]:,}<br>Grade A: %{y:.1%}<extra></extra>", marker={"size": 17,
@@ -253,8 +256,8 @@ def create_app(frame=None, metadata=None):
                     html.Span([html.Img(src="/assets/legend-circle.svg", className="key-mark", alt=""), "Below overall"]),
                     html.Span([html.I(className="key-line"), "Dashed line: overall Grade A %"], className="key-reference"),
                     html.Span([
-                        html.Span([html.Img(src="/assets/legend-circle-open.svg", className="key-mark", alt="")], className="key-symbols"),
-                        html.Span("Hollow symbols: fewer than 10 A/B/C-graded restaurants per cuisine"),
+                        html.Span([html.Img(src="/assets/legend-square-open.svg", className="key-mark", alt="")], className="key-symbols"),
+                        html.Span("Fewer than 10 A/B/C-graded restaurants per cuisine"),
                     ], className="key-note"),
                 ], className="plot-key"),
                 html.Div([

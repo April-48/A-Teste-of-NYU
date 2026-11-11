@@ -5,7 +5,7 @@ import pandas as pd
 
 from prepare_data import BOROUGHS, FIELDS, clean_restaurants, read_raw, DATA
 from app import (app, bar_figure, create_app, cuisine_summary, heatmap_figure,
-                 load_data, scatter_figure, select_state, ABOVE, BELOW, SELECTED)
+                 load_data, scatter_figure, select_state, ABOVE, BELOW, SELECTED, SMALL_SAMPLE)
 
 
 class CleaningTests(unittest.TestCase):
@@ -123,9 +123,9 @@ class RealSnapshotTests(unittest.TestCase):
                 if trace.customdata is None:
                     continue
                 for rate, color, symbol, detail in zip(trace.y, trace.marker.color, trace.marker.symbol, trace.customdata):
-                    self.assertEqual(color, ABOVE if rate >= expected else BELOW)
-                    expected_symbol = "triangle-up" if rate >= expected else "circle"
-                    self.assertEqual(symbol, expected_symbol + ("-open" if detail[2] < 10 else ""))
+                    self.assertEqual(color, SMALL_SAMPLE if detail[2] < 10 else ABOVE if rate >= expected else BELOW)
+                    expected_symbol = "square-open" if detail[2] < 10 else "triangle-up" if rate >= expected else "circle"
+                    self.assertEqual(symbol, expected_symbol)
             selected = [t for t in fig.data if t.text and "Chinese" in t.text][0]
             self.assertEqual(selected.marker.line.color, "#111111")
         # A deliberately skewed fixture distinguishes a pooled rate from average rates,
@@ -135,6 +135,13 @@ class RealSnapshotTests(unittest.TestCase):
         fig = scatter_figure(summary, None)
         self.assertEqual(fig.layout.shapes[0].y0, 101/200)
         self.assertEqual(len(fig.data[0].x), 2)
+        self.assertEqual(fig.data[0].marker.symbol[0], "square-open")
+        # The three categories use exactly three shapes; small-sample status wins.
+        summary = pd.DataFrame({"cuisine": ["High", "Low", "Small high", "Small low"],
+                                "restaurants": [10, 10, 9, 9], "rated": [10, 10, 9, 9],
+                                "grade_a": [10, 0, 9, 0], "grade_a_pct": [1., 0., 1., 0.]})
+        fig = scatter_figure(summary, None)
+        self.assertEqual(list(fig.data[0].marker.symbol), ["triangle-up", "circle", "square-open", "square-open"])
 
     def test_heatmap_labels_selection_and_fixed_scale(self):
         default, cuisines = heatmap_figure(self.frame)
