@@ -19,8 +19,8 @@ h1 { font-family: Georgia, serif; font-size: 50px; font-weight: 500; letter-spac
 .controls .selection { flex-basis: 100%; margin-left: 0; }
 #sample-filter { width: 205px; font-size: 13px; }
 .filter-scope { font-size: 12px; color: var(--muted); }
-button { background: #2c4742; color: #fff; border: 1px solid #2c4742; border-radius: 3px; padding: 8px 16px; font-size: 14px; font-weight: 400; cursor: pointer; }
-button:hover { background: #1b342f; }
+#reset { background: #2c4742; color: #fff; border: 1px solid #2c4742; border-radius: 3px; padding: 8px 16px; font-size: 14px; font-weight: 400; cursor: pointer; }
+#reset:hover { background: #1b342f; }
 button:focus-visible, a:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; }
 .selection { display: flex; align-items: baseline; gap: 8px; margin-left: 6px; font-size: 14px; }
 .selection-label { color: var(--muted); }
@@ -48,4 +48,4 @@ a { color: var(--accent); text-underline-offset: 3px; }
 @media (max-width: 1400px) { .page { padding: 24px; } .hint { display: none; } .chart-grid { padding: 22px 18px 16px; gap: 18px; } .right-column { padding-left: 18px; } .scatter-panel h2 { font-size: 22px; } h2 { font-size: 20px; } .edition { max-width: 240px; } }
 @media (max-width: 1150px) { .chart-grid { grid-template-columns: 1fr; gap: 30px; } .right-column { border-left: 0; padding-left: 0; gap: 26px; } .scatter-plot { height: 420px !important; } .reading-note { max-width: none; } }
 @media (max-width: 700px) { header { display: block; } .edition { display: none; } .heatmap-plot { min-width: 680px; } .panel:has(.heatmap-plot) { overflow-x: auto; } .panel:has(.heatmap-plot) .chart-subtitle::after { content: "Scroll horizontally to compare all cuisines →"; display: block; margin-top: 6px; color: var(--accent); } }
-@media (max-width: 550px) { .page { padding: 20px 12px; } h1 { font-size: 40px; } .intro { font-size: 15px; } header { margin-bottom: 18px; } .controls { gap: 10px; } .cuisine-filter { order: 1; width: 100%; } #cuisine-focus { flex: 1; width: auto; min-width: 0; } .selection { order: 2; } .selection { margin-left: 0; width: 100%; flex-wrap: wrap; } #borough { width: 145px; } button { padding: 9px 13px; } .chart-grid { padding: 20px 12px; } h2, .scatter-panel h2 { font-size: 20px; } }
+@media (max-width: 550px) { .page { padding: 20px 12px; } h1 { font-size: 40px; } .intro { font-size: 15px; } header { margin-bottom: 18px; } .controls { gap: 10px; } .cuisine-filter { order: 1; width: 100%; } #cuisine-focus { flex: 1; width: auto; min-width: 0; } .selection { order: 2; } .selection { margin-left: 0; width: 100%; flex-wrap: wrap; } #borough { width: 145px; } #reset { padding: 9px 13px; } .chart-grid { padding: 20px 12px; } h2, .scatter-panel h2 { font-size: 20px; } }
