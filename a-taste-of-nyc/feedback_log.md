@@ -4,6 +4,6 @@ Prototype prepared; classroom demonstration has not taken place. Record actual f
 
 | Feedback from | Main issue raised | Planned change |
 | --- | --- | --- |
-| 课堂后填写 | 课堂后填写 | 课堂后填写 |
+| --- | --- | --- |
 
 Demonstration date: _to be filled after class_
