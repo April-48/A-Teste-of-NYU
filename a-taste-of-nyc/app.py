@@ -280,8 +280,12 @@ def create_app(frame=None, metadata=None):
     app = Dash(__name__, title="A Taste of NYC", assets_folder=str(ROOT / "assets"))
     app.layout = html.Main([
         html.Header([
-            html.Div([html.H1("A Taste of NYC"),
+            html.Div([html.P("New York · Food & city life", className="eyebrow"),
+                      html.H1("A Taste of NYC"),
                       html.P("Explore New York’s cuisines and how their inspection grades compare.", className="intro")]),
+            html.Div([html.Span("The restaurant inspection atlas", className="edition-title"),
+                      html.Span("Five boroughs · NYC Open Data"),
+                      html.Span(f"Snapshot: {metadata.get("download_date", "unknown")}")], className="edition"),
         ]),
         html.Div([
             html.Div([html.Label("Borough", htmlFor="borough"),
@@ -302,11 +306,13 @@ def create_app(frame=None, metadata=None):
                     html.Span([html.Img(src="/assets/legend-square-open.svg", className="key-mark", alt=""),
                                "<10 graded"]),
                 ], className="plot-key"),
-                dcc.Graph(id="scatter", config=CONFIG, responsive=True, style={"height": "430px"}, className="scatter-plot"),
+                dcc.Graph(id="scatter", config=CONFIG, responsive=True, style={"height": "470px"}, className="scatter-plot"),
                 html.Div([
                     dcc.Checklist(id="sample-filter", options=[{"label": "At least 10 graded restaurants", "value": "ten"}], value=[]),
                     html.Span(id="sample-status", **{"aria-live": "polite"}),
                 ], className="sample-controls"),
+                html.P([html.Strong("How to read this view"),
+                        html.Span("Farther right means more restaurants. Higher up means a larger share graded A.")], className="reading-note"),
             ], className="panel scatter-panel"),
             html.Div([
                 html.Section([
