@@ -76,7 +76,7 @@ def scatter_figure(summary, selected, scope="All NYC", min_graded=1):
         if rows.empty:
             continue
         colors = [ABOVE if value >= benchmark else BELOW for value in rows.grade_a_pct]
-        symbols = [("triangle-up" if value >= benchmark else "square") + ("-open" if n < 10 else "")
+        symbols = [("triangle-up" if value >= benchmark else "circle") + ("-open" if n < 10 else "")
                    for value, n in zip(rows.grade_a_pct, rows.rated)]
         relation = ["At or above overall" if value >= benchmark else "Below overall" for value in rows.grade_a_pct]
         custom = [[c, int(n), int(r), int(a), rel, scope] for c, n, r, a, rel in
@@ -250,10 +250,10 @@ def create_app(frame=None, metadata=None):
                 html.P(id="scatter-scope", className="chart-subtitle"),
                 html.Div([
                     html.Span([html.Img(src="/assets/legend-triangle.svg", className="key-mark", alt=""), "At or above overall"]),
-                    html.Span([html.Img(src="/assets/legend-square.svg", className="key-mark", alt=""), "Below overall"]),
+                    html.Span([html.Img(src="/assets/legend-circle.svg", className="key-mark", alt=""), "Below overall"]),
                     html.Span([html.I(className="key-line"), "Dashed line: overall Grade A %"], className="key-reference"),
                     html.Span([
-                        html.Span([html.Img(src="/assets/legend-square-open.svg", className="key-mark", alt="")], className="key-symbols"),
+                        html.Span([html.Img(src="/assets/legend-circle-open.svg", className="key-mark", alt="")], className="key-symbols"),
                         html.Span("Hollow symbols: fewer than 10 A/B/C-graded restaurants per cuisine"),
                     ], className="key-note"),
                 ], className="plot-key"),

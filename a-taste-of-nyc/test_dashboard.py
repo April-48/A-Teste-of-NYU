@@ -124,7 +124,7 @@ class RealSnapshotTests(unittest.TestCase):
                     continue
                 for rate, color, symbol, detail in zip(trace.y, trace.marker.color, trace.marker.symbol, trace.customdata):
                     self.assertEqual(color, ABOVE if rate >= expected else BELOW)
-                    expected_symbol = "triangle-up" if rate >= expected else "square"
+                    expected_symbol = "triangle-up" if rate >= expected else "circle"
                     self.assertEqual(symbol, expected_symbol + ("-open" if detail[2] < 10 else ""))
             selected = [t for t in fig.data if t.text and "Chinese" in t.text][0]
             self.assertEqual(selected.marker.line.color, "#111111")
