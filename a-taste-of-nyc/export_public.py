@@ -33,10 +33,10 @@ def export(destination, base_path="/"):
     # Memoize unchanged figure components during export; each cache is scoped to
     # this one immutable snapshot. This does not alter the normal Dash app.
     original_bar, original_heat = source.bar_figure, source.heatmap_figure
-    cached_bar = lru_cache(None)(lambda scope, selected: original_bar(summaries[scope], selected, scope))
-    cached_heat = lru_cache(None)(lambda boro, selected: original_heat(frame, boro, selected))
-    source.bar_figure = lambda summary, selected, scope="All NYC": cached_bar(scope, selected)
-    source.heatmap_figure = lambda data, borough="All NYC", selected=None: cached_heat(borough, selected)
+    cached_bar = lru_cache(None)(lambda scope, selected, allowed: original_bar(summaries[scope], selected, scope, allowed))
+    cached_heat = lru_cache(None)(lambda boro, selected, allowed: original_heat(frame, boro, selected, allowed))
+    source.bar_figure = lambda summary, selected, scope="All NYC", allowed=None: cached_bar(scope, selected, allowed)
+    source.heatmap_figure = lambda data, borough="All NYC", selected=None, allowed=None: cached_heat(borough, selected, allowed)
 
     key, callback = next(iter(source.app.callback_map.items()))
     outputs = callback["output"]
@@ -51,7 +51,10 @@ def export(destination, base_path="/"):
     )
     web = public.server.test_client()
     html = web.get("/").data.decode()
-    html = html.replace('<script id="_dash-renderer"', f'<script src="{base_path}public-callback.js"></script>\n<script id="_dash-renderer"')
+    version = hashlib.sha256(b"".join((source.ROOT / p).read_bytes() for p in
+                                     ["app.py", "export_public.py", "public/callback.js", "data/restaurants.csv"])).hexdigest()[:16]
+    html = html.replace("</head>", f'<meta name="public-version" content="{version}"></head>')
+    html = html.replace('<script id="_dash-renderer"', f'<script src="{base_path}public-callback.js?v={version}"></script>\n<script id="_dash-renderer"')
     (destination / "index.html").write_text(html)
     (destination / ".nojekyll").touch()
     shutil.copyfile(source.ROOT / "public" / "callback.js", destination / "public-callback.js")
@@ -91,6 +94,9 @@ def export(destination, base_path="/"):
     objects, states = destination / "objects", destination / "states"
     objects.mkdir(exist_ok=True)
     states.mkdir(exist_ok=True)
+    # Remove only prior generated state files; the state schema can change.
+    for stale in states.glob("*.json"):
+        stale.unlink()
     saved = set()
 
     def store_object(value):
@@ -111,26 +117,32 @@ def export(destination, base_path="/"):
     total = 0
     try:
         for bi, borough in enumerate(boroughs):
-            for ci, cuisine in enumerate(cuisines):
-                for minimum in source.SAMPLE_LIMITS:
-                    values = [borough, None, 0, None, None, minimum, cuisine]
-                    response = client.post("/_dash-update-component", json={
-                        "output": key,
-                        "outputs": [{"id": o.component_id, "property": o.component_property} for o in outputs],
-                        "inputs": [dict(i, value=v) for i, v in zip(callback["inputs"], values)],
-                        "state": [{"id": "selected-cuisine", "property": "data", "value": cuisine}],
-                        "changedPropIds": ["cuisine-focus.value"],
-                    })
-                    assert response.status_code == 200, (borough, cuisine, minimum)
-                    result = response.get_json()["response"]
-                    ordered = [result[o.component_id][o.component_property] for o in outputs]
-                    packed = [store_object(v) if isinstance(v, (dict, list)) else v for v in ordered]
-                    (states / f"{bi}-{ci}-{minimum}.json").write_text(json.dumps(packed, separators=(",", ":")))
-                    total += 1
-            print(f"Exported {borough}: {total} callback states", flush=True)
+            for ri, count_range in enumerate(source.COUNT_RANGES):
+                allowed = source.count_cuisines(summaries[borough], count_range)
+                for ci, cuisine in enumerate(cuisines):
+                    if cuisine is not None and allowed is not None and cuisine not in allowed:
+                        continue
+                    for minimum in source.SAMPLE_LIMITS:
+                        values = [borough, None, 0, None, None, minimum, cuisine, count_range]
+                        response = client.post("/_dash-update-component", json={
+                            "output": key,
+                            "outputs": [{"id": o.component_id, "property": o.component_property} for o in outputs],
+                            "inputs": [dict(i, value=v) for i, v in zip(callback["inputs"], values)],
+                            "state": [{"id": "selected-cuisine", "property": "data", "value": cuisine}],
+                            "changedPropIds": ["cuisine-focus.value"],
+                        })
+                        assert response.status_code == 200, (borough, cuisine, minimum)
+                        result = response.get_json()["response"]
+                        ordered = [result[o.component_id][o.component_property] for o in outputs]
+                        packed = [store_object(v) if isinstance(v, (dict, list)) else v for v in ordered]
+                        (states / f"{bi}-{ci}-{minimum}-{ri}.json").write_text(json.dumps(packed, separators=(",", ":")))
+                        total += 1
+                print(f"Exported {borough} / {count_range}: {total} callback states", flush=True)
     finally:
         source.bar_figure, source.heatmap_figure = original_bar, original_heat
     manifest = {"boroughs": boroughs, "cuisines": cuisines, "minimums": list(source.SAMPLE_LIMITS),
+                "count_ranges": source.COUNT_RANGES,
+                "counts": [summaries[b].set_index("cuisine").restaurants.to_dict() for b in boroughs],
                 "outputs": [{"id": o.component_id, "property": o.component_property} for o in outputs],
                 "snapshot": metadata["download_date"], "states": total}
     (destination / "state-index.json").write_text(json.dumps(manifest))

@@ -21,6 +21,9 @@ BAR_BACKGROUND = "#aebfc6"
 SELECTED = "#355e6a"
 MISSING_CUISINE = "Unknown"
 SAMPLE_LIMITS = (1, 10, 25, 50, 100)
+COUNT_RANGES = {"all": ("Any count", 0, None), "1-9": ("1–9 restaurants", 1, 9),
+                "10-49": ("10–49 restaurants", 10, 49), "50-99": ("50–99 restaurants", 50, 99),
+                "100-499": ("100–499 restaurants", 100, 499), "500+": ("500+ restaurants", 500, None)}
 HEAT_COLORS = [[0, "#faf5ff"], [0.25, "#d7b5f1"], [0.5, "#9950c9"], [0.75, "#63169b"], [1, "#29004f"]]
 INK = "#172033"
 CONFIG = {"displayModeBar": False, "responsive": True, "scrollZoom": False}
@@ -57,6 +60,17 @@ def base_figure():
     figure.update_xaxes(title_font={"size": 15}, tickfont={"size": 13}, showline=True, linecolor="#cbd2d7")
     figure.update_yaxes(title_font={"size": 15}, tickfont={"size": 13})
     return figure
+
+
+def count_cuisines(summary, count_range="all"):
+    """Select cuisine identities; leave all restaurant/rate denominators intact."""
+    if count_range == "all":
+        return None
+    _, low, high = COUNT_RANGES[count_range]
+    mask = summary.restaurants.ge(low) & summary.cuisine.ne(MISSING_CUISINE)
+    if high is not None:
+        mask &= summary.restaurants.le(high)
+    return tuple(sorted(summary.loc[mask, "cuisine"]))
 
 
 def empty_figure(message):
@@ -110,13 +124,15 @@ def scatter_labels(plotted, selected, benchmark):
     return labels
 
 
-def scatter_figure(summary, selected, scope="All NYC", min_graded=1):
+def scatter_figure(summary, selected, scope="All NYC", min_graded=1, allowed=None):
     # The benchmark is a pooled restaurant-level rate, not a mean of cuisine rates.
     total_rated = int(summary.rated.sum())
     benchmark = float(summary.grade_a.sum() / total_rated) if total_rated else None
     plotted = summary[(summary.rated >= min_graded) & summary.cuisine.ne(MISSING_CUISINE)]
+    if allowed is not None:
+        plotted = plotted[plotted.cuisine.isin(allowed)]
     if plotted.empty:
-        return empty_figure("No recorded cuisines meet the graded-sample filter" if min_graded > 1 else "No recorded cuisines with A/B/C grades in this selection")
+        return empty_figure("No cuisines meet both count and graded-sample filters" if allowed is not None else "No recorded cuisines meet the graded-sample filter" if min_graded > 1 else "No recorded cuisines with A/B/C grades in this selection")
     fig = base_figure()
     labels = scatter_labels(plotted, selected, benchmark)
     groups = [(plotted[plotted.cuisine.ne(selected)], False), (plotted[plotted.cuisine.eq(selected)], True)]
@@ -162,10 +178,12 @@ def scatter_figure(summary, selected, scope="All NYC", min_graded=1):
     return fig
 
 
-def bar_figure(summary, selected, scope="All NYC"):
+def bar_figure(summary, selected, scope="All NYC", allowed=None):
     total = int(summary.restaurants.sum())  # Includes unrecorded cuisines.
     summary = summary[summary.cuisine.ne(MISSING_CUISINE)].copy()
     summary["rank"] = range(1, len(summary) + 1)
+    if allowed is not None:
+        summary = summary[summary.cuisine.isin(allowed)]
     if summary.empty:
         return empty_figure("No restaurants in this selection"), False
     top = summary.head(10)
@@ -201,13 +219,14 @@ def heat_text_color(fraction):
     return "#ffffff"
 
 
-def heatmap_figure(frame, borough="All NYC", selected=None):
+def heatmap_figure(frame, borough="All NYC", selected=None, allowed=None):
     if frame.empty:
         return empty_figure("No restaurant data available"), []
     summary = cuisine_summary(frame)
     recorded = summary[summary.cuisine.ne(MISSING_CUISINE)]
-    cuisines = recorded.head(10).cuisine.tolist()
-    if selected in recorded.cuisine.values and selected not in cuisines:
+    eligible = recorded if allowed is None else recorded[recorded.cuisine.isin(allowed)]
+    cuisines = eligible.head(10).cuisine.tolist()
+    if selected in eligible.cuisine.values and selected not in cuisines:
         cuisines.append(selected)
     if not cuisines:
         return empty_figure("No recorded cuisines available"), []
@@ -245,7 +264,7 @@ def heatmap_figure(frame, borough="All NYC", selected=None):
     labels = {"Coffee/Tea": "Coffee /<br>Tea", "Juice, Smoothies, Fruit Salads": "Juice /<br>Smoothies", "Latin American": "Latin<br>American", "Bakery Products/Desserts": "Bakery /<br>Desserts"}
     ticks = [labels.get(c, "<br>".join(textwrap.wrap(c, 11))) for c in cuisines]
     ticks = [f"<b>{t}</b>" if c == selected else t for c, t in zip(cuisines, ticks)]
-    fig.update_xaxes(title="Cuisine · NYC top 10" + (" + selected" if len(cuisines) > 10 else ""), tickvals=cuisines, ticktext=ticks, tickangle=-40, showgrid=False, showline=False,
+    fig.update_xaxes(title="Cuisine · " + ("Top 10 matching range" if allowed is not None else "NYC top 10") + (" + selected" if len(cuisines) > 10 else ""), tickvals=cuisines, ticktext=ticks, tickangle=-40, showgrid=False, showline=False,
                      tickfont={"size": 13})
     fig.update_yaxes(title=None, autorange="reversed", showgrid=False, tickvals=BOROUGHS,
                      ticktext=[f"<b>{b}</b>" if b == borough else b for b in BOROUGHS])
@@ -276,6 +295,7 @@ def create_app(frame=None, metadata=None):
     metadata = metadata or {}
     heatmap, heat_cuisines = heatmap_figure(frame)
     all_cuisines = set(frame.loc[frame.cuisine.ne(MISSING_CUISINE), "cuisine"])
+    summaries = {b: cuisine_summary(frame if b == "All NYC" else frame[frame.borough.eq(b)]) for b in ["All NYC", *BOROUGHS]}
     app = Dash(__name__, title="A Taste of NYC", assets_folder=str(ROOT / "assets"))
     app.layout = html.Main([
         html.Header([
@@ -292,11 +312,16 @@ def create_app(frame=None, metadata=None):
             html.Div([html.Label("Cuisine focus", htmlFor="cuisine-focus"),
                       dcc.Dropdown(id="cuisine-focus", options=sorted(all_cuisines), value=None,
                                    placeholder="Search cuisines…", clearable=True, searchable=True)], className="filter cuisine-filter"),
+            html.Div([html.Label("Restaurants per cuisine", htmlFor="count-filter"),
+                      dcc.Dropdown(id="count-filter", options=[{"label": v[0], "value": k} for k, v in COUNT_RANGES.items()],
+                                   value="all", clearable=False, searchable=False)], className="filter count-filter",
+                     title="Unique restaurants per cuisine in the selected borough. Filters all three charts."),
             html.Button("Reset", id="reset", n_clicks=0),
             html.Div([html.Span("Viewing", className="selection-label"), html.Strong(id="selection")], className="selection", **{"aria-live": "polite"}),
             html.P("Click any chart to select a cuisine.", className="hint"),
         ], className="controls"),
         dcc.Store(id="selected-cuisine", data=None),
+        html.Div(id="count-status", className="count-status", **{"aria-live": "polite"}),
         html.Div(id="metrics", className="metrics"),
         html.Div([
             html.Section([
@@ -310,7 +335,7 @@ def create_app(frame=None, metadata=None):
                 ], className="plot-key"),
                 dcc.Graph(id="scatter", config=CONFIG, responsive=True, style={"height": "470px"}, className="scatter-plot"),
                 html.Div([
-                    html.Label("Sample size", htmlFor="sample-filter"),
+                    html.Label("Graded sample", htmlFor="sample-filter"),
                     dcc.Dropdown(id="sample-filter", options=[
                         {"label": "All rated cuisines" if n == 1 else f"{n}+ graded restaurants", "value": n}
                         for n in SAMPLE_LIMITS], value=1, clearable=False, searchable=False),
@@ -328,7 +353,7 @@ def create_app(frame=None, metadata=None):
                 ], className="panel"),
                 html.Section([
                     html.Div([html.H2("Cuisine share by borough", id="heatmap-title")], className="chart-title"),
-                    html.P("NYC top 10 · Share of all restaurants in each borough", className="chart-subtitle"),
+                    html.P("NYC top 10 · Share of all restaurants in each borough", id="heatmap-scope", className="chart-subtitle"),
                     dcc.Graph(id="heatmap", figure=heatmap, config=CONFIG, responsive=True, style={"height": "290px"}, className="heatmap-plot"),
                 ], className="panel"),
             ], className="right-column"),
@@ -350,12 +375,14 @@ def create_app(frame=None, metadata=None):
         Output("bar", "clickData"), Output("scatter", "clickData"),
         Output("sample-filter", "value"), Output("sample-status", "children"), Output("heatmap-title", "children"),
         Output("cuisine-focus", "value"), Output("cuisine-focus", "options"),
+        Output("count-filter", "value"), Output("count-status", "children"), Output("heatmap-scope", "children"),
         Input("borough", "value"), Input("heatmap", "clickData"), Input("reset", "n_clicks"),
         Input("bar", "clickData"), Input("scatter", "clickData"), Input("sample-filter", "value"),
         Input("cuisine-focus", "value"),
+        Input("count-filter", "value"),
         State("selected-cuisine", "data"),
     )
-    def update(borough, click_data, reset_clicks, bar_click, scatter_click, sample_filter, cuisine_focus, selected):
+    def update(borough, click_data, reset_clicks, bar_click, scatter_click, sample_filter, cuisine_focus, count_filter, selected):
         trigger = ctx.triggered_id
         click = {"heatmap": click_data, "bar": bar_click, "scatter": scatter_click}.get(trigger)
         borough, selected = select_state(trigger, borough, click, selected, all_cuisines)
@@ -363,16 +390,23 @@ def create_app(frame=None, metadata=None):
             selected = cuisine_focus if cuisine_focus in all_cuisines else None
         minimum = sample_filter if sample_filter in SAMPLE_LIMITS and trigger != "reset" else 1
         subset = frame if borough == "All NYC" else frame[frame.borough.eq(borough)]
-        summary = cuisine_summary(subset)
-        counts = summary.set_index("cuisine").restaurants.to_dict()
-        cuisine_options = [{"label": f"{c} · {int(counts.get(c, 0)):,}", "value": c}
-                           for c in sorted(all_cuisines)]
-        bar, extra = bar_figure(summary, selected, borough)
+        summary = summaries[borough]
+        count_filter = count_filter if count_filter in COUNT_RANGES and trigger != "reset" else "all"
+        allowed = count_cuisines(summary, count_filter)
+        if allowed is not None and selected not in allowed:
+            if trigger == "heatmap" and selected:
+                # A heatmap click changes borough; keep the clicked cuisine visible.
+                count_filter, allowed = "all", None
+            else:
+                selected = None
+        cuisine_options = [{"label": c, "value": c} for c in sorted(all_cuisines if allowed is None else allowed)]
+        bar, extra = bar_figure(summary, selected, borough, allowed)
+        filtered = summary if allowed is None else summary[summary.cuisine.isin(allowed)]
         rated = int(subset.grade.isin(["A", "B", "C"]).sum())
-        metrics = f"{len(subset):,} restaurants · {rated:,} with A/B/C grades"
-        omitted = int((summary.rated.eq(0) & summary.cuisine.ne(MISSING_CUISINE)).sum())
-        hidden = int(((summary.rated > 0) & (summary.rated < minimum) & summary.cuisine.ne(MISSING_CUISINE)).sum())
-        visible = int(((summary.rated >= minimum) & summary.cuisine.ne(MISSING_CUISINE)).sum())
+        metrics = f"{borough} total: {len(subset):,} restaurants · {rated:,} with A/B/C grades"
+        omitted = int((filtered.rated.eq(0) & filtered.cuisine.ne(MISSING_CUISINE)).sum())
+        hidden = int(((filtered.rated > 0) & (filtered.rated < minimum) & filtered.cuisine.ne(MISSING_CUISINE)).sum())
+        visible = int(((filtered.rated >= minimum) & filtered.cuisine.ne(MISSING_CUISINE)).sum())
         sample_status = f"{visible} cuisines shown · {hidden} hidden by sample filter"
         if omitted:
             sample_status += (" · " if sample_status else "") + f"{omitted} with no grade not plotted"
@@ -384,15 +418,20 @@ def create_app(frame=None, metadata=None):
                 sample_status += (" · " if sample_status else "") + f"{selected}: no valid grade"
             elif int(row.iloc[0].rated) < minimum:
                 sample_status += f" · {selected} is hidden ({int(row.iloc[0].rated)} graded); lower the sample minimum to see it"
-        return (borough, selected, None, scatter_figure(summary, selected, borough, minimum), bar,
-                f"{borough} · {selected or 'All cuisines'}", metrics,
-                f"{borough} · Each mark is a cuisine",
-                f"{borough} · Top 10 by unique restaurant count",
+        heatmap, displayed_heat = heatmap_figure(frame, borough, selected, allowed)
+        count_label = COUNT_RANGES[count_filter][0]
+        count_status = (f"{len(allowed)} cuisines with {count_label.lower()} in {borough} · Applies to all three charts"
+                        if allowed is not None else "Restaurant counts use the selected borough · All cuisine sizes shown")
+        return (borough, selected, None, scatter_figure(summary, selected, borough, minimum, allowed), bar,
+                f"{borough} · {selected or ('All matching cuisines' if allowed is not None else 'All cuisines')}", metrics,
+                f"{borough} · Each mark is a cuisine" + (f" · {count_label}" if allowed is not None else ""),
+                f"{borough} · Top 10 by restaurant count" + (" within range" if allowed is not None else ""),
                 "Most common cuisines" + (" · + selected" if extra else ""),
-                heatmap_figure(frame, borough, selected)[0],
+                heatmap,
                 None, None, minimum, sample_status,
-                "Cuisine share by borough" + (" · + selected" if selected and selected not in heat_cuisines else ""),
-                selected, cuisine_options)
+                "Cuisine share by borough" + (" · + selected" if len(displayed_heat) > 10 else ""),
+                selected, cuisine_options, count_filter, count_status,
+                ("NYC top 10 matching range" if allowed is not None else "NYC top 10") + " · Share of all restaurants in each borough")
 
     return app
 

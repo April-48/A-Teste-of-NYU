@@ -20,11 +20,19 @@ def verify(root):
             return obj
         return value
 
-    cases = [(b, c, n) for b in manifest["boroughs"] for c, n in [(None, 1), ("Chinese", 50), ("Basque", 100)]]
-    for borough, cuisine, minimum in cases:
-        name = f"{manifest['boroughs'].index(borough)}-{manifest['cuisines'].index(cuisine)}-{minimum}.json"
+    cases = [(b, c, n, "all") for b in manifest["boroughs"] for c, n in [(None, 1), ("Chinese", 50), ("Basque", 100)]]
+    for bi, borough in enumerate(manifest["boroughs"]):
+        for count_range, (_, low, high) in manifest["count_ranges"].items():
+            if count_range == "all":
+                continue
+            eligible = [c for c in manifest["cuisines"] if c and low <= manifest["counts"][bi].get(c, 0)
+                        and (high is None or manifest["counts"][bi].get(c, 0) <= high)]
+            cases.extend([(borough, None, 100, count_range), (borough, eligible[0] if eligible else None, 1, count_range)])
+    for borough, cuisine, minimum, count_range in cases:
+        ri = list(manifest["count_ranges"]).index(count_range)
+        name = f"{manifest['boroughs'].index(borough)}-{manifest['cuisines'].index(cuisine)}-{minimum}-{ri}.json"
         exported = [unpack(v) for v in json.loads((root / "states" / name).read_text())]
-        values = [borough, None, 0, None, None, minimum, cuisine]
+        values = [borough, None, 0, None, None, minimum, cuisine, count_range]
         response = client.post("/_dash-update-component", json={
             "output": key, "outputs": manifest["outputs"],
             "inputs": [dict(i, value=v) for i, v in zip(callback["inputs"], values)],

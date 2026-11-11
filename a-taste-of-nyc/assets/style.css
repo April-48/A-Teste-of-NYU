@@ -14,6 +14,9 @@ h1 { font-family: Georgia, serif; font-size: 50px; font-weight: 500; letter-spac
 .filter { display: flex; align-items: center; gap: 10px; font-size: 14px; }
 #borough { width: 175px; font-size: 14px; }
 #cuisine-focus { width: 245px; font-size: 14px; }
+#count-filter { width: 190px; font-size: 14px; }
+.count-status { margin: 9px 0 0; font-size: 12px; color: var(--muted); }
+.controls .selection { flex-basis: 100%; margin-left: 0; }
 #sample-filter { width: 205px; font-size: 13px; }
 .filter-scope { font-size: 12px; color: var(--muted); }
 button { background: #2c4742; color: #fff; border: 1px solid #2c4742; border-radius: 3px; padding: 8px 16px; font-size: 14px; font-weight: 400; cursor: pointer; }

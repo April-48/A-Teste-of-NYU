@@ -163,11 +163,11 @@ class RealSnapshotTests(unittest.TestCase):
         client = app.server.test_client()
         key, callback = next(iter(app.callback_map.items()))
 
-        def update(trigger, borough="All NYC", cuisine=None, click=None, sample=1, focus=None):
+        def update(trigger, borough="All NYC", cuisine=None, click=None, sample=1, focus=None, count="all"):
             values = [borough, click if trigger == "heatmap" else None, 1,
-                      click if trigger == "bar" else None, click if trigger == "scatter" else None, sample, focus]
+                      click if trigger == "bar" else None, click if trigger == "scatter" else None, sample, focus, count]
             inputs = [dict(item, value=value) for item, value in zip(callback["inputs"], values)]
-            prop = "value" if trigger in ("borough", "sample-filter", "cuisine-focus") else "n_clicks" if trigger == "reset" else "clickData"
+            prop = "value" if trigger in ("borough", "sample-filter", "cuisine-focus", "count-filter") else "n_clicks" if trigger == "reset" else "clickData"
             response = client.post("/_dash-update-component", json={
                 "output": key, "outputs": [{"id": o.component_id, "property": o.component_property} for o in callback["output"]],
                 "inputs": inputs, "state": [{"id": "selected-cuisine", "property": "data", "value": cuisine}],
@@ -207,7 +207,7 @@ class RealSnapshotTests(unittest.TestCase):
         self.assertEqual(len(focused["heatmap"]["figure"]["layout"]["shapes"]), 10)
         moved = update("borough", "Brooklyn", "Chinese", sample=25, focus="Chinese")
         self.assertEqual(moved["selection"]["children"], "Brooklyn · Chinese")
-        self.assertIn({"label": "Chinese · 647", "value": "Chinese"}, moved["cuisine-focus"]["options"])
+        self.assertIn({"label": "Chinese", "value": "Chinese"}, moved["cuisine-focus"]["options"])
         cleared = update("cuisine-focus", "Brooklyn", "Chinese", sample=25)
         self.assertEqual(cleared["selection"]["children"], "Brooklyn · All cuisines")
         self.assertEqual(cleared["sample-filter"]["value"], 25)
@@ -222,6 +222,42 @@ class RealSnapshotTests(unittest.TestCase):
         absent = next(c for c in summary.cuisine if c != "Unknown" and c not in set(self.frame.loc[self.frame.borough.eq("Staten Island"), "cuisine"]))
         no_data = update("cuisine-focus", "Staten Island", focus=absent)
         self.assertIn("no restaurants in this borough", no_data["sample-status"]["children"])
+        # Count bands partition recorded cuisines without changing pooled rates,
+        # borough denominators, or the heatmap color scale.
+        from app import COUNT_RANGES
+        for count, (_, low, high) in list(COUNT_RANGES.items())[1:]:
+            filtered = update("count-filter", count=count)
+            eligible = summary[summary.cuisine.ne("Unknown") & summary.restaurants.ge(low)]
+            if high is not None:
+                eligible = eligible[eligible.restaurants.le(high)]
+            expected = set(eligible.cuisine)
+            self.assertEqual({o["value"] for o in filtered["cuisine-focus"]["options"]}, expected)
+            for trace in filtered["scatter"]["figure"]["data"]:
+                for row in trace["customdata"]:
+                    self.assertIn(row[0], expected)
+            self.assertEqual(filtered["metrics"], focused["metrics"])
+            if filtered["scatter"]["figure"]["data"]:
+                self.assertEqual(filtered["scatter"]["figure"]["layout"]["shapes"], focused["scatter"]["figure"]["layout"]["shapes"])
+            for row in filtered["bar"]["figure"]["data"][0]["customdata"]:
+                self.assertIn(row[0], expected)
+                self.assertAlmostEqual(row[2], row[1] / len(self.frame))
+            heat = filtered["heatmap"]["figure"]["data"][0]
+            self.assertTrue(set(heat["x"]).issubset(expected))
+            self.assertEqual(heat["zmax"], focused["heatmap"]["figure"]["data"][0]["zmax"])
+            for zrow, detailrow in zip(heat["z"], heat["customdata"]):
+                for z, detail in zip(zrow, detailrow):
+                    self.assertAlmostEqual(z, detail[2] / detail[3])
+        cleared = update("count-filter", cuisine="Chinese", count="1-9")
+        self.assertIsNone(cleared["selected-cuisine"]["data"])
+        empty = update("sample-filter", count="1-9", sample=100)
+        self.assertFalse(empty["scatter"]["figure"]["data"])
+        self.assertTrue(empty["scatter"]["figure"]["layout"]["annotations"])
+        reset = update("reset", "Brooklyn", "Chinese", sample=100, count="1-9")
+        self.assertEqual(reset["count-filter"]["value"], "all")
+        self.assertEqual(reset["sample-filter"]["value"], 1)
+        moved = update("heatmap", count="100-499", click={"points": [{"x": "Chinese", "y": "Brooklyn"}]})
+        self.assertEqual(moved["count-filter"]["value"], "all")
+        self.assertEqual(moved["selection"]["children"], "Brooklyn · Chinese")
 
     def test_hover_denominators_and_context(self):
         frame = self.frame[self.frame.borough.eq("Brooklyn")]

@@ -35,6 +35,7 @@ jobs:
         env:
           BASE_PATH: ${{ steps.pages.outputs.base_path }}
         run: |
+          python -m unittest -q
           python export_public.py public-dist --base-path "$BASE_PATH/"
           python verify_public.py public-dist
       - uses: actions/upload-pages-artifact@v4
