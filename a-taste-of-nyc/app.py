@@ -303,9 +303,9 @@ def create_app(frame=None, metadata=None):
                 html.Div([html.H2("Cuisine size & inspection grades")], className="chart-title"),
                 html.P(id="scatter-scope", className="chart-subtitle"),
                 html.Div([
-                    html.Span([html.Img(src="/assets/legend-triangle.svg", className="key-mark", alt=""), "At/above overall"]),
-                    html.Span([html.Img(src="/assets/legend-circle.svg", className="key-mark", alt=""), "Below overall"]),
-                    html.Span([html.Img(src="/assets/legend-square-open.svg", className="key-mark", alt=""),
+                    html.Span([html.Img(src="assets/legend-triangle.svg", className="key-mark", alt=""), "At/above overall"]),
+                    html.Span([html.Img(src="assets/legend-circle.svg", className="key-mark", alt=""), "Below overall"]),
+                    html.Span([html.Img(src="assets/legend-square-open.svg", className="key-mark", alt=""),
                                "<10 graded"]),
                 ], className="plot-key"),
                 dcc.Graph(id="scatter", config=CONFIG, responsive=True, style={"height": "470px"}, className="scatter-plot"),
