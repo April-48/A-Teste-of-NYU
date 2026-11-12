@@ -326,6 +326,7 @@ def create_app(frame=None, metadata=None):
         html.Div([
             html.Section([
                 html.Div([html.H2("Cuisine size & inspection grades")], className="chart-title"),
+                html.P("RQ3 · How does restaurant count relate to the share of Grade A restaurants?", className="research-question"),
                 html.P(id="scatter-scope", className="chart-subtitle"),
                 html.Div([
                     html.Span([html.Img(src="assets/legend-triangle.svg", className="key-mark", alt=""), "At/above overall"]),
@@ -348,11 +349,13 @@ def create_app(frame=None, metadata=None):
             html.Div([
                 html.Section([
                     html.Div([html.H2(id="bar-title")], className="chart-title"),
+                    html.P("RQ1 · Which cuisines have the most restaurants?", className="research-question"),
                     html.P(id="bar-scope", className="chart-subtitle"),
                     dcc.Graph(id="bar", config=CONFIG, responsive=True, style={"height": "310px"}, className="bar-plot"),
                 ], className="panel"),
                 html.Section([
                     html.Div([html.H2("Cuisine share by borough", id="heatmap-title")], className="chart-title"),
+                    html.P("RQ2 · How does cuisine share differ across the five boroughs?", className="research-question"),
                     html.P("NYC top 10 · Share of all restaurants in each borough", id="heatmap-scope", className="chart-subtitle"),
                     dcc.Graph(id="heatmap", figure=heatmap, config=CONFIG, responsive=True, style={"height": "290px"}, className="heatmap-plot"),
                 ], className="panel"),
