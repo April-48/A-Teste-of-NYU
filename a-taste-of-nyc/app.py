@@ -302,9 +302,6 @@ def create_app(frame=None, metadata=None):
             html.Div([html.P("New York · Food & city life", className="eyebrow"),
                       html.H1("A Taste of NYC"),
                       html.P("Explore New York’s cuisines and how their inspection grades compare.", className="intro")]),
-            html.Div([html.Span("The restaurant inspection atlas", className="edition-title"),
-                      html.Span("Five boroughs · NYC Open Data"),
-                      html.Span(f"Snapshot: {metadata.get("download_date", "unknown")}")], className="edition"),
         ]),
         html.Div([
             html.Div([html.Label("Borough", htmlFor="borough"),
