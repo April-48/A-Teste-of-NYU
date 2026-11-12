@@ -1,4 +1,4 @@
-:root { color-scheme: light; --ink: #252c2b; --muted: #59645f; --line: #d9ded9; --accent: #285f60; --paper: #f4f2eb; }
+:root { color-scheme: light; --ink: #252c2b; --muted: #59645f; --line: #d9ded9; --accent: #285f60; --paper: #ffffff; }
 * { box-sizing: border-box; }
 body { margin: 0; background: var(--paper); color: var(--ink); font-family: Arial, Helvetica, sans-serif; }
 .page { max-width: 1740px; margin: auto; padding: 28px 38px 22px; }
