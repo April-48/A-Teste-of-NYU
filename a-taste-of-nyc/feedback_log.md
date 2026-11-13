@@ -1,9 +1,7 @@
-# Classroom feedback log
+# Peer feedback log
 
-Prototype prepared; classroom demonstration has not taken place. Record actual feedback after the demonstration. This is not a completed usability report or reflection.
+Feedback received on the working prototype. The planned change below has not yet been implemented.
 
 | Feedback from | Main issue raised | Planned change |
 | --- | --- | --- |
-| --- | --- | --- |
-
-Demonstration date: _to be filled after class_
+| Yisi Liu (yl13404) | The dashboard has a clear design, three charts addressing different research questions, and a well-organized layout. However, RQ3 is on the left while RQ1 and RQ2 are on the right, which conflicts with the natural left-to-right, top-to-bottom reading order. Suggested either rearranging the charts into RQ1 → RQ2 → RQ3 or renumbering the research questions. | For the final version, review the question numbering against the visual reading order. Prefer renumbering the questions while keeping the current layout, and update the chart labels and project documentation consistently. |
