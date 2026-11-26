@@ -364,3 +364,18 @@ header { padding: 3px 0 4px; }
 /* Remove the repeated scope totals line and give its height to the charts. */
 .metrics > .scope-total { display: none; }
 .metrics .metrics-main { margin-top: 0; }
+
+/* The geographic view prioritizes legibility over fitting one screen. */
+.page:has(.borough-panel.map-mode) { height: auto; min-height: 100dvh; display: block; }
+.page:has(.borough-panel.map-mode) .chart-grid { align-items: start; }
+.page:has(.borough-panel.map-mode) .right-column { grid-template-rows: auto auto; align-content: start; gap: 18px; }
+.page:has(.borough-panel.map-mode) .scatter-plot { flex: none; height: clamp(540px,40vw,720px) !important; }
+.page:has(.borough-panel.map-mode) .bar-plot { flex: none; height: 300px !important; }
+.map-mode #map-view { flex: none; }
+.map-mode .map-plot { flex: none; height: clamp(620px,58vw,820px) !important; min-height: 620px; }
+.map-mode .chart-subtitle { font-size: 14px; line-height: 1.5; }
+.map-mode .js-plotly-plot .xtick text,
+.map-mode .js-plotly-plot .ytick text { font-size: 14px !important; }
+@media (max-width:700px) {
+  .map-mode .map-plot { height: 600px !important; min-height: 600px; }
+}

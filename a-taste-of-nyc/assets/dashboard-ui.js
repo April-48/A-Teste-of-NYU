@@ -54,7 +54,7 @@
       if(kind==='map'){
         figure.layout.margin={l:80,r:50,t:26,b:68};
         figure.layout.dragmode='pan';figure.layout.uirevision='expanded-map';
-        (figure.layout.annotations||[]).forEach(a=>{if(a.xref!=='paper')a.font=Object.assign({},a.font,{size:14});});
+        (figure.layout.annotations||[]).forEach(a=>{if(a.xref!=='paper')a.font=Object.assign({},a.font,{size:18});});
         figure.layout.xaxis.fixedrange=false;figure.layout.yaxis.fixedrange=false;
       }
       const titles={scatter:'Cuisine size & inspection grades',bar:'Most common cuisines',heatmap:'Cuisine share · Heatmap',map:'Cuisine share · Map'};
@@ -87,9 +87,10 @@
         const figure=id==='expanded-graph'?expandedFigure:mapFigure;
         const meta=figure?.layout?.meta,row=meta?.boroughs?.[p.curveNumber];
         if(!row)return [{display:'none'},n];
-        title=meta.cuisine||'Choose a cuisine';scope=row.borough;
-        rows=meta.cuisine?[['Restaurants',num(row.restaurants)],['Share of borough',pct(row.share)],['All borough restaurants',num(row.total)]]:[['All borough restaurants',num(row.total)]];
-        if(!meta.cuisine)foot='Choose a cuisine in Filters to compare borough shares.';
+        title=meta.cuisine||(meta.matching_cuisines?'All matching cuisines':'All cuisines');scope=row.borough;
+        rows=meta.cuisine?[['Restaurants',num(row.restaurants)],['Share of borough',pct(row.share)],['All borough restaurants',num(row.total)]]:
+          [[meta.matching_cuisines?'Matching restaurants':'Restaurants',num(row.restaurants)],['Share of all NYC restaurants',pct(row.share)],['All NYC restaurants',num(meta.population_total)]];
+        if(!meta.cuisine)foot='Overview uses the NYC total. Choose a cuisine for within-borough shares.';
       }else return [{display:'none'},n];
       const children=[node('Div',title,'tooltip-title'),node('Div',scope,'tooltip-scope'),
         node('Div',rows.map(([label,value])=>node('Div',[node('Span',label,'tooltip-label'),node('Strong',value,'tooltip-value')],'tooltip-row')),'tooltip-rows')];

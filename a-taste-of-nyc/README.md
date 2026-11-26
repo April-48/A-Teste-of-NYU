@@ -23,16 +23,16 @@ The source is [NYC DOHMH Restaurant Inspection Results](https://data.cityofnewyo
 
 Restaurant counts use unique CAMIS IDs. Grade A rate is Grade A restaurants divided by A/B/C-graded restaurants within the selected scope. Cuisine share is a cuisine's restaurant count divided by all restaurants in the corresponding borough. Missing grades are excluded from grade-rate denominators. Grade A reflects inspection results, not taste.
 
-The map uses the included NYC DCP land boundaries, a local equirectangular projection and the same within-borough share values as the heatmap. It does not load external map tiles.
+The map uses the included NYC DCP land boundaries and a local equirectangular projection. With a cuisine selected, its values and shared 0–20% scale match the heatmap. With no cuisine selected, it shows each borough's restaurants as a share of all NYC restaurants, using an explicitly labelled 0–50% scale. A count-band filter limits the restaurants in that overview's numerator while preserving the NYC denominator. No cuisine is assigned automatically. The map does not load external tiles.
 
 ## Linked views and controls
 
 - RQ1 scatter compares cuisine restaurant count on a log X axis with Grade A rate (%). Focus 80–100% and Full 0–100% are presentation options; the graded-sample threshold affects only this view. Hollow squares identify fewer than ten graded restaurants.
 - RQ2 ranks the most common cuisines by restaurant count. A selected cuisine outside the top ten is also shown.
-- RQ3 compares within-borough cuisine shares with a shared 0–20% color scale. Switch between the heatmap and geographic map. Map clicks update the borough without assigning an automatic cuisine.
+- RQ3 compares within-borough cuisine shares with a shared 0–20% color scale. Switch between the heatmap and geographic map. The map initially provides the labelled all-cuisine NYC distribution overview described above. Map clicks update the borough without assigning an automatic cuisine.
 - Borough, cuisine and restaurant-count controls coordinate the views. Click a chart to select a cuisine or borough. Rounded hover cards provide details. Each card has an Expand button; press Esc to close the overlay.
 
-The desktop overview shares the available window height across the three cards. Narrower or shorter windows preserve natural scrolling to maintain legibility.
+The desktop heatmap overview shares the available window height across the three cards. Map mode uses a taller geographic view and allows page scrolling so borough shapes, percentage labels and the color legend remain readable. Narrower or shorter windows also preserve natural scrolling.
 
 ## Validation and static publication
 

@@ -508,7 +508,7 @@ def create_app(frame=None, metadata=None):
                         dcc.Graph(id="heatmap", clear_on_unhover=True, figure=heatmap, config=CONFIG, responsive=True, className="heatmap-plot"),
                     ], id="heatmap-view", style={"display":"block"}),
                     html.Div([
-                        html.P("Choose a cuisine in Filters to compare borough shares.",
+                        html.P(map_model.description(initial_map_cuisine),
                                id="map-cuisine", className="chart-subtitle"),
                         dcc.Graph(id="borough-map", clear_on_unhover=True, figure=initial_map, config=CONFIG, responsive=True, className="map-plot"),
                     ], id="map-view", style={"display":"none"}),
@@ -595,8 +595,7 @@ def create_app(frame=None, metadata=None):
                 "Cuisine share by borough" + (" · + selected" if len(displayed_heat) > 10 else ""),
                 selected, cuisine_options, count_filter, count_status,
                 ("NYC top 10 matching range" if allowed is not None else "NYC top 10") + f" · % of all borough restaurants · Shared scale: 0–{map_model.maximum:.0%}",
-                map_plot, None, (f"{map_cuisine} · % of all borough restaurants · Shared scale: 0–{map_model.maximum:.0%} · Click a borough"
-                                 if map_cuisine else "Choose a cuisine in Filters to compare borough shares."), map_cuisine)
+                map_plot, None, map_model.description(map_cuisine, allowed), map_cuisine)
 
     register_view_callbacks(app)
     register_scatter_callbacks(app)
