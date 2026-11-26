@@ -372,10 +372,10 @@ header { padding: 3px 0 4px; }
 .page:has(.borough-panel.map-mode) .scatter-plot { flex: none; height: clamp(540px,40vw,720px) !important; }
 .page:has(.borough-panel.map-mode) .bar-plot { flex: none; height: 300px !important; }
 .map-mode #map-view { flex: none; }
-.map-mode .map-plot { flex: none; height: clamp(620px,58vw,820px) !important; min-height: 620px; }
+.map-mode .map-plot { flex: none; height: clamp(560px,50vw,720px) !important; min-height: 560px; }
 .map-mode .chart-subtitle { font-size: 14px; line-height: 1.5; }
 .map-mode .js-plotly-plot .xtick text,
 .map-mode .js-plotly-plot .ytick text { font-size: 14px !important; }
 @media (max-width:700px) {
-  .map-mode .map-plot { height: 600px !important; min-height: 600px; }
+  .map-mode .map-plot { height: 560px !important; min-height: 560px; }
 }
