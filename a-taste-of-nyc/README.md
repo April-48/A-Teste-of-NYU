@@ -1,191 +1,53 @@
 # A Taste of NYC
 
-A working Python + Plotly Dash prototype with the proposal's **Option B** layout: scatter on the left, horizontal bar at upper right, and heatmap at lower right. The UI is in English for the classroom demonstration.
+[Open the live dashboard on GitHub Pages](https://april-48.github.io/A-Teste-of-NYU/)
 
-## Install and run
+## Run locally
 
-Use Python 3.12–3.14 (tested with Python 3.14 on macOS). From a fresh clone:
+Use Python 3.12 or newer. From this directory:
 
 ```sh
-git clone https://github.com/April-48/A-Teste-of-NYU.git
-cd A-Teste-of-NYU/a-taste-of-nyc
 python3 -m venv .venv
 source .venv/bin/activate
 pip install -r requirements.txt
 python app.py
 ```
 
-On Windows, replace the activation command with `.venv\Scripts\activate` and use `python` instead of `python3` if needed.
+Open http://127.0.0.1:8050. On Windows, activate with `.venv\Scripts\activate`.
 
-Open **http://127.0.0.1:8050**. Stop with **Ctrl+C**. To restart, activate the same environment, enter this folder and run `python app.py` again. The checked-in cleaned data lets the app start without downloading anything. Dependencies are installed once; charts and data are served locally without CDN dependencies. If port 8050 is occupied, macOS/Linux users can run `PORT=8051 python app.py` and open port 8051.
+## Data and definitions
 
-The Python Dash app runs locally with the commands above. A separate public export preserves the same Dash browser components and Plotly figures without requiring a Python server; see the public deployment section below. The source repository and these setup instructions remain the runnable-code submission.
+The source is [NYC DOHMH Restaurant Inspection Results](https://data.cityofnewyork.us/d/43nn-pn8j). The included snapshot was downloaded on November 9, 2026. It contains 31,360 unique restaurants, of which 24,804 have an A/B/C graded inspection under the cleaning rules.
 
-## Data source and snapshot
+`data/restaurants.csv` contains one row per CAMIS restaurant. `prepare_data.py` preserves the latest valid borough and cuisine independently and assigns the latest available A/B/C graded inspection separately. Restaurants without a known cuisine remain in population denominators but are excluded from cuisine comparisons. Download receipts, source metadata and the cleaning audit remain in `data/`.
 
-- Source: [NYC DOHMH Restaurant Inspection Results, 43nn-pn8j](https://data.cityofnewyork.us/d/43nn-pn8j).
-- Actual download date: **November 9, 2026**, America/New_York.
-- The portal's full CSV export failed during download. The successful fallback was the **same official Socrata dataset**, requesting all rows but projecting only `camis`, `boro`, `cuisine_description`, `inspection_date`, and `grade`; no row filters were used.
-- **295,002 source rows**, matching an independent official `count(*)` response of **295,002** and the source metadata's CAMIS count. The request limit was 2,000,000, above the full dataset size; this is not a first-N-row sample.
-- `data/nyc_inspections.csv.gz` preserves **every source row** and the five required fields, including violation duplicates. It is a compressed CSV, readable directly by pandas. The uncompressed download is excluded from Git to avoid duplicate storage.
-- `data/restaurants.csv` contains **31,360 unique restaurants**, **24,804 rated restaurants**, and **22,183 Grade A restaurants**. Borough counts: Manhattan 12,576; Brooklyn 8,021; Queens 7,005; Bronx 2,637; Staten Island 1,121.
-- `data/download_receipt.json` records the actual URL and completeness check. `data/data_quality.json` records counts, exclusions, date bounds and the SHA-256 of the compressed source. `data/source_metadata.json` preserves the official metadata read for this initial snapshot.
+Restaurant counts use unique CAMIS IDs. Grade A rate is Grade A restaurants divided by A/B/C-graded restaurants within the selected scope. Cuisine share is a cuisine's restaurant count divided by all restaurants in the corresponding borough. Missing grades are excluded from grade-rate denominators. Grade A reflects inspection results, not taste.
 
-The official source covers establishments active at its record date, including not-yet-inspected applicants. It is not an all-time census or a list of restaurants guaranteed to be open today. Source documentation describes a rolling inspection window, but this snapshot contains some older records (earliest parsed date: August 10, 2007); this prototype does not silently impose a three-year cutoff. Latest observed inspection: November 4, 2026. Download date and inspection date are different concepts.
+The map uses the included NYC DCP land boundaries, a local equirectangular projection and the same within-borough share values as the heatmap. It does not load external map tiles.
 
-## Actual cleaning rules
+## Linked views and controls
 
-`prepare_data.py` does the following in order:
+- RQ1 scatter compares cuisine restaurant count on a log X axis with Grade A rate (%). Focus 80–100% and Full 0–100% are presentation options; the graded-sample threshold affects only this view. Hollow squares identify fewer than ten graded restaurants.
+- RQ2 ranks the most common cuisines by restaurant count. A selected cuisine outside the top ten is also shown.
+- RQ3 compares within-borough cuisine shares with a shared 0–20% color scale. Switch between the heatmap and geographic map. Map clicks update the borough without assigning an automatic cuisine.
+- Borough, cuisine and restaurant-count controls coordinate the views. Click a chart to select a cuisine or borough. Rounded hover cards provide details. Each card has an Expand button; press Esc to close the overlay.
 
-1. Read CAMIS as text, trim surrounding whitespace, and normalize blank cells to missing. Keep only the five required fields. No fuzzy grouping of cuisine names is performed.
-2. Parse inspection dates. Missing/unparseable dates, `1900-01-01` (the official not-yet-inspected marker), and dates after the download day cannot establish a latest graded inspection. Their restaurants can still count. **3,998 source rows** have invalid/placeholder dates under this rule.
-3. Normalize borough names to the five boroughs. For each CAMIS, choose its most recent nonmissing valid borough and cuisine **independently**. This allows an older valid field to fill a missing field in a newer record. Same-date conflicting attributes use alphabetical order for deterministic results.
-4. Drop missing CAMIS rows (**0** in this snapshot). Exclude restaurants with no valid five-borough value anywhere (**103**). Preserve restaurants with no known cuisine as **Unknown** (**3,922**), including them in all relevant count/share denominators. The UI calls this **Cuisine not recorded**, and excludes it from the cuisine comparisons. `Unknown` remains only as the existing internal missing-value label in the cleaned CSV.
-5. Build one restaurant row per CAMIS. Repeated violations have no weight; projecting and deduplicating the five fields leaves **91,738 distinct required-field records** before the restaurant-level collapse.
-6. Separately consider only A/B/C rows with a valid inspection date. For each CAMIS, take the **latest such inspection date**, even if a newer ungraded inspection exists. If conflicting A/B/C grades occur on that same latest day, choose the worse grade (C > B > A) and report the conflict count. There are **0 latest-day grade conflicts** in this snapshot.
-7. Left-join that grade into the restaurant table, validating a one-to-one join and unique CAMIS. Unrated restaurants remain in the output. Save the selected graded inspection date separately from the restaurant's latest inspection date.
+The desktop overview shares the available window height across the three cards. Narrower or shorter windows preserve natural scrolling to maintain legibility.
 
-Grade is attached to the restaurant's latest valid borough/cuisine information. The older graded inspection need not have the same historical cuisine or borough; this is a snapshot of current recorded restaurant attributes with the latest available valid grade, not a longitudinal analysis.
-
-## Metrics and chart scope
-
-| Metric | Formula |
-| --- | --- |
-| Restaurant count | Number of unique CAMIS in the selected scope |
-| Cuisine share | Cuisine's unique restaurants in one borough / **all** restaurants in that borough |
-| Grade A percentage | Restaurants with latest valid grade A / restaurants with latest valid grade A, B or C |
-
-**Why there is no duplicate restaurant counting:** every chart loads the one-row-per-CAMIS table, not the violation-level source table. The join is checked as one-to-one.
-
-**Grade A denominator:** only A/B/C-rated restaurants. Missing grades, N, Z, P and other values never become non-A observations. A zero graded denominator means **no data**, not 0%.
-
-- **Scatter / RQ3:** X = restaurant count (linear); Y = Grade A percentage; one point per recorded cuisine with at least one valid grade. The dashed line is the pooled Grade A rate for the selected scope, including every validly graded restaurant. For cuisines with at least 10 graded restaurants, teal triangles = at or above that rate and warm orange circles = below it. Cuisines with 1–9 graded restaurants always use a gray hollow square, regardless of which side of the benchmark they fall on. These are three mutually exclusive shape groups. The dashed line has one directly attached scope-and-percentage label; its meaning is not repeated in a separate legend. The selected cuisine keeps its comparison color, with a black outline and label. Markers are smaller and semi-transparent; fewer than 10 graded restaurants use hollow squares. The legend shows one triangle, one circle and one square; all legend symbols use consistent SVG dimensions. The **Graded sample** dropdown offers all rated cuisines (default), or a minimum of 10, 25, 50 or 100 A/B/C-rated restaurants. This filters only scatter, reports shown/hidden cuisine counts, and leaves totals and the pooled benchmark unchanged. A selected cuisine hidden by the minimum is named explicitly beside the control. Zero-rated cuisines are not plotted on a numeric percentage axis. Above/below overall is descriptive, not statistical significance or causation.
-- **Bar / RQ1:** descending restaurant count, Top 10 recorded cuisines in the selected borough. If any chart selection falls outside that Top 10, append the selected cuisine, disclose this in the title, and show its actual rank among recorded cuisines. Ordinary bars are gray-blue; a dark desaturated teal bar and bold cuisine label identify selection. Counts remain at bar ends; the former arrow and redundant Cuisine axis title are removed. Ties are alphabetical.
-- **Heatmap / RQ2:** five boroughs × citywide Top 10 recorded cuisines. Purple intensity represents borough share, and every cell displays its percentage. Text switches to white on darker cells. All five cells in the selected cuisine column have thin outlines; the active borough–cuisine cell has a heavier outline and the active borough label is bold. A cuisine selected from scatter/bar outside the NYC Top 10 is appended as an eleventh column. All five boroughs and the citywide color scale remain fixed across selections. The nearby subtitle explicitly says “NYC top 10 · Share of all restaurants in each borough”; all five borough names remain visible. All borough restaurants, including Cuisine not recorded, remain in the denominator. Zero-count combinations remain 0%; zero denominators are no data.
-
-## Missing-cuisine audit
-
-The November 9 snapshot was checked directly against every available source row for each CAMIS classified as Unknown:
-
-- **3,922 unique restaurants** have no recorded cuisine, including **992 in Brooklyn**.
-- These IDs have **4,000 source rows**. **Zero** of those restaurant IDs have any nonblank cuisine in any available inspection record. The missing values were not introduced by mapping or the grade join, and there is no usable older cuisine to recover.
-- None has a valid A/B/C grade. **3,920 source rows** carry the source's `1900-01-01` not-yet-inspected marker; this count is rows, not restaurants.
-- They remain in total restaurant counts and heatmap denominators, but are excluded from cuisine comparisons and Top 10 selection. The missing-cuisine counts and denominator policy are documented here; the page keeps only a short metric definition in its footer. The cleaned data is retained intact.
-
-The saved audit is [data/cuisine_missingness_audit.json](data/cuisine_missingness_audit.json). `test_missing_cuisine_really_missing_in_all_source_records` repeats the key raw-source check. Brooklyn's reference rate is **5,707 Grade A / 6,325 A/B/C-rated = 90.229249…%**, displayed as **90.2%**. It is not the unweighted average of cuisine rates.
-
-## Visual channel table
-
-| View | Mark / channel | Meaning |
-| --- | --- | --- |
-| Scatter / RQ3 | One point | One recorded cuisine with at least one valid A/B/C grade |
-| Scatter / RQ3 | Horizontal position | Unique restaurant count; linear X axis |
-| Scatter / RQ3 | Vertical position | Latest valid Grade A percentage |
-| Scatter / RQ3 | Teal triangle / warm orange circle | At or above / below the selected scope's pooled Grade A rate, for cuisines with at least 10 graded restaurants |
-| Scatter / RQ3 | Dashed horizontal line | All Grade A restaurants divided by all A/B/C-rated restaurants in scope |
-| Scatter / RQ3 | Gray hollow square | Fewer than 10 graded restaurants |
-| Scatter / RQ3 | Black outline + text label | Selected cuisine; its comparison color and shape are preserved |
-| Bar / RQ1 | Length and sorted position | Unique restaurant count, descending |
-| Bar / RQ1 | Gray-blue / dark teal + bold label | Background comparison / selected cuisine |
-| Heatmap / RQ2 | Row / column | Borough / citywide Top 10 recorded cuisines, plus selected cuisine if needed |
-| Heatmap / RQ2 | Sequential purple intensity + cell text | Cuisine share among **all** restaurants in that borough |
-| Heatmap / RQ2 | Thin column outlines / heavy cell outline / bold row label | Selected cuisine across boroughs / selected borough–cuisine / active borough |
-
-These refinements retain Option B and the original chart types and axes. The added reference line and binary comparison colors strengthen RQ3. No logarithmic axis or arbitrary cuisine palette was introduced. The selected scatter point is labeled, with up to three common cuisines labeled where approximate text-box checks find room. The chart numbering was removed; the original research-question mapping remains RQ3 / RQ1 / RQ2.
-
-The editorial revision uses a warm off-white page, a 50 px serif desktop title (40 px on phones), and a single white canvas containing all three charts. Chart titles are 21–24 px on wide screens, scope subtitles 14 px, and plot labels 13–15 px. A small subject line and source/snapshot block frame the heading; dark green controls and selection text establish hierarchy without separate KPI cards. Thin separators organize the views. The scatter legend contains exactly one triangle, circle and hollow square. The sample filter and a short reading guide sit below scatter, and detailed methodology is kept in this README. Heatmap labels retain their 40° angle. The full heatmap and its color scale fit the checked 1280 px laptop layout; below 700 px the heatmap scrolls within its own panel. The data and metric definitions are unchanged. Cuisine search and configurable sample thresholds extend the original controls. The revised layout was inspected at 1600, 1280 and 390 px widths.
-
-Design references inspected for this revision: [The Pudding’s restaurant story](https://pudding.cool/2018/02/restaurants/), [Our World in Data’s scatter explorer](https://ourworldindata.org/grapher/life-expectancy-vs-gdp-per-capita?time=2020), and [Datawrapper scatter examples](https://www.datawrapper.de/docs/examples-of-datawrapper-scatter-plots). These informed the simpler typography, quieter controls and direct chart annotations. The implementation is original; no site assets were copied.
-
-## Interactions and demonstration
-
-1. Start at **All NYC · All cuisines**. Other cuisines always remain as comparison context when selecting one.
-2. Click **Chinese** in the bar: scatter labels/outlines Chinese, and heatmap outlines its entire column. Click **American** in scatter: the bar and heatmap switch to American.
-3. Click **Brooklyn × Chinese** on the heatmap. The dropdown changes to Brooklyn; bar and scatter recompute, and all three charts highlight Chinese. The selected heatmap cell is outlined more heavily than the other four cells in that column.
-4. Click **Brooklyn × Italian**: Italian is appended to Brooklyn's bar with **Selected cuisine · Rank 11**. Click **Caribbean** in that bar: heatmap adds Caribbean as an extra column because it is outside the NYC Top 10.
-5. Choose **10+ graded restaurants** under **Graded sample**. Brooklyn hides **24 cuisines** from scatter; the other charts, counts and overall reference remain unchanged. Other thresholds are 25, 50 and 100; **All rated cuisines** is the default. Zero-rated cuisines cannot appear on the percentage axis and are reported separately.
-6. Hover over each chart. Scatter shows cuisine, borough, total restaurants, A/B/C-rated count, Grade A count and Grade A percentage. Bar shows cuisine, borough, count, share of all restaurants and rank. Heatmap shows borough, cuisine, count, share and its full-borough denominator.
-7. Use **Cuisine focus** to search any recorded cuisine, including those outside the initial Top 10. Options show cuisine names only. Restaurant count is a separate filter; an absent-cuisine selection under Any count has an explicit no-data message. This highlights the cuisine across all charts while retaining comparison categories. Chart clicks update the same dropdown. Clearing the dropdown removes the cuisine focus.
-8. Use **Restaurants per cuisine** to choose **Any count**, **1–9**, **10–49**, **50–99**, **100–499** or **500+ restaurants** in the current borough (All NYC means citywide). Matching cuisine identities constrain search, scatter, bar and heatmap columns. Bar and heatmap show their Top 10 among matching cuisines, plus an eligible selected cuisine if needed. Heatmap still compares all five boroughs. The pooled Grade A benchmark, bar-share denominator, heatmap borough-share denominators and heatmap color scale remain unchanged. Header totals describe the whole selected borough. A sample minimum can produce an empty scatter while other charts remain populated. If a changed range or borough excludes the selected cuisine, its focus clears. A heatmap click that changes to a borough where the clicked cuisine is outside the range resets the count filter to Any count, keeping the clicked cuisine visible.
-9. Click **Reset** to return to All NYC, clear the cuisine and restore **All rated cuisines** and **Any count**. Clicking the same mark again works. Manual borough changes retain the sample minimum and retain cuisine focus when it matches the count range, allowing comparison of the same cuisine across boroughs.
-
-The three chart click paths, the Italian rank-11 case, the appended Caribbean column, sample filtering, Reset and repeated selection were exercised in the running browser on November 9, 2026. On November 11, the editorial revision was also checked in the running browser, including bar, scatter and heatmap selection and Reset. The two screenshots were refreshed after the editorial revision; screenshots supplement the interactive demonstration rather than proving it alone.
-
-Below 1150 px, chart panels stack vertically. When the heatmap cannot fit readable columns, it scrolls horizontally within its panel; the narrow-screen subtitle explains this. Mouse/touch chart marks initiate selection; keyboard-only chart-mark navigation is not implemented. Borough, cuisine search, sample-size dropdown and Reset are keyboard accessible.
-
-## Public deployment
-
-**Live dashboard: [A Taste of NYC](https://april-48.github.io/A-Teste-of-NYU/)**. Public access requires no installation or local Python server.
-
-The hosted edition is a **fixed-snapshot export**, not a live Python process. `export_public.py` evaluates every supported borough, count-range, cuisine and sample-minimum combination through the real Python Dash callback. Identical figures/options are shared by content hash. A small browser callback routes selections to those generated results, preserving search, linked highlighting, sample filtering and Reset. Data and calculations are not reimplemented in JavaScript.
-
-Rebuild and preview locally after data, chart or control changes:
+## Validation and static publication
 
 ```sh
-python export_public.py public-dist
+python -m unittest -q
+python export_public.py public-dist --base-path /A-Teste-of-NYU/
 python verify_public.py public-dist
-python serve_public.py public-dist
 ```
 
-GitHub Actions (`.github/workflows/pages.yml`) rebuilds, validates and publishes the dashboard after relevant changes on `main`. The Pages export uses `/A-Teste-of-NYU/` as its base path. To preview at the root of a local static server, omit `--base-path`; to publish under another subdirectory, set it to that directory. Versioned bootstrap and state requests prevent stale controls after deployments. The browser adapter maps Dash’s two initialization requests to standard `.json` files so MIME types work without custom server configuration. Use `serve_public.py` for local preview. The export includes Dash and Plotly browser libraries locally, with no CDN requirement. `verify_public.py` checks 78 representative states across every borough and count band against the original Python callback and verifies every generated state's object references. The hosted snapshot does not update until it is rebuilt and published.
+The exporter evaluates supported selections through the real Python callback. The browser retrieves the resulting numeric states and figures; it does not recompute inspection statistics. Export verification compares representative states and map clicks against the callback and checks every generated state reference.
 
-## Rebuild or refresh data
+The existing workflow in `../.github/workflows/pages.yml` runs these commands and publishes the static result to GitHub Pages. The source Dash application still runs locally as Python; GitHub Pages serves the exported interactive edition.
 
-Rebuild the included snapshot without network access:
+## Code map
 
-```sh
-python prepare_data.py
-```
+`app.py` defines the charts and linked selection. `borough_map.py` provides the offline borough map and display toggle. `dashboard_ui.py` and `assets/dashboard-ui.js` provide shared expansion and tooltip behavior. `palette.py` stores the shared colors. `assets/style.css` styles the three-card layout. `prepare_data.py` documents the cleaning pipeline; `prepare_borough_map.py` prepares the supplied boundary files. The fixed-snapshot publication pipeline is implemented in `export_public.py`, `public/callback.js` and `verify_public.py`.
 
-Download a new full five-field snapshot and clean it:
-
-```sh
-python prepare_data.py --download
-```
-
-The downloader retries transient network errors and verifies row counts before and after download. It rejects incomplete/changing downloads and datasets that reach its request limit instead of silently truncating. A successful refresh updates the CSVs, receipt and audit; restart the app afterwards. Source metadata JSON is the preserved initial documentation, not a promise of refresh-time metadata.
-
-For a complete CSV exported manually from the official portal, use its actual download date:
-
-```sh
-python prepare_data.py --input data/your_download.csv --download-date YYYY-MM-DD
-```
-
-This accepts portal uppercase labels or API field names. A manual import does not inherit the previous snapshot's completeness claim. The script prints source row count, columns, the first five rows and the cleaning audit. Do not use a truncated preview export.
-
-## Validation
-
-Run the analytical and boundary-case tests:
-
-```sh
-python -m unittest -v
-```
-
-Thirteen tests cover duplicate violations, independent latest grades, missing attributes, invalid dates, conflict handling, zero graded denominators, empty plots, five-borough reconciliations, every heatmap cell's full-population denominator, independent raw-row grade reconstruction, outside-Top-10 selection, Reset state and Dash HTTP routes. Added checks verify source missingness, pooled benchmark weighting, preservation of comparison colors on selection, heatmap values/outlines, and a fixed citywide color scale. Callback HTTP tests exercise all three click inputs, sample filtering without changing the benchmark, out-of-Top-10 additions, tooltip denominators and Reset. The expanded checks also cover cuisine search/clearing, retaining focus across boroughs, all five sample thresholds, count-band boundaries and three-view filtering, unchanged benchmark/totals and a cuisine absent from the selected borough.
-
-Optional real-browser check (app running, Google Chrome installed):
-
-```sh
-pip install playwright==1.64.1
-python check_browser.py
-```
-
-This checks rendered charts, all five borough selections, clicks in all three charts, linked highlights, hover text, the sample filter, Reset, selecting the same cell again, reload and narrow layout. It recreates the two screenshots. Snapshot counts in this browser regression script refer to the included November 9 dataset and must be updated intentionally after a data refresh.
-
-## Submission materials
-
-- [Default view: all three charts](screenshots/01-default.jpg)
-- [Linked view: Brooklyn · Chinese](screenshots/02-brooklyn-chinese.jpg)
-- [Feedback log template](feedback_log.md): intentionally not populated with invented feedback; fill it after the classroom demo.
-
-The 2–3 page usability report and one-page reflection belong to the final stage and are not claimed as completed here.
-
-## Code map and AI assistance
-
-- `prepare_data.py`: `read_raw` standardizes fields; `clean_restaurants` creates attributes and latest-grade tables separately; `main` writes the auditable snapshot.
-- `app.py`: `cuisine_summary` calculates counts and ratios; three figure functions draw plots; `select_state` handles selection rules; one Dash callback updates controls and dependent views together.
-- `assets/style.css`: Option B layout, readable typography and responsive behavior.
-- `export_public.py`, `public/callback.js`, `verify_public.py`: reproducible public export, browser selection routing and parity checks.
-- `test_dashboard.py`: data logic and boundary-case tests. `check_browser.py`: real-browser interactions and screenshots.
-
-**AI assistance actually used:** OpenAI Codex generated the initial Python/CSS implementation, downloaded and inspected the official data, proposed and documented cleaning choices, wrote and executed automated checks, inspected browser screenshots, fixed chart-container overlap, audited missing cuisine against all source records, inspected real data-visualization websites and implemented the approved editorial redesign, benchmark color encoding, visual hierarchy changes, three-way linked selection and sample filter, built and validated the fixed-snapshot public export, and drafted this README and the empty feedback template. The dataset is real NYC Open Data; it is not AI-generated. No classroom feedback or user-study outcome has been invented. The student should review the code and be able to explain the unique-CAMIS collapse, separate latest-grade lookup, rate denominators, and callback state before submitting. AI testing is not classroom usability feedback.
+The implementation and documentation were developed with OpenAI Codex assistance. The restaurant data are real NYC Open Data. Automated checks are separate from classroom usability testing.

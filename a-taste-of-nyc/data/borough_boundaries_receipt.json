@@ -1,0 +1,16 @@
+{
+  "source_url": "https://data.cityofnewyork.us/resource/gthc-hcne.geojson?$limit=10",
+  "publisher": "NYC Department of City Planning / NYC Open Data",
+  "dataset": "gthc-hcne",
+  "download_date": "2026-11-24",
+  "features": 5,
+  "coordinate_system": "WGS84 longitude/latitude",
+  "water_areas": "excluded",
+  "source_vertices": 81065,
+  "display_vertices": 5424,
+  "simplification_degrees": 0.00025,
+  "rounding_decimal_places": 5,
+  "purpose": "display only; restaurant metrics use borough names",
+  "source_sha256": "f9045f042e2331b7be42af77c1abc440292f4a46aab953ec2c3afc3570a7f264",
+  "display_sha256": "f26d0e73b8cd2cd23b335167507a6bfe553f4d68d3664e09197bcfb86b00510d"
+}

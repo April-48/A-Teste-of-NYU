@@ -40,7 +40,7 @@
   }
   window.dash_clientside = Object.assign({}, window.dash_clientside, {
     nyc_public: {
-      update: async function(borough, heatClick, resetClicks, barClick, scatterClick, minimum, cuisineFocus, countFilter, selected) {
+      update: async function(borough, heatClick, resetClicks, barClick, scatterClick, minimum, cuisineFocus, countFilter, mapClick, selected, viewMode) {
         const turn = ++revision;
         const trigger = (window.dash_clientside.callback_context.triggered[0]?.prop_id || "").split(".")[0];
         const manifest = await json("/state-index.json");
@@ -55,6 +55,12 @@
             if (manifest.boroughs.includes(p.y) && manifest.cuisines.includes(p.x)) {
               borough = p.y; selected = p.x;
             }
+          } else if (trigger === "borough-map" && mapClick?.points?.length) {
+            const index = mapClick.points[0].curveNumber;
+            if (Number.isInteger(index) && index >= 0 && index < manifest.boroughs.length - 1) {
+              selected = selected || cuisineFocus || null;
+              borough = manifest.boroughs[index + 1];
+            }
           } else if (trigger === "bar" || trigger === "scatter") {
             const p = (trigger === "bar" ? barClick : scatterClick)?.points?.[0];
             const cuisine = p?.customdata?.[0] ?? (trigger === "bar" ? p?.y : null);
@@ -65,7 +71,7 @@
           const range = manifest.count_ranges[countFilter];
           const count = manifest.counts[bi][selected] || 0;
           if (countFilter !== "all" && selected && (count < range[1] || (range[2] !== null && count > range[2]))) {
-            if (trigger === "heatmap") countFilter = "all";
+            if (trigger === "heatmap" || trigger === "borough-map") countFilter = "all";
             else selected = null;
           }
           const ci = Math.max(0, manifest.cuisines.indexOf(selected ?? null));
@@ -73,6 +79,12 @@
           minimum = manifest.minimums.includes(minimum) ? minimum : 1;
           const packed = await json(`/states/${bi}-${ci}-${minimum}-${ri}.json`);
           const output = await Promise.all(packed.map(unpack));
+          // Range is panel-local presentation state. Exported numeric states
+          // are shared, but Reset still restores the initial range selection.
+          const scatterIndex = manifest.outputs.findIndex(o => o.id === "scatter-source" && o.property === "data");
+          if (output[scatterIndex]?.layout?.meta) {
+            output[scatterIndex].layout.meta.reset_range = trigger === "reset";
+          }
           return turn === revision ? output : unchanged();
         } catch (error) {
           console.error(error);

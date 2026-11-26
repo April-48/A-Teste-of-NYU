@@ -49,10 +49,13 @@ def export(destination, base_path="/"):
         [Input(i["id"], i["property"]) for i in callback["inputs"]],
         [State(i["id"], i["property"]) for i in callback["state"]],
     )
+    source.register_view_callbacks(public)
+    source.register_scatter_callbacks(public)
+    source.register_ui_callbacks(public)
     web = public.server.test_client()
     html = web.get("/").data.decode()
     version = hashlib.sha256(b"".join((source.ROOT / p).read_bytes() for p in
-                                     ["app.py", "export_public.py", "public/callback.js", "data/restaurants.csv"])).hexdigest()[:16]
+                                     ["app.py", "dashboard_ui.py", "assets/dashboard-ui.js", "assets/style.css", "assets/expand.svg", "palette.py", "borough_map.py", "export_public.py", "public/callback.js", "data/restaurants.csv", "data/borough_boundaries.geojson"])).hexdigest()[:16]
     html = html.replace("</head>", f'<meta name="public-version" content="{version}"></head>')
     html = html.replace('<script id="_dash-renderer"', f'<script src="{base_path}public-callback.js?v={version}"></script>\n<script id="_dash-renderer"')
     (destination / "index.html").write_text(html)
@@ -123,12 +126,13 @@ def export(destination, base_path="/"):
                     if cuisine is not None and allowed is not None and cuisine not in allowed:
                         continue
                     for minimum in source.SAMPLE_LIMITS:
-                        values = [borough, None, 0, None, None, minimum, cuisine, count_range]
+                        values = [borough, None, 0, None, None, minimum, cuisine, count_range, None]
                         response = client.post("/_dash-update-component", json={
                             "output": key,
                             "outputs": [{"id": o.component_id, "property": o.component_property} for o in outputs],
                             "inputs": [dict(i, value=v) for i, v in zip(callback["inputs"], values)],
-                            "state": [{"id": "selected-cuisine", "property": "data", "value": cuisine}],
+                            "state": [{"id": "selected-cuisine", "property": "data", "value": cuisine},
+                                      {"id": "borough-view", "property": "value", "value": "heatmap"}],
                             "changedPropIds": ["cuisine-focus.value"],
                         })
                         assert response.status_code == 200, (borough, cuisine, minimum)
@@ -140,7 +144,10 @@ def export(destination, base_path="/"):
                 print(f"Exported {borough} / {count_range}: {total} callback states", flush=True)
     finally:
         source.bar_figure, source.heatmap_figure = original_bar, original_heat
-    manifest = {"boroughs": boroughs, "cuisines": cuisines, "minimums": list(source.SAMPLE_LIMITS),
+    map_model = source.BoroughMap(frame, source.BOROUGHS, source.HEAT_COLORS, source.MISSING_CUISINE)
+    map_defaults = {b: {r: map_model.focus(None, source.count_cuisines(summaries[b], r))
+                        for r in source.COUNT_RANGES} for b in boroughs}
+    manifest = {"map_defaults": map_defaults, "boroughs": boroughs, "cuisines": cuisines, "minimums": list(source.SAMPLE_LIMITS),
                 "count_ranges": source.COUNT_RANGES,
                 "counts": [summaries[b].set_index("cuisine").restaurants.to_dict() for b in boroughs],
                 "outputs": [{"id": o.component_id, "property": o.component_property} for o in outputs],

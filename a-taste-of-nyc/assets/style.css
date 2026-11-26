@@ -1,50 +1,366 @@
-:root { color-scheme: light; --ink: #252c2b; --muted: #59645f; --line: #d9ded9; --accent: #285f60; --paper: #ffffff; }
+:root { color-scheme: light; --ink: #172033; --muted: #596974; --line: #dbe3e8; --accent: #245f7b; --paper: #fff; }
 * { box-sizing: border-box; }
-body { margin: 0; background: var(--paper); color: var(--ink); font-family: Arial, Helvetica, sans-serif; }
-.page { max-width: 1740px; margin: auto; padding: 28px 38px 22px; }
-header { display: flex; justify-content: space-between; align-items: center; gap: 30px; margin-bottom: 24px; }
-.eyebrow { margin: 0 0 9px; color: #864733; font-size: 12px; font-weight: 700; letter-spacing: .7px; }
-.reading-note { margin: 25px 0 0; padding-top: 16px; border-top: 1px solid #e8ece7; max-width: 470px; font-size: 13px; line-height: 1.65; color: var(--muted); }
-.reading-note strong { display: block; color: var(--ink); font-weight: 600; margin-bottom: 3px; }
-h1 { font-family: Georgia, serif; font-size: 50px; font-weight: 500; letter-spacing: -1.7px; margin: 0 0 9px; line-height: 1.05; }
-.intro { color: var(--muted); font-size: 16px; margin: 0; line-height: 1.45; }
-.controls { display: flex; align-items: center; flex-wrap: wrap; gap: 14px; border-top: 1px solid #a6b2a8; border-bottom: 1px solid var(--line); padding: 13px 0; }
-.filter { display: flex; align-items: center; gap: 10px; font-size: 14px; }
-#borough { width: 175px; font-size: 14px; }
-#cuisine-focus { width: 245px; font-size: 14px; }
-#count-filter { width: 190px; font-size: 14px; }
-.count-status { margin: 9px 0 0; font-size: 12px; color: var(--muted); }
-.controls .selection { flex-basis: 100%; margin-left: 0; }
-#sample-filter { width: 205px; font-size: 13px; }
-.filter-scope { font-size: 12px; color: var(--muted); }
-#reset { background: #2c4742; color: #fff; border: 1px solid #2c4742; border-radius: 3px; padding: 8px 16px; font-size: 14px; font-weight: 400; cursor: pointer; }
-#reset:hover { background: #1b342f; }
+body { font-size: 16px; margin: 0; background: var(--paper); color: var(--ink); font-family: Arial, Helvetica, sans-serif; }
+.page { max-width: 1800px; margin: auto; padding: 12px 22px; }
+header { margin-bottom: 9px; display: flex; align-items: center; justify-content: space-between; gap: 12px 24px; }
+h1 { font-family: Georgia, serif; font-size: 36px; font-weight: 500; letter-spacing: -1px; margin: 0 0 3px; line-height: 1.05; }
+.intro { color: var(--muted); font-size: 14px; margin: 0; line-height: 1.35; }
+.controls { position: relative; z-index: 30; display: flex; align-items: center; flex-wrap: wrap; gap: 6px 16px; border-top: 1px solid #a6b6c1; border-bottom: 1px solid var(--line); padding: 7px 0; }
+.filter { display: flex; align-items: center; gap: 8px; font-size: 15px; }
+#borough { width: 155px; font-size: 15px; }
+#cuisine-focus { width: 220px; font-size: 15px; }
+#count-filter { width: 185px; font-size: 15px; }
+#sample-filter { width: 190px; font-size: 14px; }
+.count-status { margin: 0; font-size: 11px; color: var(--muted); line-height: 1.3; }
+.count-status:empty { display: none; }
+.controls .selection { flex-basis: 100%; }
+#reset { background: #173f59; color: #fff; border: 1px solid #173f59; border-radius: 3px; padding: 7px 14px; font-size: 15px; cursor: pointer; }
+#reset:hover { background: #102f44; }
 button:focus-visible, a:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; }
-.selection { display: flex; align-items: baseline; gap: 8px; margin-left: 6px; font-size: 14px; }
+.selection { display: flex; align-items: baseline; gap: 8px; font-size: 13px; }
 .selection-label { color: var(--muted); }
-.selection strong { color: #204c43; font-weight: 600; }
-.hint { margin: 0 0 0 auto; font-size: 13px; color: var(--muted); }
-.metrics { padding: 12px 0 17px; font-size: 13px; color: var(--muted); }
-.chart-grid { display: grid; grid-template-columns: minmax(0, .95fr) minmax(0, 1.05fr); gap: 28px; align-items: start; background: #fff; border: 1px solid #dce1db; padding: 26px 24px 18px; }
-.right-column { display: grid; gap: 20px; min-width: 0; padding-left: 24px; border-left: 1px solid var(--line); }
+.selection strong { color: #173f59; font-weight: 600; }
+.hint { display: none; }
+.metrics { max-width: 510px; font-size: 12px; color: var(--muted); text-align: right; line-height: 1.45; }
+.scope-total { display: block; }
+.focus-facts { display: flex; justify-content: flex-end; flex-wrap: wrap; gap: 0 10px; color: var(--ink); }
+.focus-facts strong { color: #173f59; }
+.selection-prompt { color: var(--accent); }
+.chart-grid { display: grid; grid-template-columns: minmax(0, .82fr) minmax(0, 1.18fr); gap: 16px; align-items: start; background: #fff; border: 1px solid #dbe3e8; padding: 12px 14px 10px; }
+.right-column { display: grid; gap: 10px; min-width: 0; padding-left: 16px; border-left: 1px solid var(--line); }
 .panel { background: white; min-width: 0; }
-.right-column .panel + .panel { border-top: 1px solid var(--line); padding-top: 20px; }
-h2 { margin: 0; font-size: 21px; line-height: 1.3; font-weight: 600; letter-spacing: -.25px; }
-.scatter-panel h2 { font-size: 24px; max-width: 520px; }
-.research-question { margin: 8px 0 0; color: var(--accent); font-size: 15px; font-weight: 600; line-height: 1.45; }
-.chart-subtitle { font-size: 14px; color: var(--muted); font-weight: 400; margin: 7px 0 12px; line-height: 1.45; }
-.plot-key { display: flex; flex-wrap: wrap; gap: 9px 18px; margin: 18px 0 10px; padding-bottom: 14px; border-bottom: 1px solid #e8ece7; font-size: 13px; color: #414a50; }
-.plot-key span { display: inline-flex; align-items: center; gap: 6px; }
-.key-mark { display: inline-block; width: 15px; height: 15px; flex-shrink: 0; }
-.sample-controls { display: flex; flex-wrap: wrap; align-items: center; gap: 6px 16px; margin-top: 12px; font-size: 13px; color: #414a50; }
-.sample-controls label { display: inline-flex; align-items: center; gap: 7px; font-weight: 400; cursor: pointer; }
-
-#sample-status { flex-basis: 100%; line-height: 1.5; color: var(--muted); font-size: 12px; }
+.right-column .panel + .panel { border-top: 1px solid var(--line); padding-top: 9px; }
+h2 { margin: 0; font-size: 19px; line-height: 1.2; font-weight: 600; letter-spacing: -.25px; }
+.research-question { margin: 4px 0 0; color: var(--accent); font-size: 15px; font-weight: 600; line-height: 1.4; }
+.chart-subtitle { font-size: 12px; color: var(--muted); margin: 3px 0 3px; line-height: 1.3; }
+.plot-key { display: flex; flex-wrap: wrap; gap: 5px 12px; margin: 6px 0 0; font-size: 12px; color: #414a50; }
+.plot-key span { display: inline-flex; align-items: center; gap: 5px; }
+.key-mark { display: inline-block; width: 14px; height: 14px; flex-shrink: 0; }
+@keyframes selection-arrival { from { opacity: .25; } to { opacity: 1; } }
+.heatmap-plot .shapelayer path { animation: selection-arrival 180ms ease-out; }
+@media (prefers-reduced-motion: reduce) {
+  .heatmap-plot .shapelayer path { animation: none; }
+}
+.scatter-plot { height: clamp(340px, calc(100dvh - 400px), 520px) !important; }
+.bar-plot { height: clamp(200px, calc(45dvh - 177.75px), 245px) !important; }
+.heatmap-plot, .map-plot { height: clamp(215px, calc(55dvh - 217.25px), 285px) !important; }
+#sample-status { line-height: 1.35; color: var(--muted); font-size: 11px; }
 #sample-status:empty { display: none; }
-footer { margin-top: 16px; line-height: 1.6; color: var(--muted); font-size: 12px; }
-footer p { margin: 0 0 5px; }
+.reading-note { margin: 6px 0 0; padding-top: 6px; border-top: 1px solid #e7edf1; font-size: 12px; line-height: 1.4; color: var(--muted); }
+footer { margin-top: 8px; line-height: 1.4; color: var(--muted); font-size: 11px; }
+footer p { margin: 0 0 2px; }
 a { color: var(--accent); text-underline-offset: 3px; }
-@media (max-width: 1400px) { .page { padding: 24px; } .hint { display: none; } .chart-grid { padding: 22px 18px 16px; gap: 18px; } .right-column { padding-left: 18px; } .scatter-panel h2 { font-size: 22px; } h2 { font-size: 20px; } }
-@media (max-width: 1150px) { .chart-grid { grid-template-columns: 1fr; gap: 30px; } .right-column { border-left: 0; padding-left: 0; gap: 26px; } .scatter-plot { height: 420px !important; } .reading-note { max-width: none; } }
-@media (max-width: 700px) { header { display: block; } .heatmap-plot { min-width: 680px; } .panel:has(.heatmap-plot) { overflow-x: auto; } .panel:has(.heatmap-plot) .chart-subtitle::after { content: "Scroll horizontally to compare all cuisines →"; display: block; margin-top: 6px; color: var(--accent); } }
-@media (max-width: 550px) { .page { padding: 20px 12px; } h1 { font-size: 40px; } .intro { font-size: 15px; } header { margin-bottom: 18px; } .controls { gap: 10px; } .cuisine-filter { order: 1; width: 100%; } #cuisine-focus { flex: 1; width: auto; min-width: 0; } .selection { order: 2; } .selection { margin-left: 0; width: 100%; flex-wrap: wrap; } #borough { width: 145px; } #reset { padding: 9px 13px; } .chart-grid { padding: 20px 12px; } h2, .scatter-panel h2 { font-size: 20px; } }
+@media (max-width: 1100px) {
+  .page { padding: 12px; }
+  header { display: block; }
+  .metrics { max-width: none; text-align: left; margin-top: 6px; }
+  .focus-facts { justify-content: flex-start; }
+  .chart-grid { grid-template-columns: 1fr; gap: 22px; }
+  .right-column { border-left: 0; padding-left: 0; gap: 18px; }
+  .scatter-panel { width: 100%; max-width: 640px; margin-inline: auto; }
+  .scatter-plot { height: 480px !important; }
+  .bar-plot { height: 270px !important; }
+  .heatmap-plot, .map-plot { height: 260px !important; }
+}
+@media (max-width: 700px) {
+  .heatmap-plot { min-width: 820px; }
+  .borough-panel.heatmap-mode { overflow-x: auto; }
+  .borough-panel.heatmap-mode #heatmap-scope::after { content: "Scroll horizontally to compare all cuisines →"; display: block; margin-top: 5px; color: var(--accent); }
+  .filter { flex-wrap: wrap; }
+  .count-filter { width: 100%; }
+  #count-filter { flex: 1; }
+}
+@media (max-width: 550px) {
+  h1 { font-size: 32px; }
+  .intro { font-size: 13px; }
+  .controls { gap: 8px; }
+  .cuisine-filter { order: 1; width: 100%; }
+  #cuisine-focus { flex: 1; width: auto; min-width: 0; }
+  .count-filter { order: 2; }
+  .selection { order: 3; flex-wrap: wrap; }
+  .chart-grid { padding: 14px 9px; }
+  h2 { font-size: 19px; }
+  .scatter-plot { height: 350px !important; }
+  .scatter-controls { width: 100%; max-width: none; }
+}
+
+.view-heading { display: flex; align-items: center; justify-content: space-between; gap: 8px; flex-wrap: wrap; }
+.view-toggle { display: inline-flex; gap: 0; border: 1px solid #a9bdc9; border-radius: 4px; overflow: hidden; font-size: 12px; flex-shrink: 0; }
+.view-toggle label { position: relative; padding: 5px 10px; cursor: pointer; color: #245f7b; background: #fff; }
+.view-toggle label + label { border-left: 1px solid #a9bdc9; }
+.view-toggle input { position: absolute; width: 1px; height: 1px; opacity: 0; }
+.view-toggle label:has(input:checked) { color: #fff; background: #245f7b; }
+.view-toggle label:has(input:focus-visible) { outline: 2px solid #172033; outline-offset: -3px; }
+.map-mode .shapelayer path { animation: selection-arrival 180ms ease-out; }
+@media (max-width: 550px) { .map-plot { min-width: 0; height: 285px !important; } }
+
+.view-toggle .dash-options-list-option { margin: 0; border-radius: 0; }
+.view-toggle .dash-options-list-option-wrapper { width: 0; height: 0; margin: 0; padding: 0; }
+.view-toggle .dash-options-list-option-text { color: inherit !important; }
+.view-toggle .dash-options-list-option.selected { background: #245f7b !important; color: #fff !important; }
+
+/* Short laptops keep all three linked views in the same viewport. */
+@media (min-width: 1101px) and (max-height: 760px) {
+  .page { padding: 8px 16px; }
+  header { margin-bottom: 6px; }
+  h1 { font-size: 32px; }
+  .intro { font-size: 13px; }
+  .chart-grid { margin-top: 6px; padding: 10px 12px 8px; }
+  .right-column { gap: 8px; }
+  .right-column .panel + .panel { padding-top: 7px; }
+  .bar-plot { height: 190px !important; }
+  .heatmap-plot, .map-plot { height: 205px !important; }
+}
+@media (min-width: 1101px) and (min-height: 761px) {
+  .chart-grid { margin-top: 7px; }
+}
+
+.scatter-controls { display: grid; grid-template-columns: auto minmax(0, 1fr) minmax(0, 1.1fr); align-items: center; gap: 12px; width: 100%; margin-top: 9px; padding: 9px 10px; border: 1px solid var(--line); border-radius: 5px; background: #f5f8fb; }
+.scatter-only { color: var(--accent); font-size: 13px; font-weight: 600; white-space: nowrap; }
+.scatter-control { min-width: 0; font-size: 14px; }
+.scatter-control label { display: block; margin-bottom: 4px; font-weight: 600; color: #334c5c; }
+#scatter-range, .scatter-controls #sample-filter { width: 100%; min-width: 0; font-size: 14px; }
+.scatter-panel .plot-key { margin-top: 10px; }
+.scatter-footer { margin-top: 6px; padding-top: 7px; border-top: 1px solid var(--line); }
+.scatter-status { display: flex; flex-wrap: wrap; gap: 2px 12px; font-size: 11px; line-height: 1.35; color: var(--muted); }
+.scatter-footer .reading-note { margin: 4px 0 0; padding: 0; border: 0; font-size: 11px; }
+.sample-feedback { margin-top: 6px; }
+.interaction-hint { margin: -6px 0 6px; color: var(--accent); font-size: 12px; line-height: 1.35; }
+#bar .barlayer .point path, .modal-bar .barlayer .point path { cursor: pointer; }
+@media (max-width: 550px) {
+  .scatter-controls { grid-template-columns: minmax(0, 1fr) minmax(0, 1.1fr); gap: 8px; padding: 9px; }
+  .scatter-only { grid-column: 1 / -1; }
+}
+
+/* Editorial metric card and prominent global filters. */
+header > div:first-child { flex: 1; min-width: 0; }
+.metrics { flex: 0 1 760px; max-width: 760px; padding: 11px 16px; background: #173f59; color: #fff; border-radius: 8px; text-align: left; font-size: 11px; line-height: 1.3; }
+.metrics .scope-total { color: #c7dce9; font-size: 13px; }
+.metrics-main { display: grid; grid-template-columns: minmax(130px,1.1fr) repeat(3,minmax(0,1fr)); gap: 14px; align-items: center; margin-top: 6px; }
+.metric-context { min-width: 0; }
+.metric-context strong { display: block; font-size: 18px; line-height: 1.2; overflow-wrap: anywhere; }
+.metric-context > span { display: block; margin-top: 3px; color: #bdd5e5; font-size: 13px; }
+.metric-cell { min-width: 0; padding-left: 14px; border-left: 1px solid rgba(220,237,247,.24); }
+.metric-value { display: block; font: 500 28px/1.1 Georgia,serif; color: #fff; }
+.metric-label { display: block; margin-top: 4px; color: #d1e4ef; font-size: 13px; }
+.controls { border: 1px solid #c8d9e5; border-left: 4px solid #245f7b; border-radius: 8px; background: #eef4f8; padding: 10px 12px; gap: 8px 18px; }
+.filters-heading { color: #245f7b; font-size: 13px; font-weight: 700; text-transform: uppercase; letter-spacing: .08em; }
+.filter label { color: #214a63; font-weight: 600; font-size: 14px; }
+#borough button, #cuisine-focus button, #count-filter button, #sample-filter button, #scatter-range button { border-color: #b9cddc; border-radius: 6px; background: #fff; }
+#borough button:hover, #cuisine-focus button:hover, #count-filter button:hover, #sample-filter button:hover, #scatter-range button:hover { border-color: #245f7b; }
+.controls .count-status { flex-basis: 100%; font-size: 13px; }
+.sr-only { position: absolute !important; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0,0,0,0); white-space: nowrap; }
+.scatter-plot { height: clamp(320px, calc(100dvh - 420px), 520px) !important; }
+.plot-heading { display: flex; align-items: flex-start; justify-content: space-between; gap: 12px; }
+.plot-actions { display: flex; align-items: center; gap: 8px; }
+.expand-button { flex-shrink: 0; display: inline-flex; align-items: center; justify-content: center; width: 30px; height: 30px; padding: 6px; border: 1px solid #d3e0e9; border-radius: 6px; background: #fff; cursor: pointer; }
+.expand-button img { width: 16px; height: 16px; }
+.expand-button:hover { background: #eaf2f7; border-color: #8fabbf; }
+.view-toggle { padding: 3px; gap: 2px; border: 0; border-radius: 7px; background: #e8eff3; }
+.view-toggle label { padding: 5px 11px; color: #496477; background: transparent; border: 0 !important; border-radius: 5px; font-weight: 600; }
+.view-toggle .dash-options-list-option.selected, .view-toggle label:has(input:checked) { color: #173f59 !important; background: #fff !important; box-shadow: 0 1px 4px rgba(23,63,89,.15); }
+.borough-panel .chart-subtitle { padding: 6px 8px; margin: 6px 0; background: #eff4f5; border-left: 2px solid #79969e; }
+.map-plot { height: 330px !important; }
+/* Native SVG hover boxes are replaced by the shared rounded information card. */
+.js-plotly-plot .hoverlayer { visibility: hidden !important; }
+.ui-tooltip { pointer-events: none; z-index: 3000; padding: 14px 16px; border: 1px solid #dbe6ed; border-radius: 10px; background: #fff; box-shadow: 0 9px 30px rgba(19,54,77,.18); color: #173f59; font: 12px/1.45 Arial,sans-serif; }
+.tooltip-title { font-size: 15px; font-weight: 700; line-height: 1.25; }
+.tooltip-scope { margin: 3px 0 10px; color: #6c8292; font-size: 11px; }
+.tooltip-row { display: grid; grid-template-columns: minmax(0,1fr) auto; gap: 16px; padding: 3px 0; }
+.tooltip-label { color: #687d8b; }
+.tooltip-value { text-align: right; font-weight: 600; color: #173f59; }
+.tooltip-foot { margin-top: 9px; padding-top: 8px; border-top: 1px solid #e5edf2; color: #617a8b; font-size: 11px; }
+.modal-open { overflow: hidden; }
+.chart-modal { position: fixed; inset: 0; z-index: 2000; place-items: center; padding: 20px; }
+.modal-backdrop { position: absolute; inset: 0; border: 0; background: rgba(12,34,49,.5); cursor: default; }
+.modal-card { position: relative; width: min(1400px,96vw); max-height: 94dvh; padding: 18px 20px 12px; border-radius: 12px; background: #fff; box-shadow: 0 20px 80px rgba(6,26,40,.3); }
+.modal-heading { display: flex; align-items: flex-start; justify-content: space-between; gap: 16px; }
+.modal-heading h2 { font-size: 22px; }
+.modal-heading p { margin: 5px 0 8px; color: #657d8e; font-size: 13px; }
+.modal-close { width: 32px; height: 32px; flex-shrink: 0; border: 1px solid #d4e1ea; border-radius: 7px; background: #f4f8fa; color: #173f59; font-size: 24px; line-height: 1; cursor: pointer; }
+.modal-plot-body { width: 100%; overflow: auto; }
+.expanded-plot { height: calc(86dvh - 110px) !important; min-height: 320px; }
+.modal-heatmap .expanded-plot { min-width: 800px; }
+.modal-help { margin: 6px 0 0; color: #6c8292; font-size: 11px; }
+@media (max-width:1100px) {
+  .metrics { max-width: none; width: 100%; margin-top: 10px; }
+  .scatter-plot { height: 480px !important; }
+}
+@media (max-width:550px) {
+  .metrics { padding: 12px; }
+  .metrics-main { grid-template-columns: repeat(3,minmax(0,1fr)); gap: 10px; }
+  .metric-context { grid-column: 1/-1; }
+  .metric-context strong { font-size: 18px; }
+  .metric-context > span { display: none; }
+  .metric-value { font-size: 24px; }
+  .metric-cell { padding-left: 9px; }
+  .filters-heading { flex-basis: 100%; }
+  .scatter-plot { height: 350px !important; }
+  .map-plot { height: 315px !important; min-width: 0; }
+  .chart-modal { padding: 8px; }
+  .modal-card { padding: 14px 10px 10px; width: 98vw; }
+  .modal-heading h2 { font-size: 18px; }
+}
+
+.view-heading .plot-actions { margin-left: auto; }
+.tooltip-label, .tooltip-scope, .tooltip-foot, .modal-heading p, .modal-help { color: #536f82; }
+@media (min-width:1101px) and (max-height:760px) {
+  .metrics { padding: 8px 12px; }
+  .metrics-main { margin-top: 4px; gap: 12px; }
+  .metric-value { font-size: 24px; }
+  .metric-label { margin-top: 3px; }
+  .controls { padding: 6px 10px; }
+  .expand-button { width: 26px; height: 26px; padding: 5px; }
+  .borough-panel .chart-subtitle { padding: 4px 8px; margin: 3px 0; }
+}
+.modal-heatmap .modal-help::after { content: " On narrow screens, swipe horizontally."; }
+
+@media (min-width:1101px) and (max-height:760px) { .chart-grid { padding-bottom: 4px; } }
+
+/* Query controls lead into the full-width result summary. */
+header { display: block; }
+.metrics { flex: none; width: 100%; max-width: none; margin: 10px 0; padding: 9px 16px; }
+.metrics-main { margin-top: 4px; }
+@media (min-width:1101px) {
+  .controls { position: sticky; top: 6px; z-index: 30; box-shadow: 0 2px 8px rgba(23,63,89,.04); }
+}
+@media (max-width:550px) { .metrics { padding: 12px; margin: 10px 0; } }
+
+/* Light glass surfaces, with opaque data marks and high-contrast type. */
+body { background: #f1f5f8; }
+h1 { color: #173f59; font-size: 46px; font-weight: 600; line-height: 1.06; letter-spacing: -1.6px; text-shadow: 0 1px 0 rgba(255,255,255,.9); }
+.intro { color: #526e81; font-size: 14px; }
+header { padding: 3px 0 4px; }
+.controls { isolation: isolate; background: rgba(237,245,251,.83); border-color: rgba(255,255,255,.96); border-left-color: #3c799a; box-shadow: 0 5px 20px rgba(28,68,96,.07), inset 0 1px 0 rgba(255,255,255,.9); }
+.controls::before, .chart-grid::before { content: ''; position: absolute; inset: 0; z-index: -1; pointer-events: none; border-radius: inherit; backdrop-filter: blur(14px) saturate(115%); -webkit-backdrop-filter: blur(14px) saturate(115%); }
+.chart-grid { position: relative; isolation: isolate; background: rgba(255,255,255,.74); border-color: rgba(255,255,255,.94); border-radius: 14px; box-shadow: 0 10px 34px rgba(24,65,94,.08), inset 0 1px 0 rgba(255,255,255,.95); }
+.panel { background: transparent; }
+.metrics { background: rgba(23,63,89,.95); border: 1px solid rgba(255,255,255,.45); box-shadow: 0 10px 28px rgba(23,63,89,.15), inset 0 1px 0 rgba(255,255,255,.18); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px); }
+.scatter-controls { background: rgba(240,246,251,.78); border-color: rgba(203,221,234,.65); box-shadow: inset 0 1px 0 rgba(255,255,255,.8); }
+.borough-panel .chart-subtitle { background: rgba(235,243,245,.78); }
+.js-plotly-plot .main-svg { background: transparent !important; }
+.js-plotly-plot .bg { fill: rgba(255,255,255,.18) !important; }
+.expand-button { background: rgba(255,255,255,.76); box-shadow: 0 2px 7px rgba(23,63,89,.04); }
+.ui-tooltip { background: rgba(255,255,255,.97); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); }
+.modal-backdrop { background: rgba(17,43,61,.4); backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px); }
+.modal-card { background: rgba(255,255,255,.96); border: 1px solid rgba(255,255,255,.92); backdrop-filter: blur(18px); -webkit-backdrop-filter: blur(18px); }
+@media (min-width:1101px) and (max-height:760px) { h1 { font-size: 40px; } }
+@media (max-width:550px) { h1 { font-size: 36px; letter-spacing: -1px; } }
+@media (max-width:1100px) { .controls::before { display: none; } }
+@media (min-width:1101px) {
+  .controls { width: fit-content; max-width: 100%; padding: 7px 10px; gap: 6px 14px; }
+  .controls > .filter { flex: 0 0 auto; min-width: 0; gap: 6px; }
+  .controls .filter label { flex-shrink: 0; white-space: nowrap; }
+  .controls #borough { width: 146px; }
+  .controls #cuisine-focus { width: 220px; }
+  .controls #count-filter { width: 184px; }
+}
+
+/* Consistent axis typography across the overview and expanded charts. */
+.js-plotly-plot .xtick text,
+.js-plotly-plot .ytick text { font-family: Arial, Helvetica, sans-serif !important; font-size: 14px !important; }
+.js-plotly-plot .xtitle,
+.js-plotly-plot .ytitle { font-family: Arial, Helvetica, sans-serif !important; font-size: 16px !important; }
+
+/* Give each linked view its own surface and room for both axes. */
+.chart-grid { padding: 0; margin-top: 18px; gap: 24px; background: transparent; border: 0; border-radius: 0; box-shadow: none; }
+.chart-grid::before { display: none; }
+.right-column { gap: 24px; padding-left: 0; border-left: 0; }
+.panel { position: relative; isolation: isolate; padding: 20px; border: 1px solid rgba(255,255,255,.94); border-radius: 14px; background: rgba(255,255,255,.82); box-shadow: 0 7px 25px rgba(24,65,94,.06); }
+.panel::before { content: ''; position: absolute; inset: 0; z-index: -1; pointer-events: none; border-radius: inherit; backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px); }
+.right-column .panel + .panel { padding-top: 20px; border-top: 1px solid rgba(255,255,255,.94); }
+.research-question { margin-top: 8px; }
+.chart-subtitle { margin: 6px 0 12px; }
+.scatter-controls { margin-top: 12px; }
+.scatter-panel .plot-key { margin: 12px 0 8px; }
+.scatter-footer { margin-top: 12px; padding-top: 10px; }
+.borough-panel .chart-subtitle { margin: 10px 0 12px; }
+.scatter-plot { height: clamp(540px,40vw,700px) !important; }
+.bar-plot { height: 320px !important; }
+.heatmap-plot { height: 370px !important; }
+.heatmap-plot { min-width: var(--heatmap-readable-width,740px); }
+#heatmap-view { overflow-x: auto; padding-bottom: 4px; }
+.map-plot { height: 420px !important; }
+@media (max-width:1100px) {
+  .chart-grid { gap: 22px; }
+  .right-column { gap: 22px; }
+  .scatter-panel { max-width: none; }
+  .scatter-plot { height: 520px !important; }
+}
+@media (max-width:550px) {
+  .panel { padding: 16px 12px; }
+  .right-column .panel + .panel { padding-top: 16px; }
+  .scatter-plot { height: 420px !important; }
+  .bar-plot { height: 320px !important; }
+  .heatmap-plot { height: 370px !important; }
+  .map-plot { height: 390px !important; }
+}
+
+@media (min-width:551px) and (max-width:1450px) {
+  .scatter-controls { grid-template-columns: minmax(0,1fr) minmax(0,1.1fr); }
+  .scatter-only { grid-column: 1 / -1; }
+}
+@media (max-width:550px) {
+  .scatter-controls { grid-template-columns: minmax(0,1fr); }
+}
+@media (max-width:700px) {
+  .heatmap-plot { min-width: max(820px,var(--heatmap-readable-width,740px)); }
+}
+@media (min-width:701px) and (max-width:1450px) {
+  .heatmap-mode #heatmap-scope::after { content: "Scroll horizontally if needed to compare all cuisines →"; display: block; margin-top: 5px; color: var(--accent); }
+}
+
+/* Desktop overview: preserve the three-card order and share the available height. */
+@media (min-width:1300px) and (min-height:740px) {
+  .page { height: calc(100dvh - 8px); display: flex; flex-direction: column; padding: 8px 18px; }
+  header { flex: none; margin-bottom: 5px; padding: 0; }
+  .controls { flex: none; position: relative; top: auto; padding-block: 4px; }
+  .metrics { flex: none; margin: 6px 0; padding: 6px 14px; }
+  .metrics-main { margin-top: 2px; gap: 12px; }
+  .metric-label { margin-top: 1px; }
+  .metric-context > span { margin-top: 1px; }
+  .chart-grid { flex: 1 1 0; min-height: 0; align-items: stretch; margin-top: 5px; gap: 14px; }
+  .right-column { min-height: 0; grid-template-rows: minmax(0,1fr) minmax(0,1fr); gap: 12px; }
+  .panel { min-height: 0; display: flex; flex-direction: column; padding: 10px 14px; }
+  .right-column .panel + .panel { padding-top: 10px; }
+  .plot-heading, .view-heading, .research-question, .chart-subtitle, .scatter-controls, .plot-key, .scatter-footer, .interaction-hint { flex: none; }
+  .research-question { margin-top: 3px; }
+  .chart-subtitle { margin: 3px 0 5px; }
+  .interaction-hint { margin: 0 0 3px; }
+  .scatter-controls { margin-top: 5px; padding: 6px 8px; gap: 6px 10px; }
+  .scatter-panel .plot-key { margin: 6px 0 3px; }
+  .scatter-footer { margin-top: 4px; padding-top: 4px; }
+  .scatter-footer .reading-note { margin-top: 2px; }
+  .scatter-plot, .bar-plot, .heatmap-plot, .map-plot { flex: 1 1 0; height: 0 !important; min-height: 0; min-width: 0; }
+  #heatmap-view, #map-view { flex: 1 1 0; min-height: 0; overflow: visible; padding-bottom: 0; }
+  #heatmap-view:not([style*="none"]), #map-view:not([style*="none"]) { display: flex !important; flex-direction: column; }
+  .borough-panel .chart-subtitle { margin: 3px 0 4px; padding: 3px 6px; }
+  .heatmap-mode #heatmap-scope::after { display: none; }
+  footer { flex: none; margin-top: 5px; line-height: 1.25; }
+  footer p { display: inline; margin-right: 8px; }
+}
+@media (min-width:1300px) and (min-height:740px) {
+  .right-column { grid-template-rows: minmax(0,1.04fr) minmax(0,.96fr); }
+  .panel { padding-block: 8px; }
+  .right-column .panel + .panel { padding-top: 8px; }
+  .expand-button { width: 24px; height: 24px; padding: 5px; }
+  .research-question { line-height: 1.2; }
+  .chart-subtitle { margin: 2px 0 3px; }
+  .interaction-hint { line-height: 1.2; margin-bottom: 2px; }
+  .borough-panel .chart-subtitle { margin: 2px 0 3px; padding: 2px 6px; }
+}
+
+@media (min-width:1300px) and (min-height:740px) and (max-width:1500px),
+       (min-width:1300px) and (min-height:740px) and (max-height:800px) {
+  .chart-grid .js-plotly-plot .xtick text,
+  .chart-grid .js-plotly-plot .ytick text,
+  #heatmap .annotation-text, #bar .bartext { font-size: 12px !important; }
+}
+@media (min-width:1300px) and (min-height:740px) and (max-height:800px) {
+  h1 { font-size: 40px; }
+  .metric-value { font-size: 24px; }
+}
+
+/* Remove the repeated scope totals line and give its height to the charts. */
+.metrics > .scope-total { display: none; }
+.metrics .metrics-main { margin-top: 0; }
